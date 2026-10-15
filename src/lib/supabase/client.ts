@@ -1,26 +1,51 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const rawKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+function cleanSupabaseUrl(url?: string): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url.trim());
+    if (!parsed.protocol.startsWith('http')) return null;
+    if (!parsed.hostname || (!parsed.hostname.includes('.') && parsed.hostname !== 'localhost')) return null;
+    return `${parsed.protocol}//${parsed.host}`;
+  } catch {
+    return null;
+  }
+}
+
+const cleanedUrl = cleanSupabaseUrl(rawUrl);
 
 export const isSupabaseConfigured = Boolean(
-  supabaseUrl &&
-    supabaseAnonKey &&
-    !supabaseUrl.includes('placeholder') &&
-    supabaseUrl.startsWith('https://')
+  cleanedUrl &&
+    rawKey &&
+    rawKey.length > 20 &&
+    !cleanedUrl.includes('placeholder')
 );
 
-// Crea il client Supabase singleton per il browser
-export const supabase = isSupabaseConfigured
-  ? createSupabaseClient(supabaseUrl!, supabaseAnonKey!, {
+// Safe initialization
+function initSupabase() {
+  if (!isSupabaseConfigured || !cleanedUrl || !rawKey) {
+    return null;
+  }
+  try {
+    return createSupabaseClient(cleanedUrl, rawKey, {
       auth: {
-        persistSession: true,
-        autoRefreshToken: true,
+        persistSession: typeof window !== 'undefined',
+        autoRefreshToken: typeof window !== 'undefined',
       },
       realtime: {
         params: {
           eventsPerSecond: 10,
         },
       },
-    })
-  : null;
+    });
+  } catch (err) {
+    console.warn('[Supabase Client] Failed to initialize:', err);
+    return null;
+  }
+}
+
+// Crea il client Supabase singleton per il browser in modo sicuro
+export const supabase = initSupabase();

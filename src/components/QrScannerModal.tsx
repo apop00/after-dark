@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { X, Camera, Image, AlertCircle, Sparkles } from 'lucide-react';
+import { X, Camera, Image, AlertCircle } from 'lucide-react';
 import { triggerHaptic } from '@/lib/haptics/vibration';
 import { sounds } from '@/lib/audio/sound';
 
@@ -22,7 +22,7 @@ export function QrScannerModal({
 
   // Helper per estrarre il codice stanza da qualsiasi formato (URL o testo grezzo)
   const extractCode = (decodedText: string): string => {
-    let clean = decodedText.trim();
+    const clean = decodedText.trim();
     try {
       if (clean.startsWith('http://') || clean.startsWith('https://')) {
         const url = new URL(clean);
@@ -101,9 +101,8 @@ export function QrScannerModal({
           }
         );
         if (mounted) setIsScanning(true);
-      } catch (err: unknown) {
+      } catch {
         if (!mounted) return;
-        const msg = err instanceof Error ? err.message : 'Impossibile accedere alla fotocamera';
         setScannerError(
           'Permesso fotocamera negato o non disponibile. Puoi caricare uno screenshot del QR o inserire il codice a mano.'
         );
