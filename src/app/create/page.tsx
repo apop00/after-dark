@@ -1,0 +1,359 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  Wine,
+  Disc,
+  Home,
+  Compass,
+  Zap,
+  Clock,
+  Users,
+  Shield,
+  ArrowRight,
+  ArrowLeft,
+  Sparkles,
+} from 'lucide-react';
+import { Navbar } from '@/components/Navbar';
+import { ModeGraphic } from '@/components/ModeGraphics';
+import { GameMode, MissionDifficulty } from '@/types/game';
+import { getOrCreatePlayerSession } from '@/lib/session/player';
+import { triggerHaptic } from '@/lib/haptics/vibration';
+import { sounds } from '@/lib/audio/sound';
+
+const GAME_MODES: {
+  id: GameMode;
+  name: string;
+  tagline: string;
+  icon: React.ReactNode;
+  accent: string;
+}[] = [
+  {
+    id: 'bar',
+    name: 'BAR & LOUNGE',
+    tagline: 'Conversazioni, drink, osservazione sottile e bluff da bancone',
+    icon: <Wine className="w-5 h-5" />,
+    accent: 'border-amber-500/50 hover:bg-amber-500/10 text-amber-400',
+  },
+  {
+    id: 'discoteca',
+    name: 'DISCOTECA & CLUB',
+    tagline: 'Musica alta, cenni, sguardi, ballo e missioni visive senza parole',
+    icon: <Disc className="w-5 h-5" />,
+    accent: 'border-purple-500/50 hover:bg-purple-500/10 text-purple-400',
+  },
+  {
+    id: 'house_party',
+    name: 'HOUSE PARTY',
+    tagline: 'Segreti tra amici, votazioni, divano, cucina e alleanze domestiche',
+    icon: <Home className="w-5 h-5" />,
+    accent: 'border-emerald-500/50 hover:bg-emerald-500/10 text-emerald-400',
+  },
+  {
+    id: 'outdoor',
+    name: 'OUTDOOR & FESTIVAL',
+    tagline: 'Passeggiate serali, piazze, ponti e scorci urbani in movimento',
+    icon: <Compass className="w-5 h-5" />,
+    accent: 'border-cyan-500/50 hover:bg-cyan-500/10 text-cyan-400',
+  },
+  {
+    id: 'chaos',
+    name: 'CHAOS MODE',
+    tagline: 'Imprevisti spietati, sabotaggi amichevoli, bluff estremo e rimescolamenti',
+    icon: <Zap className="w-5 h-5" />,
+    accent: 'border-rose-500/50 hover:bg-rose-500/10 text-rose-400',
+  },
+];
+
+export default function CreateRoomPage() {
+  const router = useRouter();
+  const [groupName, setGroupName] = useState('');
+  const [selectedMode, setSelectedMode] = useState<GameMode>('bar');
+  const [durationMinutes, setDurationMinutes] = useState<number>(45);
+  const [minPlayers, setMinPlayers] = useState<number>(3);
+  const [maxPlayers, setMaxPlayers] = useState<number>(10);
+  const [allowCoop, setAllowCoop] = useState<boolean>(true);
+  const [difficulties, setDifficulties] = useState<MissionDifficulty[]>([
+    'facile',
+    'media',
+    'difficile',
+    'leggendaria',
+  ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const toggleDifficulty = (d: MissionDifficulty) => {
+    triggerHaptic('light');
+    if (difficulties.includes(d)) {
+      if (difficulties.length === 1) return; // Mantieni almeno una difficoltà
+      setDifficulties(difficulties.filter((x) => x !== d));
+    } else {
+      setDifficulties([...difficulties, d]);
+    }
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg('');
+    setIsSubmitting(true);
+    triggerHaptic('medium');
+
+    try {
+      const session = getOrCreatePlayerSession();
+
+      const res = await fetch('/api/rooms/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          groupName: groupName.trim() || 'I Guerrieri della Notte',
+          mode: selectedMode,
+          minPlayers,
+          maxPlayers,
+          durationMinutes,
+          allowedDifficulties: difficulties,
+          allowCoop,
+          hostPlayerId: session.playerId,
+          hostNickname: session.nickname,
+          hostAvatar: session.avatarSeed,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Errore nella creazione della stanza');
+      }
+
+      sounds.playSuccess();
+      router.push(`/room/${data.room.code}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Errore imprevisto';
+      setErrorMsg(message);
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-10">
+      <Navbar />
+
+      <main className="flex-1 max-w-md w-full mx-auto px-4 py-4 space-y-5">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Indietro</span>
+          </button>
+          <span className="text-xs uppercase tracking-widest text-rose-400 font-bold">
+            Nuova Stanza
+          </span>
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-black tracking-tight text-white">Configura la Partita</h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Personalizza l&apos;esperienza per il tuo gruppo e il locale di stasera.
+          </p>
+        </div>
+
+        {errorMsg && (
+          <div className="p-3 rounded-2xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300 font-medium">
+            {errorMsg}
+          </div>
+        )}
+
+        <form onSubmit={handleCreate} className="space-y-5">
+          {/* Group Name */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-300">
+              Nome del Gruppo o Serata
+            </label>
+            <input
+              type="text"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              placeholder="Es. Venerdì da Leoni, Squadra Gin Tonic..."
+              maxLength={30}
+              className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-rose-500 transition-colors"
+            />
+          </div>
+
+          {/* Mode Selector */}
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-slate-300">
+              Modalità & Atmosfera
+            </label>
+            <div className="space-y-2">
+              {GAME_MODES.map((mode) => {
+                const isSelected = selectedMode === mode.id;
+                return (
+                  <div
+                    key={mode.id}
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setSelectedMode(mode.id);
+                    }}
+                    className={`cursor-pointer p-3.5 rounded-3xl border transition-all flex items-center gap-3.5 ${
+                      isSelected
+                        ? `bg-gradient-to-r from-white/10 to-white/5 border-2 ${mode.accent} shadow-xl shadow-black/80 scale-[1.01]`
+                        : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.06] opacity-75 hover:opacity-100'
+                    }`}
+                  >
+                    <div className="shrink-0 w-14 h-14 flex items-center justify-center p-1 rounded-2xl bg-black/40 border border-white/10">
+                      <ModeGraphic mode={mode.id} className="w-12 h-12" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-sm tracking-wide text-white">
+                          {mode.name}
+                        </span>
+                        {isSelected && (
+                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shadow-lg shadow-rose-500" />
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                        {mode.tagline}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Duration Selector */}
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-slate-300">
+              Durata della Partita
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { label: '30 min', val: 30 },
+                { label: '45 min', val: 45 },
+                { label: '60 min', val: 60 },
+                { label: '90 min', val: 90 },
+              ].map((dur) => (
+                <button
+                  key={dur.val}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setDurationMinutes(dur.val);
+                  }}
+                  className={`py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                    durationMinutes === dur.val
+                      ? 'bg-rose-500/20 border-rose-500 text-rose-300 shadow-md'
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {dur.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Player Quorum */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-slate-300">
+                Minimo Giocatori
+              </label>
+              <select
+                value={minPlayers}
+                onChange={(e) => setMinPlayers(Number(e.target.value))}
+                className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-rose-500"
+              >
+                <option value={2} className="bg-slate-900">2 Giocatori (Duello)</option>
+                <option value={3} className="bg-slate-900">3 Giocatori</option>
+                <option value={4} className="bg-slate-900">4 Giocatori</option>
+                <option value={5} className="bg-slate-900">5 Giocatori</option>
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-slate-300">
+                Massimo Giocatori
+              </label>
+              <select
+                value={maxPlayers}
+                onChange={(e) => setMaxPlayers(Number(e.target.value))}
+                className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-rose-500"
+              >
+                <option value={6} className="bg-slate-900">6 Giocatori</option>
+                <option value={8} className="bg-slate-900">8 Giocatori</option>
+                <option value={10} className="bg-slate-900">10 Giocatori</option>
+                <option value={16} className="bg-slate-900">16 Giocatori</option>
+                <option value={24} className="bg-slate-900">24 Giocatori</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Difficulties */}
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-slate-300">
+              Difficoltà Ammesse
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {(['facile', 'media', 'difficile', 'leggendaria'] as MissionDifficulty[]).map((d) => {
+                const active = difficulties.includes(d);
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => toggleDifficulty(d)}
+                    className={`py-2 px-3 rounded-xl border text-xs font-semibold capitalize transition-all ${
+                      active
+                        ? 'bg-rose-500/20 border-rose-500 text-rose-300'
+                        : 'bg-white/5 border-white/10 text-slate-500 opacity-60'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Coop toggle */}
+          <div
+            onClick={() => {
+              triggerHaptic('light');
+              setAllowCoop(!allowCoop);
+            }}
+            className="cursor-pointer p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between"
+          >
+            <div>
+              <span className="font-bold text-xs text-white block">Missioni Collaborative</span>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Consenti missioni in cui due giocatori complottano insieme
+              </p>
+            </div>
+            <div
+              className={`w-11 h-6 rounded-full transition-colors relative p-1 ${
+                allowCoop ? 'bg-rose-600' : 'bg-white/10'
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                  allowCoop ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full py-4 rounded-3xl btn-game-rose disabled:opacity-40 text-white font-black text-base tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer shadow-2xl"
+          >
+            <span>{isSubmitting ? 'Generazione Stanza...' : 'Crea Stanza & Invita'}</span>
+            <ArrowRight className="w-5 h-5 filter drop-shadow" />
+          </button>
+        </form>
+      </main>
+    </div>
+  );
+}

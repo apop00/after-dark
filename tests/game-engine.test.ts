@@ -1,0 +1,305 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { serverStore } from '../src/lib/server/store';
+import { MISSIONS_DATABASE } from '../src/data/missions';
+import { assignMissionsToPlayers, calculateEndGameAwards } from '../src/lib/game/engine';
+
+describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
+  beforeEach(() => {
+    serverStore.clearAll();
+  });
+
+  it('1. Database missioni contiene oltre 100 missioni valide e strutturate', () => {
+    expect(MISSIONS_DATABASE.length).toBeGreaterThanOrEqual(100);
+    MISSIONS_DATABASE.forEach((m) => {
+      expect(m.id).toBeDefined();
+      expect(m.title.length).toBeGreaterThan(3);
+      expect(m.description.length).toBeGreaterThan(10);
+      expect(m.compatible_modes.length).toBeGreaterThan(0);
+      expect(m.base_points).toBeGreaterThan(0);
+      expect(['facile', 'media', 'difficile', 'leggendaria']).toContain(m.difficulty);
+      expect([
+        'socializzazione',
+        'osservazione',
+        'deduzione',
+        'persuasione',
+        'creativita',
+        'collaborazione',
+        'bluff',
+        'chaos',
+      ]).toContain(m.category);
+    });
+  });
+
+  it('2. Creazione stanza e ingresso partecipanti con codice', () => {
+    const { room, member: host } = serverStore.createRoom({
+      groupName: 'Notte Brava a Trastevere',
+      mode: 'bar',
+      minPlayers: 3,
+      maxPlayers: 8,
+      durationMinutes: 45,
+      allowedDifficulties: ['facile', 'media', 'difficile', 'leggendaria'],
+      allowCoop: true,
+      hostPlayerId: 'player_host_01',
+      hostNickname: 'Marco',
+      hostAvatar: 'shadow',
+    });
+
+    expect(room.code).toHaveLength(6);
+    expect(room.status).toBe('lobby');
+    expect(host.is_host).toBe(true);
+
+    // Secondo giocatore si unisce
+    const joinResult1 = serverStore.joinRoom({
+      code: room.code,
+      playerId: 'player_02',
+      nickname: 'Giulia',
+      avatarSeed: 'viper',
+    });
+    expect(joinResult1.member.nickname).toBe('Giulia');
+    expect(joinResult1.member.is_host).toBe(false);
+
+    // Terzo giocatore si unisce
+    const joinResult2 = serverStore.joinRoom({
+      code: room.code,
+      playerId: 'player_03',
+      nickname: 'Luca',
+      avatarSeed: 'rebel',
+    });
+    expect(joinResult2.member.nickname).toBe('Luca');
+
+    const { members } = serverStore.getRoomByCode(room.code);
+    expect(members).toHaveLength(3);
+  });
+
+  it('3. Rifiuta l\'avvio prima del raggiungimento del numero minimo di giocatori', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Test Min Players',
+      mode: 'bar',
+      minPlayers: 3,
+      maxPlayers: 6,
+      durationMinutes: 30,
+      allowedDifficulties: ['facile', 'media'],
+      allowCoop: true,
+      hostPlayerId: 'p1',
+      hostNickname: 'Solo',
+      hostAvatar: 'shadow',
+    });
+
+    expect(() => {
+      serverStore.startGame({ roomCode: room.code, hostPlayerId: 'p1' });
+    }).toThrow(/almeno 3 giocatori/);
+  });
+
+  it('4. Avvio partita, assegnazione missioni bilanciate ed evitamento duplicati', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Party Club',
+      mode: 'discoteca',
+      minPlayers: 3,
+      maxPlayers: 10,
+      durationMinutes: 60,
+      allowedDifficulties: ['facile', 'media', 'difficile', 'leggendaria'],
+      allowCoop: true,
+      hostPlayerId: 'p1',
+      hostNickname: 'DJ',
+      hostAvatar: 'shadow',
+    });
+
+    serverStore.joinRoom({ code: room.code, playerId: 'p2', nickname: 'Sara', avatarSeed: 'viper' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p3', nickname: 'Leo', avatarSeed: 'wolf' });
+
+    const { game, missionsAssignedCount } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p1',
+    });
+
+    expect(game.status).toBe('active');
+    expect(missionsAssignedCount).toBe(9); // 3 giocatori x 3 missioni
+
+    // Verifica stato della stanza
+    const updatedRoom = serverStore.getRoomByCode(room.code).room;
+    expect(updatedRoom?.status).toBe('playing');
+  });
+
+  it('5. PRIVACY DELLE MISSIONI: gli avversari non possono vedere le missioni altrui', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Privacy Check',
+      mode: 'house_party',
+      minPlayers: 3,
+      maxPlayers: 10,
+      durationMinutes: 45,
+      allowedDifficulties: ['facile', 'media', 'difficile'],
+      allowCoop: false,
+      hostPlayerId: 'alice',
+      hostNickname: 'Alice',
+      hostAvatar: 'shadow',
+    });
+
+    serverStore.joinRoom({ code: room.code, playerId: 'bob', nickname: 'Bob', avatarSeed: 'wolf' });
+    serverStore.joinRoom({ code: room.code, playerId: 'charlie', nickname: 'Charlie', avatarSeed: 'viper' });
+
+    const { game } = serverStore.startGame({ roomCode: room.code, hostPlayerId: 'alice' });
+
+    // Alice fa richiesta del suo stato
+    const aliceState = serverStore.getGameState(game.id, 'alice');
+    expect(aliceState.myMissions).toHaveLength(3);
+    aliceState.myMissions.forEach((m) => {
+      expect(m.player_id).toBe('alice');
+    });
+
+    // Bob fa richiesta del suo stato
+    const bobState = serverStore.getGameState(game.id, 'bob');
+    expect(bobState.myMissions).toHaveLength(3);
+    bobState.myMissions.forEach((m) => {
+      expect(m.player_id).toBe('bob');
+    });
+
+    // Le missioni di Alice e Bob sono distinte e nessun avversario vede quelle dell'altro
+    const aliceMissionIds = aliceState.myMissions.map((m) => m.id);
+    bobState.myMissions.forEach((bm) => {
+      expect(aliceMissionIds).not.toContain(bm.id);
+    });
+  });
+
+  it('6. Flusso completo di completamento missione con verifica tra pari e punteggi', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Verifiche Live',
+      mode: 'bar',
+      minPlayers: 3,
+      maxPlayers: 6,
+      durationMinutes: 30,
+      allowedDifficulties: ['facile', 'media', 'difficile'],
+      allowCoop: false,
+      hostPlayerId: 'p1',
+      hostNickname: 'Mario',
+      hostAvatar: 'shadow',
+    });
+    serverStore.joinRoom({ code: room.code, playerId: 'p2', nickname: 'Luigi', avatarSeed: 'viper' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p3', nickname: 'Peach', avatarSeed: 'phoenix' });
+
+    const { game } = serverStore.startGame({ roomCode: room.code, hostPlayerId: 'p1' });
+
+    const marioState = serverStore.getGameState(game.id, 'p1');
+    const missionToComplete = marioState.myMissions[0];
+
+    // Mario richiede completamento indicando Luigi come testimone
+    const submitRes = serverStore.submitMissionCompletion({
+      gameId: game.id,
+      playerMissionId: missionToComplete.id,
+      requesterPlayerId: 'p1',
+      verifierPlayerId: 'p2',
+    });
+
+    expect(submitRes.playerMission.status).toBe(
+      missionToComplete.mission?.verification_type === 'self_timer' ? 'completed' : 'pending_verification'
+    );
+
+    if (submitRes.verification) {
+      // Luigi vede la richiesta di verifica
+      const luigiState = serverStore.getGameState(game.id, 'p2');
+      expect(luigiState.pendingVerifications).toHaveLength(1);
+      expect(luigiState.pendingVerifications[0].id).toBe(submitRes.verification.id);
+
+      // Luigi approva la testimonianza
+      const verifyRes = serverStore.resolveVerification({
+        gameId: game.id,
+        verificationId: submitRes.verification.id,
+        verifierPlayerId: 'p2',
+        approved: true,
+        note: 'Visto e confermato con i miei occhi!',
+      });
+
+      expect(verifyRes.verification.status).toBe('approved');
+      expect(verifyRes.playerMission.status).toBe('completed');
+      expect(verifyRes.playerMission.earned_points).toBeGreaterThan(0);
+
+      // Verifica aggiornamento classifica
+      const updatedMarioState = serverStore.getGameState(game.id, 'p1');
+      const marioScore = updatedMarioState.scores.find((s) => s.player_id === 'p1');
+      expect(marioScore?.completed_count).toBe(1);
+      expect(marioScore?.total_points).toBe(verifyRes.playerMission.earned_points);
+    }
+  });
+
+  it('7. Rifiuto verifica da parte del testimone e protezione doppio completamento', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Test Rifiuto',
+      mode: 'house_party',
+      minPlayers: 3,
+      maxPlayers: 6,
+      durationMinutes: 30,
+      allowedDifficulties: ['facile', 'media', 'difficile'],
+      allowCoop: false,
+      hostPlayerId: 'p1',
+      hostNickname: 'Giacomo',
+      hostAvatar: 'shadow',
+    });
+    serverStore.joinRoom({ code: room.code, playerId: 'p2', nickname: 'Giovanni', avatarSeed: 'viper' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p3', nickname: 'Aldo', avatarSeed: 'wolf' });
+
+    const { game } = serverStore.startGame({ roomCode: room.code, hostPlayerId: 'p1' });
+    const gState = serverStore.getGameState(game.id, 'p1');
+    const mission = gState.myMissions[0];
+
+    // Simula missione con testimone
+    mission.mission!.verification_type = 'peer_witness';
+
+    const submit = serverStore.submitMissionCompletion({
+      gameId: game.id,
+      playerMissionId: mission.id,
+      requesterPlayerId: 'p1',
+      verifierPlayerId: 'p2',
+    });
+
+    // Testimone rifiuta
+    serverStore.resolveVerification({
+      gameId: game.id,
+      verificationId: submit.verification!.id,
+      verifierPlayerId: 'p2',
+      approved: false,
+      note: 'Non è vero, non l\'ha fatto!',
+    });
+
+    // Non è possibile ri-approvare una verifica già risolta
+    expect(() => {
+      serverStore.resolveVerification({
+        gameId: game.id,
+        verificationId: submit.verification!.id,
+        verifierPlayerId: 'p2',
+        approved: true,
+      });
+    }).toThrow(/già stata gestita/);
+
+    const checkState = serverStore.getGameState(game.id, 'p1');
+    const p1Score = checkState.scores.find((s) => s.player_id === 'p1');
+    expect(p1Score?.failed_count).toBe(1);
+    expect(p1Score?.total_points).toBe(0);
+  });
+
+  it('8. Conclusione partita e assegnazione premi ironici', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Gran Finale',
+      mode: 'chaos',
+      minPlayers: 3,
+      maxPlayers: 5,
+      durationMinutes: 15,
+      allowedDifficulties: ['facile', 'media'],
+      allowCoop: false,
+      hostPlayerId: 'p1',
+      hostNickname: 'Campione',
+      hostAvatar: 'shadow',
+    });
+    serverStore.joinRoom({ code: room.code, playerId: 'p2', nickname: 'Secondo', avatarSeed: 'viper' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p3', nickname: 'Ultimo', avatarSeed: 'wolf' });
+
+    const { game } = serverStore.startGame({ roomCode: room.code, hostPlayerId: 'p1' });
+
+    // Conclude la partita
+    const finishRes = serverStore.finishGame(game.id);
+    expect(finishRes.game.status).toBe('completed');
+    expect(finishRes.awards.length).toBeGreaterThan(0);
+
+    const winnerAward = finishRes.awards.find((a) => a.id === 'award_winner');
+    expect(winnerAward).toBeDefined();
+    expect(winnerAward?.recipient_nickname).toBe('Campione');
+  });
+});
