@@ -31,7 +31,7 @@ create table if not exists public.rooms (
   expires_at timestamptz not null default (now() + interval '8 hours')
 );
 
-create index if unfair_idx_rooms_code on public.rooms (code);
+create index if not exists idx_rooms_code on public.rooms (code);
 create index if not exists idx_rooms_status on public.rooms (status);
 
 -- 3. ROOM_MEMBERS
