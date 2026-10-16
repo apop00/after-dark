@@ -28,8 +28,8 @@ export async function GET(
       room,
       members,
       isExpired: Boolean(isExpired),
-      gameId: game ? game.id : null,
-      gameStatus: game ? game.status : null,
+      gameId: (game && (game.status === 'active' || room.status === 'playing')) ? game.id : null,
+      gameStatus: (game && (game.status === 'active' || room.status === 'playing')) ? game.status : null,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Errore nel recupero della stanza';

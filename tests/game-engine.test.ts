@@ -535,6 +535,71 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
       });
     }).toThrow('inattività');
   });
+
+  it('14. Rimanere nella lobby e ricominciare un\'altra partita con gli stessi giocatori', () => {
+    // 1. Crea stanza con host e due giocatori
+    const { room, member: host } = serverStore.createRoom({
+      groupName: 'Notte Brava 2.0',
+      mode: 'jeffrey_island',
+      minPlayers: 3,
+      maxPlayers: 8,
+      durationMinutes: 30,
+      allowedDifficulties: ['facile', 'media', 'difficile'],
+      allowCoop: true,
+      hostPlayerId: 'p_host_rematch',
+      hostNickname: 'HostRematch',
+      hostAvatar: 'cocktail',
+    });
+
+    serverStore.joinRoom({ code: room.code, playerId: 'p_mate1', nickname: 'Mate 1', avatarSeed: 'lion' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p_mate2', nickname: 'Mate 2', avatarSeed: 'fox' });
+
+    // 2. Avvia Partita 1
+    const { game: game1 } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p_host_rematch',
+    });
+
+    expect(game1.id).toBeDefined();
+    expect(serverStore.getRoomByCode(room.code).room?.status).toBe('playing');
+
+    // 3. Concludi Partita 1
+    serverStore.finishGame(game1.id);
+
+    // Verifica che getGameState restituisca anche info sulla stanza
+    const state1 = serverStore.getGameState(game1.id, 'p_host_rematch');
+    expect(state1.room?.code).toBe(room.code);
+
+    // 4. Host decide di rimanere nella lobby per una nuova partita
+    const resetRes = serverStore.resetRoomToLobby(room.code, 'p_host_rematch');
+    expect(resetRes.room.status).toBe('lobby');
+
+    // Verifica che tutti i giocatori siano ancora nella stanza
+    const lobbyCheck = serverStore.getRoomByCode(room.code);
+    expect(lobbyCheck.room?.status).toBe('lobby');
+    expect(lobbyCheck.members.length).toBe(3);
+
+    // Non-host non può riaprire la lobby
+    expect(() => {
+      serverStore.resetRoomToLobby(room.code, 'p_mate1');
+    }).toThrow("Solo l'Host");
+
+    // 5. Host avvia la seconda partita nella stessa stanza
+    const { game: game2 } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p_host_rematch',
+      missionsPerPlayer: 4,
+    });
+
+    expect(game2.id).not.toBe(game1.id);
+    expect(serverStore.getRoomByCode(room.code).room?.status).toBe('playing');
+
+    // Tutti e 3 i giocatori hanno le nuove missioni assegnate
+    const p1State = serverStore.getGameState(game2.id, 'p_host_rematch');
+    const p2State = serverStore.getGameState(game2.id, 'p_mate1');
+    expect(p1State.myMissions.length).toBe(4);
+    expect(p2State.myMissions.length).toBe(4);
+  });
 });
 
 

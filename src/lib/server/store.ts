@@ -434,10 +434,37 @@ class GameServerStore {
 
   public getGameByRoomId(roomId: string): Game | undefined {
     this.loadFromDisk();
+    const matches: Game[] = [];
     for (const g of this.games.values()) {
-      if (g.room_id === roomId) return g;
+      if (g.room_id === roomId) matches.push(g);
     }
-    return undefined;
+    if (matches.length === 0) return undefined;
+    matches.sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
+    return matches.find((g) => g.status === 'active') || matches[0];
+  }
+
+  public resetRoomToLobby(roomCode: string, hostPlayerId: string): { room: Room } {
+    this.loadFromDisk();
+    const formattedCode = roomCode.trim().toUpperCase();
+    const room = this.rooms.get(formattedCode);
+    if (!room) throw new Error('Stanza non trovata.');
+    if (room.host_id !== hostPlayerId) {
+      throw new Error("Solo l'Host può riportare la stanza nella lobby.");
+    }
+
+    // Segna eventuali partite precedenti di questa stanza come completate
+    for (const g of this.games.values()) {
+      if (g.room_id === room.id && g.status === 'active') {
+        g.status = 'completed';
+      }
+    }
+
+    room.status = 'lobby';
+    room.created_at = new Date().toISOString();
+    room.expires_at = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    this.saveToDisk();
+
+    return { room };
   }
 
   /**
@@ -452,6 +479,14 @@ class GameServerStore {
     const scores = this.scores.get(gameId) || [];
     const events = (this.gameEvents.get(gameId) || []).filter((e) => e.is_active);
     const allMissions = this.playerMissions.get(gameId) || [];
+
+    let room: Room | undefined;
+    for (const r of this.rooms.values()) {
+      if (r.id === game.room_id) {
+        room = r;
+        break;
+      }
+    }
 
     // PRIVACY POLICY: Filtra per dare SOLO le missioni del giocatore chiamante o dove è coop_partner!
     const myMissions = allMissions
@@ -479,6 +514,13 @@ class GameServerStore {
 
     return {
       game,
+      room: room ? {
+        id: room.id,
+        code: room.code,
+        host_id: room.host_id,
+        status: room.status,
+        group_name: room.group_name,
+      } : undefined,
       scores,
       activeEvents: events,
       myMissions,

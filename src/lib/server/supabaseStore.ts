@@ -367,6 +367,52 @@ class SupabaseStore {
     return Array.isArray(list) && list.length > 0 ? list[0] : undefined;
   }
 
+  async resetRoomToLobby(roomCode: string, hostPlayerId: string): Promise<{ room: Room }> {
+    const cleanCode = roomCode.trim().toUpperCase();
+    const { room } = await this.getRoomByCode(cleanCode);
+    if (!room) throw new Error('Stanza non trovata.');
+
+    const hostUuid = ensureUuid(hostPlayerId);
+    if (room.host_id !== hostUuid) {
+      throw new Error("Solo l'Host può riportare la stanza nella lobby.");
+    }
+
+    // Completa eventuali partite attive per questa stanza
+    await fetch(this.getUrl(`games?room_id=eq.${room.id}&status=eq.active`), {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ status: 'completed' }),
+    }).catch(() => {});
+
+    // Riporta lo stato della stanza a 'lobby' e resetta il timer a 5 min
+    const updatePayload = {
+      status: 'lobby',
+      created_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+    };
+
+    let updateRes = await fetch(this.getUrl(`rooms?id=eq.${room.id}`), {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(updatePayload),
+    });
+
+    if (!updateRes.ok) {
+      // Fallback: aggiorna solo lo status se le date causano vincoli
+      await fetch(this.getUrl(`rooms?id=eq.${room.id}`), {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ status: 'lobby' }),
+      }).catch(() => {});
+    }
+
+    room.status = 'lobby';
+    room.created_at = new Date().toISOString();
+    room.expires_at = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+
+    return { room };
+  }
+
   // ==========================================
   // GAME LIFECYCLE
   // ==========================================
@@ -610,8 +656,35 @@ class SupabaseStore {
     );
     const pendingVerifications = [...dbVerifications, ...fallbacks];
 
+    // Fetch Room info per consentire ritorno alla lobby
+    let roomInfo: { id: string; code: string; host_id: string; status: Room['status']; group_name: string } | undefined;
+    if (game.room_id) {
+      try {
+        const roomRes = await fetch(this.getUrl(`rooms?id=eq.${game.room_id}&limit=1`), {
+          headers: this.getHeaders(),
+          cache: 'no-store',
+        });
+        if (roomRes.ok) {
+          const roomRows = await roomRes.json();
+          if (Array.isArray(roomRows) && roomRows.length > 0) {
+            const r = roomRows[0];
+            roomInfo = {
+              id: r.id,
+              code: r.code,
+              host_id: r.host_id,
+              status: r.status,
+              group_name: r.group_name,
+            };
+          }
+        }
+      } catch {
+        // Ignora
+      }
+    }
+
     return {
       game,
+      room: roomInfo,
       scores,
       activeEvents,
       myMissions,
