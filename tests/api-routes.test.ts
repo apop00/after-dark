@@ -89,9 +89,10 @@ describe('AFTER DARK — API Route Endpoints End-to-End Tests', () => {
     });
     const stateResChiara = await getGameState(stateReqChiara, { params: Promise.resolve({ id: gameId }) });
     const stateDataChiara = await stateResChiara.json();
-    expect(stateDataChiara.myMissions).toHaveLength(3);
-    stateDataChiara.myMissions.forEach((m: { player_id: string }) => {
-      expect(m.player_id).toBe('player_chiara');
+    const chiaraMissions = stateDataChiara.myMissions.filter((m: { player_id: string }) => m.player_id === 'player_chiara');
+    expect(chiaraMissions).toHaveLength(3);
+    stateDataChiara.myMissions.forEach((m: { player_id: string; coop_partner_id?: string }) => {
+      expect(m.player_id === 'player_chiara' || m.coop_partner_id === 'player_chiara').toBe(true);
     });
 
     // 6. Chiara completa la sua prima missione indicando Davide come testimone

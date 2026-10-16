@@ -47,6 +47,7 @@ class SupabaseStore {
     minPlayers: number;
     maxPlayers: number;
     durationMinutes: number;
+    missionsPerPlayer?: number;
     allowedDifficulties: Room['allowed_difficulties'];
     allowCoop: boolean;
     hostPlayerId: string;
@@ -98,6 +99,7 @@ class SupabaseStore {
 
     const roomList = await roomRes.json();
     const createdRoom: Room = roomList[0];
+    createdRoom.missions_per_player = params.missionsPerPlayer || 3;
 
     // Inserisci host come primo membro
     const memberPayload = {
@@ -246,6 +248,7 @@ class SupabaseStore {
   async startGame(params: {
     roomCode: string;
     hostPlayerId: string;
+    missionsPerPlayer?: number;
   }): Promise<{ game: Game; missionsAssignedCount: number }> {
     const cleanCode = params.roomCode.trim().toUpperCase();
     const { room, members } = await this.getRoomByCode(cleanCode);
@@ -268,6 +271,9 @@ class SupabaseStore {
       ? new Date(Date.now() + durationMs).toISOString()
       : null;
 
+    const missionsPerPlayer =
+      Number(params.missionsPerPlayer) || room.missions_per_player || 3;
+
     // Crea record Game
     const gamePayload = {
       room_id: room.id,
@@ -279,7 +285,7 @@ class SupabaseStore {
         mode: room.mode,
         duration_minutes: room.duration_minutes,
         allow_coop: room.allow_coop,
-        missions_per_player: 3,
+        missions_per_player: missionsPerPlayer,
       },
     };
 
@@ -314,7 +320,7 @@ class SupabaseStore {
       mode: room.mode,
       allowedDifficulties: room.allowed_difficulties,
       allowCoop: room.allow_coop,
-      missionsPerPlayer: 3,
+      missionsPerPlayer,
     });
 
     // Inserisci assegnazioni su Supabase

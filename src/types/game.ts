@@ -48,6 +48,7 @@ export interface Room {
   duration_minutes: number; // 30, 45, 60, 90, 120 (0 = open ended)
   allowed_difficulties: MissionDifficulty[];
   allow_coop: boolean;
+  missions_per_player?: number;
   host_id: string; // player_id of creator
   status: RoomStatus;
   created_at: string;

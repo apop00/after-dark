@@ -117,6 +117,7 @@ class GameServerStore {
     minPlayers: number;
     maxPlayers: number;
     durationMinutes: number;
+    missionsPerPlayer?: number;
     allowedDifficulties: Room['allowed_difficulties'];
     allowCoop: boolean;
     hostPlayerId: string;
@@ -139,6 +140,7 @@ class GameServerStore {
       min_players: params.minPlayers || 3,
       max_players: params.maxPlayers || 16,
       duration_minutes: params.durationMinutes || 45,
+      missions_per_player: params.missionsPerPlayer || 3,
       allowed_difficulties: params.allowedDifficulties || ['facile', 'media', 'difficile', 'leggendaria'],
       allow_coop: params.allowCoop ?? true,
       host_id: params.hostPlayerId,
@@ -235,6 +237,7 @@ class GameServerStore {
   public startGame(params: {
     roomCode: string;
     hostPlayerId: string;
+    missionsPerPlayer?: number;
   }): { game: Game; missionsAssignedCount: number } {
     this.loadFromDisk();
     const { room, members } = this.getRoomByCode(params.roomCode);
@@ -246,6 +249,7 @@ class GameServerStore {
       throw new Error(`Servono almeno ${room.min_players} giocatori per iniziare. Attualmente: ${members.length}.`);
     }
 
+    const targetMissions = params.missionsPerPlayer || room.missions_per_player || 3;
     const gameId = 'game_' + Date.now();
     const durationMs = room.duration_minutes > 0 ? room.duration_minutes * 60 * 1000 : null;
     const endsAt = durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
@@ -261,7 +265,7 @@ class GameServerStore {
         mode: room.mode,
         duration_minutes: room.duration_minutes,
         allow_coop: room.allow_coop,
-        missions_per_player: 3,
+        missions_per_player: targetMissions,
       },
     };
 
@@ -271,7 +275,7 @@ class GameServerStore {
       mode: room.mode,
       allowedDifficulties: room.allowed_difficulties,
       allowCoop: room.allow_coop,
-      missionsPerPlayer: 3,
+      missionsPerPlayer: targetMissions,
     });
 
     // Inizializza tabella punteggi

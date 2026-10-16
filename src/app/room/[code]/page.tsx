@@ -16,6 +16,7 @@ import {
   Shield,
   LogIn,
   User,
+  Target,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { QrCodeModal } from '@/components/QrCodeModal';
@@ -51,6 +52,7 @@ export default function RoomLobbyPage({
   const [joinNickname, setJoinNickname] = useState('');
   const [joinAvatar, setJoinAvatar] = useState('ghost');
   const [isJoiningDirect, setIsJoiningDirect] = useState(false);
+  const [missionsPerPlayer, setMissionsPerPlayer] = useState<number>(3);
 
   const fetchRoomState = useCallback(async () => {
     try {
@@ -62,6 +64,9 @@ export default function RoomLobbyPage({
 
       setRoom(data.room);
       setMembers(data.members || []);
+      if (data.room?.missions_per_player) {
+        setMissionsPerPlayer((prev) => (prev !== 3 ? prev : data.room.missions_per_player));
+      }
 
       // Se la partita è già iniziata, naviga direttamente alla HUD di gioco!
       if (data.gameId && (data.gameStatus === 'active' || data.room?.status === 'playing')) {
@@ -81,6 +86,14 @@ export default function RoomLobbyPage({
     setMyPlayerId(session.playerId);
     setJoinNickname(session.nickname);
     setJoinAvatar(session.avatarSeed);
+
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const urlTasks = Number(sp.get('tasks'));
+      if (urlTasks >= 1 && urlTasks <= 5) {
+        setMissionsPerPlayer(urlTasks);
+      }
+    }
 
     fetchRoomState();
 
@@ -133,6 +146,7 @@ export default function RoomLobbyPage({
         body: JSON.stringify({
           roomCode,
           hostPlayerId: myPlayerId,
+          missionsPerPlayer,
         }),
       });
 
@@ -254,6 +268,10 @@ export default function RoomLobbyPage({
                   <Clock className="w-3.5 h-3.5" />
                   {room.duration_minutes} min
                 </span>
+                <span className="text-xs text-rose-300 flex items-center gap-1 font-semibold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                  <Target className="w-3.5 h-3.5 text-rose-400" />
+                  {missionsPerPlayer} task
+                </span>
               </div>
             </div>
 
@@ -348,6 +366,70 @@ export default function RoomLobbyPage({
             </div>
           )}
         </div>
+
+        {/* Task Selector for Host */}
+        {isHost && (
+          <div className="p-4 rounded-3xl bg-gradient-to-b from-[#140e28] to-[#0d091a] border border-white/10 shadow-xl space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                  <Target className="w-4 h-4 text-rose-400" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-white block">Task a Testa per Giocatore</span>
+                  <span className="text-[10px] text-slate-400">Regolabile solo dall&apos;Host prima di avviare</span>
+                </div>
+              </div>
+              <span className="text-xs font-black text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-500/20">
+                {missionsPerPlayer} {missionsPerPlayer === 1 ? 'task' : 'task'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-5 gap-1.5 pt-1">
+              {[
+                { val: 1, label: '1', desc: 'Flash' },
+                { val: 2, label: '2', desc: 'Leggera' },
+                { val: 3, label: '3', desc: 'Standard ⭐' },
+                { val: 4, label: '4', desc: 'Intensa' },
+                { val: 5, label: '5', desc: 'Hardcore 🔥' },
+              ].map((item) => {
+                const isSelected = missionsPerPlayer === item.val;
+                return (
+                  <button
+                    key={item.val}
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setMissionsPerPlayer(item.val);
+                    }}
+                    className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-rose-500/30 border-rose-500 text-white shadow-lg shadow-rose-950/40 ring-2 ring-rose-400/50 scale-[1.03]'
+                        : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="text-sm font-black leading-none">{item.label}</div>
+                    <div className="text-[8px] mt-1 text-slate-400 font-semibold truncate">
+                      {item.desc}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {!isHost && (
+          <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between text-xs">
+            <span className="text-slate-400 flex items-center gap-1.5">
+              <Target className="w-3.5 h-3.5 text-rose-400" />
+              <span>Missioni a testa previste:</span>
+            </span>
+            <span className="font-bold text-white bg-rose-500/15 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-500/20">
+              {missionsPerPlayer} {missionsPerPlayer === 1 ? 'missione' : 'missioni'}
+            </span>
+          </div>
+        )}
 
         {/* Start Game Action */}
         <div className="pt-2">

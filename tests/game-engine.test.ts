@@ -302,4 +302,64 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
     expect(winnerAward).toBeDefined();
     expect(winnerAward?.recipient_nickname).toBe('Campione');
   });
+
+  it('9. Selettore task a testa: personalizzazione del numero di missioni per giocatore (es. 1 o 5 task)', () => {
+    // Stanza con 5 task a testa
+    const { room: room5 } = serverStore.createRoom({
+      groupName: 'Hardcore 5 Tasks',
+      mode: 'house_party',
+      minPlayers: 3,
+      maxPlayers: 8,
+      durationMinutes: 60,
+      missionsPerPlayer: 5,
+      allowedDifficulties: ['facile', 'media', 'difficile', 'leggendaria'],
+      allowCoop: true,
+      hostPlayerId: 'h1',
+      hostNickname: 'Host5',
+      hostAvatar: 'shadow',
+    });
+    serverStore.joinRoom({ code: room5.code, playerId: 'p2', nickname: 'Giocatore 2', avatarSeed: 'viper' });
+    serverStore.joinRoom({ code: room5.code, playerId: 'p3', nickname: 'Giocatore 3', avatarSeed: 'wolf' });
+
+    const { game: game5, missionsAssignedCount: count5 } = serverStore.startGame({
+      roomCode: room5.code,
+      hostPlayerId: 'h1',
+    });
+
+    expect(game5.config.missions_per_player).toBe(5);
+    expect(count5).toBe(15); // 3 giocatori x 5 missioni
+
+    const state5 = serverStore.getGameState(game5.id, 'h1');
+    const h1Missions = state5.myMissions.filter((m) => m.player_id === 'h1');
+    expect(h1Missions).toHaveLength(5);
+
+    // Stanza rapida con 1 task a testa (es. Warm-up)
+    const { room: room1 } = serverStore.createRoom({
+      groupName: 'Flash 1 Task',
+      mode: 'bar',
+      minPlayers: 2,
+      maxPlayers: 6,
+      durationMinutes: 30,
+      missionsPerPlayer: 1,
+      allowedDifficulties: ['facile'],
+      allowCoop: false,
+      hostPlayerId: 'h2',
+      hostNickname: 'Host1',
+      hostAvatar: 'fox',
+    });
+    serverStore.joinRoom({ code: room1.code, playerId: 'p2', nickname: 'Giocatore B', avatarSeed: 'ghost' });
+
+    const { game: game1, missionsAssignedCount: count1 } = serverStore.startGame({
+      roomCode: room1.code,
+      hostPlayerId: 'h2',
+      missionsPerPlayer: 1,
+    });
+
+    expect(game1.config.missions_per_player).toBe(1);
+    expect(count1).toBe(2); // 2 giocatori x 1 missione
+
+    const state1 = serverStore.getGameState(game1.id, 'h2');
+    expect(state1.myMissions).toHaveLength(1);
+  });
 });
+

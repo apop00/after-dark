@@ -14,6 +14,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
+  Target,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { ModeGraphic } from '@/components/ModeGraphics';
@@ -71,6 +72,7 @@ export default function CreateRoomPage() {
   const [groupName, setGroupName] = useState('');
   const [selectedMode, setSelectedMode] = useState<GameMode>('bar');
   const [durationMinutes, setDurationMinutes] = useState<number>(45);
+  const [missionsPerPlayer, setMissionsPerPlayer] = useState<number>(3);
   const [minPlayers, setMinPlayers] = useState<number>(3);
   const [maxPlayers, setMaxPlayers] = useState<number>(10);
   const [allowCoop, setAllowCoop] = useState<boolean>(true);
@@ -111,6 +113,7 @@ export default function CreateRoomPage() {
           minPlayers,
           maxPlayers,
           durationMinutes,
+          missionsPerPlayer,
           allowedDifficulties: difficulties,
           allowCoop,
           hostPlayerId: session.playerId,
@@ -125,7 +128,7 @@ export default function CreateRoomPage() {
       }
 
       sounds.playSuccess();
-      router.push(`/room/${data.room.code}`);
+      router.push(`/room/${data.room.code}?tasks=${missionsPerPlayer}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Errore imprevisto';
       setErrorMsg(message);
@@ -252,6 +255,54 @@ export default function CreateRoomPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Missions Per Player Selector */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <Target className="w-3.5 h-3.5 text-rose-400" />
+                <span>Task a Testa per Giocatore</span>
+              </label>
+              <span className="text-xs font-extrabold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                {missionsPerPlayer} {missionsPerPlayer === 1 ? 'task' : 'task'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-5 gap-1.5">
+              {[
+                { val: 1, label: '1', desc: 'Flash' },
+                { val: 2, label: '2', desc: 'Leggera' },
+                { val: 3, label: '3', desc: 'Standard ⭐' },
+                { val: 4, label: '4', desc: 'Intensa' },
+                { val: 5, label: '5', desc: 'Hardcore 🔥' },
+              ].map((item) => {
+                const isSelected = missionsPerPlayer === item.val;
+                return (
+                  <button
+                    key={item.val}
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setMissionsPerPlayer(item.val);
+                    }}
+                    className={`py-2.5 px-1 rounded-xl border text-center transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-rose-500/25 border-rose-500 text-white shadow-lg shadow-rose-950/40 ring-2 ring-rose-400/50 scale-[1.02]'
+                        : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="text-base font-black leading-none">{item.label}</div>
+                    <div className="text-[9px] mt-1 text-slate-400 font-semibold truncate">
+                      {item.desc}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Ogni partecipante riceverà {missionsPerPlayer} {missionsPerPlayer === 1 ? 'missione segreta' : 'missioni segrete'} all&apos;avvio della partita.
+            </p>
           </div>
 
           {/* Player Quorum */}

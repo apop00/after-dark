@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       hostPlayerId,
       hostNickname,
       hostAvatar,
+      missionsPerPlayer,
     } = body;
 
     if (!mode || !hostPlayerId) {
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
       minPlayers: Number(minPlayers) || 3,
       maxPlayers: Number(maxPlayers) || 16,
       durationMinutes: Number(durationMinutes) || 45,
+      missionsPerPlayer: Number(missionsPerPlayer) || 3,
       allowedDifficulties,
       allowCoop: Boolean(allowCoop),
       hostPlayerId,
