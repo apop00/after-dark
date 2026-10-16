@@ -16,6 +16,9 @@ import {
   Sparkles,
   Target,
   Flame,
+  Globe,
+  Lock,
+  Timer,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { ModeGraphic } from '@/components/ModeGraphics';
@@ -87,6 +90,7 @@ export default function CreateRoomPage() {
   const [requireWitness, setRequireWitness] = useState<boolean>(false);
   const [enableGenderMissions, setEnableGenderMissions] = useState<boolean>(false);
   const [includeJeffreyPack, setIncludeJeffreyPack] = useState<boolean>(false);
+  const [isPublic, setIsPublic] = useState<boolean>(true);
   const [difficulties, setDifficulties] = useState<MissionDifficulty[]>([
     'facile',
     'media',
@@ -130,6 +134,7 @@ export default function CreateRoomPage() {
           requireWitness,
           enableGenderMissions,
           includeJeffreyPack: selectedMode === 'jeffrey_island' || includeJeffreyPack,
+          isPublic,
           hostPlayerId: session.playerId,
           hostNickname: session.nickname,
           hostAvatar: session.avatarSeed,
@@ -557,6 +562,69 @@ export default function CreateRoomPage() {
               </div>
             </div>
           )}
+
+          {/* Visibilità Stanza: Pubblica o Privata */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-slate-300">
+                Visibilità Lobby
+              </label>
+              <span className="text-[10px] text-slate-400 font-medium">
+                {isPublic ? '🌐 Visibile a tutti nella lista' : '🔒 Solo con codice segreto'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setIsPublic(true);
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  isPublic
+                    ? 'bg-rose-500/20 border-rose-500 text-white ring-2 ring-rose-400/40 shadow-lg shadow-rose-950/40 scale-[1.01]'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Globe className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span className="font-bold text-xs text-white">Lobby Pubblica</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Compare nella sezione "Partecipa" per chiunque voglia unirsi.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setIsPublic(false);
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  !isPublic
+                    ? 'bg-purple-500/20 border-purple-500 text-white ring-2 ring-purple-400/40 shadow-lg shadow-purple-950/40 scale-[1.01]'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Lock className="w-4 h-4 text-purple-400 shrink-0" />
+                  <span className="font-bold text-xs text-white">Stanza Privata</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Entra solo chi riceve il codice a 6 cifre o inquadra il QR code.
+                </p>
+              </button>
+            </div>
+          </div>
+
+          {/* Avviso Chiusura Automatica dopo 5 Minuti */}
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-2.5">
+            <Timer className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 animate-pulse" />
+            <p className="text-[11px] text-amber-200/90 leading-tight">
+              <span className="font-bold text-amber-300">Timeout 5 minuti:</span> Se la partita non viene avviata entro <span className="font-bold text-white">5 minuti</span> dalla creazione, la stanza verrà chiusa automaticamente per inattività.
+            </p>
+          </div>
 
           {/* Submit */}
           <button

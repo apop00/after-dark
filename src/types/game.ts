@@ -40,7 +40,7 @@ export interface Mission {
   gender_target?: PlayerGender; // 'neutro' (default, per tutti) | 'uomo' | 'donna'
 }
 
-export type RoomStatus = 'lobby' | 'playing' | 'finished' | 'abandoned';
+export type RoomStatus = 'lobby' | 'playing' | 'finished' | 'abandoned' | 'expired';
 
 export interface Room {
   id: string;
@@ -56,6 +56,7 @@ export interface Room {
   missions_per_player?: number;
   enable_gender_missions?: boolean;
   include_jeffrey_pack?: boolean;
+  is_public?: boolean; // Se true, compare nell'elenco delle lobby pubbliche aperte
   host_id: string; // player_id of creator
   status: RoomStatus;
   created_at: string;

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Users,
   Crown,
@@ -18,6 +19,9 @@ import {
   LogIn,
   User,
   Target,
+  Timer,
+  Globe,
+  Plus,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { QrCodeModal } from '@/components/QrCodeModal';
@@ -58,6 +62,8 @@ export default function RoomLobbyPage({
   const [joinGender, setJoinGender] = useState<PlayerGender>('neutro');
   const [isJoiningDirect, setIsJoiningDirect] = useState(false);
   const [missionsPerPlayer, setMissionsPerPlayer] = useState<number>(3);
+  const [isExpired, setIsExpired] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState<number>(300);
 
   const fetchRoomState = useCallback(async () => {
     try {
@@ -67,10 +73,25 @@ export default function RoomLobbyPage({
         throw new Error(data.error || 'Stanza non trovata');
       }
 
+      if (data.isExpired || data.room?.status === 'abandoned' || data.room?.status === 'expired') {
+        setIsExpired(true);
+        setRoom(data.room);
+        return;
+      }
+
       setRoom(data.room);
       setMembers(data.members || []);
       if (data.room?.missions_per_player) {
         setMissionsPerPlayer((prev) => (prev !== 3 ? prev : data.room.missions_per_player));
+      }
+
+      if (data.room?.status === 'lobby' && data.room.created_at) {
+        const ageSec = Math.floor((Date.now() - new Date(data.room.created_at).getTime()) / 1000);
+        const remaining = Math.max(0, 300 - ageSec);
+        setSecondsLeft(remaining);
+        if (remaining <= 0) {
+          setIsExpired(true);
+        }
       }
 
       // Se la partita è già iniziata, naviga direttamente alla HUD di gioco!
@@ -85,6 +106,20 @@ export default function RoomLobbyPage({
       setIsLoading(false);
     }
   }, [roomCode, router]);
+
+  useEffect(() => {
+    if (isExpired || !room || room.status !== 'lobby') return;
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          setIsExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isExpired, room]);
 
   useEffect(() => {
     const session = getOrCreatePlayerSession();
@@ -229,6 +264,45 @@ export default function RoomLobbyPage({
     );
   }
 
+  if (isExpired) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-12">
+        <Navbar />
+        <main className="flex-1 max-w-md w-full mx-auto px-4 py-16 flex flex-col items-center justify-center text-center space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-xl shadow-amber-950/40">
+            <Timer className="w-8 h-8 animate-pulse" />
+          </div>
+          <div className="space-y-1.5">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400">
+              Timeout Inattività (5 Minuti)
+            </span>
+            <h2 className="text-2xl font-black text-white">Stanza Chiusa</h2>
+            <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+              La partita non è stata avviata entro 5 minuti dalla creazione. La stanza è stata chiusa automaticamente.
+            </p>
+          </div>
+
+          <div className="pt-4 flex flex-col gap-2.5 w-full max-w-xs">
+            <Link
+              href="/create"
+              className="w-full py-3.5 rounded-2xl btn-game-rose text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Crea Nuova Stanza</span>
+            </Link>
+            <Link
+              href="/join"
+              className="w-full py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+            >
+              <Globe className="w-4 h-4 text-rose-400" />
+              <span>Cerca Lobby Aperte</span>
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   if (!room) {
     return (
       <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100">
@@ -319,6 +393,19 @@ export default function RoomLobbyPage({
             >
               <QrCode className="w-6 h-6" />
             </button>
+          </div>
+
+          {/* Inactivity countdown banner */}
+          <div className="mt-3.5 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <Timer className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
+              <span className="text-amber-200 text-[11px] font-medium">
+                Chiusura automatica se non avviata:
+              </span>
+            </div>
+            <span className="font-mono font-black text-amber-300 text-xs bg-amber-500/20 px-2.5 py-0.5 rounded-lg border border-amber-500/30">
+              {Math.floor(secondsLeft / 60)}:{secondsLeft % 60 < 10 ? '0' : ''}{secondsLeft % 60}
+            </span>
           </div>
 
           {/* Room Code Banner */}

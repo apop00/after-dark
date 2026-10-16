@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       hostAvatar,
       hostGender,
       missionsPerPlayer,
+      isPublic,
     } = body;
 
     if (!mode || !hostPlayerId) {
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
       requireWitness: Boolean(requireWitness),
       enableGenderMissions: Boolean(enableGenderMissions),
       includeJeffreyPack: Boolean(includeJeffreyPack),
+      isPublic: isPublic !== undefined ? Boolean(isPublic) : true,
       hostPlayerId,
       hostNickname: hostNickname || 'Host',
       hostAvatar: hostAvatar || 'shadow',

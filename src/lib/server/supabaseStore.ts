@@ -61,6 +61,7 @@ class SupabaseStore {
     hostNickname: string;
     hostAvatar: string;
     hostGender?: PlayerGender;
+    isPublic?: boolean;
   }): Promise<{ room: Room; member: RoomMember }> {
     const hostUuid = ensureUuid(params.hostPlayerId);
 
@@ -124,6 +125,7 @@ class SupabaseStore {
     createdRoom.missions_per_player = params.missionsPerPlayer || 3;
     createdRoom.enable_gender_missions = params.enableGenderMissions ?? false;
     createdRoom.include_jeffrey_pack = params.includeJeffreyPack ?? false;
+    createdRoom.is_public = params.isPublic ?? true;
 
     // Inserisci host come primo membro
     const memberPayload = {
@@ -155,7 +157,7 @@ class SupabaseStore {
 
   async getRoomByCode(
     code: string
-  ): Promise<{ room?: Room; members: RoomMember[] }> {
+  ): Promise<{ room?: Room; members: RoomMember[]; isExpired?: boolean }> {
     const cleanCode = code.trim().toUpperCase();
     const res = await fetch(
       this.getUrl(`rooms?code=eq.${cleanCode}&select=*,room_members(*)`),
@@ -181,7 +183,95 @@ class SupabaseStore {
     delete row.room_members;
     const room: Room = row;
 
+    // Chiusura automatica dopo 5 minuti se la partita non è partita
+    if (room.status === 'lobby') {
+      const createdTime = new Date(room.created_at).getTime();
+      if (Date.now() - createdTime > 5 * 60 * 1000) {
+        fetch(this.getUrl(`rooms?id=eq.${room.id}`), {
+          method: 'PATCH',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ status: 'abandoned' }),
+        }).catch(() => {});
+        return { room: { ...room, status: 'abandoned' }, members: [], isExpired: true };
+      }
+    }
+
     return { room, members };
+  }
+
+  async getPublicRooms(): Promise<Array<{
+    id: string;
+    code: string;
+    group_name: string;
+    mode: Room['mode'];
+    host_nickname: string;
+    host_avatar: string;
+    members_count: number;
+    max_players: number;
+    created_at: string;
+    expires_in_seconds: number;
+    enable_gender_missions?: boolean;
+    include_jeffrey_pack?: boolean;
+  }>> {
+    try {
+      const res = await fetch(
+        this.getUrl('rooms?status=eq.lobby&select=*,room_members(*)&order=created_at.desc&limit=25'),
+        {
+          headers: this.getHeaders(),
+          cache: 'no-store',
+        }
+      );
+
+      if (!res.ok) return [];
+      const rows = await res.json();
+      if (!Array.isArray(rows)) return [];
+
+      const now = Date.now();
+      const results: Array<{
+        id: string;
+        code: string;
+        group_name: string;
+        mode: Room['mode'];
+        host_nickname: string;
+        host_avatar: string;
+        members_count: number;
+        max_players: number;
+        created_at: string;
+        expires_in_seconds: number;
+        enable_gender_missions?: boolean;
+        include_jeffrey_pack?: boolean;
+      }> = [];
+
+      for (const row of rows) {
+        if (row.is_public === false) continue;
+        const createdTime = new Date(row.created_at).getTime();
+        const ageMs = now - createdTime;
+        if (ageMs > 5 * 60 * 1000) continue; // Più vecchia di 5 minuti
+
+        const members: RoomMember[] = Array.isArray(row.room_members) ? row.room_members : [];
+        const host = members.find((m) => m.is_host) || members[0];
+        const expiresIn = Math.max(0, Math.floor((createdTime + 5 * 60 * 1000 - now) / 1000));
+
+        results.push({
+          id: row.id,
+          code: row.code,
+          group_name: row.group_name || 'I Guerrieri della Notte',
+          mode: row.mode,
+          host_nickname: host ? host.nickname : 'Host',
+          host_avatar: host ? host.avatar_seed : 'shadow',
+          members_count: members.length,
+          max_players: row.max_players || 16,
+          created_at: row.created_at,
+          expires_in_seconds: expiresIn,
+          enable_gender_missions: row.enable_gender_missions,
+          include_jeffrey_pack: row.include_jeffrey_pack,
+        });
+      }
+
+      return results;
+    } catch {
+      return [];
+    }
   }
 
   async joinRoom(params: {
@@ -196,6 +286,10 @@ class SupabaseStore {
 
     if (!room) {
       throw new Error(`Stanza "${cleanCode}" non trovata.`);
+    }
+
+    if (room.status === 'abandoned') {
+      throw new Error('Questa stanza è stata chiusa per inattività (5 minuti superati).');
     }
 
     if (room.status !== 'lobby') {

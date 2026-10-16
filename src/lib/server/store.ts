@@ -109,6 +109,12 @@ class GameServerStore {
     this.saveToDisk();
   }
 
+  public isRoomExpired(room: Room): boolean {
+    if (room.status !== 'lobby') return false;
+    const createdTime = new Date(room.created_at).getTime();
+    return Date.now() - createdTime > 5 * 60 * 1000;
+  }
+
   // ==========================================
   // ROOMS
   // ==========================================
@@ -124,6 +130,7 @@ class GameServerStore {
     requireWitness?: boolean;
     enableGenderMissions?: boolean;
     includeJeffreyPack?: boolean;
+    isPublic?: boolean;
     hostPlayerId: string;
     hostNickname: string;
     hostAvatar: string;
@@ -151,10 +158,11 @@ class GameServerStore {
       require_witness: params.requireWitness ?? false,
       enable_gender_missions: params.enableGenderMissions ?? false,
       include_jeffrey_pack: params.includeJeffreyPack ?? false,
+      is_public: params.isPublic ?? true,
       host_id: params.hostPlayerId,
       status: 'lobby',
       created_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + 8 * 3600 * 1000).toISOString(),
+      expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
     };
 
     const hostMember: RoomMember = {
@@ -177,15 +185,99 @@ class GameServerStore {
     return { room, member: hostMember };
   }
 
-  public getRoomByCode(code: string): { room?: Room; members: RoomMember[] } {
+  public updateRoomCreatedAt(code: string, createdAt: string) {
+    this.loadFromDisk();
+    const formatted = code.trim().toUpperCase();
+    const room = this.rooms.get(formatted);
+    if (room) {
+      room.created_at = createdAt;
+      this.saveToDisk();
+    }
+  }
+
+  public getRoomByCode(code: string): { room?: Room; members: RoomMember[]; isExpired?: boolean } {
     this.loadFromDisk();
     const formattedCode = code.trim().toUpperCase();
     const room = this.rooms.get(formattedCode);
     if (!room) {
       return { members: [] };
     }
+
+    // Verifica chiusura per inattività dopo 5 minuti se la partita non è partita
+    if (this.isRoomExpired(room)) {
+      room.status = 'abandoned';
+      this.saveToDisk();
+      return { room, members: [], isExpired: true };
+    }
+
     const members = this.roomMembers.get(room.id) || [];
     return { room, members };
+  }
+
+  public getPublicRooms(): Array<{
+    id: string;
+    code: string;
+    group_name: string;
+    mode: Room['mode'];
+    host_nickname: string;
+    host_avatar: string;
+    members_count: number;
+    max_players: number;
+    created_at: string;
+    expires_in_seconds: number;
+    enable_gender_missions?: boolean;
+    include_jeffrey_pack?: boolean;
+  }> {
+    this.loadFromDisk();
+    const now = Date.now();
+    const result: Array<{
+      id: string;
+      code: string;
+      group_name: string;
+      mode: Room['mode'];
+      host_nickname: string;
+      host_avatar: string;
+      members_count: number;
+      max_players: number;
+      created_at: string;
+      expires_in_seconds: number;
+      enable_gender_missions?: boolean;
+      include_jeffrey_pack?: boolean;
+    }> = [];
+
+    for (const room of this.rooms.values()) {
+      if (room.status !== 'lobby') continue;
+      if (room.is_public === false) continue;
+
+      const createdTime = new Date(room.created_at).getTime();
+      const ageMs = now - createdTime;
+      if (ageMs > 5 * 60 * 1000) {
+        room.status = 'abandoned';
+        continue;
+      }
+
+      const members = this.roomMembers.get(room.id) || [];
+      const host = members.find((m) => m.is_host) || members[0];
+      const expiresIn = Math.max(0, Math.floor((createdTime + 5 * 60 * 1000 - now) / 1000));
+
+      result.push({
+        id: room.id,
+        code: room.code,
+        group_name: room.group_name,
+        mode: room.mode,
+        host_nickname: host ? host.nickname : 'Host',
+        host_avatar: host ? host.avatar_seed : 'shadow',
+        members_count: members.length,
+        max_players: room.max_players,
+        created_at: room.created_at,
+        expires_in_seconds: expiresIn,
+        enable_gender_missions: room.enable_gender_missions,
+        include_jeffrey_pack: room.include_jeffrey_pack,
+      });
+    }
+
+    result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return result;
   }
 
   public joinRoom(params: {
@@ -200,6 +292,16 @@ class GameServerStore {
     const room = this.rooms.get(formattedCode);
     if (!room) {
       throw new Error(`Stanza "${formattedCode}" non trovata.`);
+    }
+
+    if (this.isRoomExpired(room)) {
+      room.status = 'abandoned';
+      this.saveToDisk();
+      throw new Error('Questa stanza è stata chiusa per inattività (5 minuti superati).');
+    }
+
+    if (room.status === 'abandoned') {
+      throw new Error('Questa stanza è stata chiusa per inattività (5 minuti superati).');
     }
 
     if (room.status !== 'lobby') {

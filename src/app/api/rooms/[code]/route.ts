@@ -11,7 +11,7 @@ export async function GET(
     const { code } = await context.params;
     const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
 
-    const { room, members } = isProdDb
+    const { room, members, isExpired } = isProdDb
       ? await supabaseStore.getRoomByCode(code)
       : serverStore.getRoomByCode(code);
 
@@ -27,6 +27,7 @@ export async function GET(
       success: true,
       room,
       members,
+      isExpired: Boolean(isExpired),
       gameId: game ? game.id : null,
       gameStatus: game ? game.status : null,
     });

@@ -26,6 +26,7 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
         'collaborazione',
         'bluff',
         'chaos',
+        'jeffrey_island',
       ]).toContain(m.category);
     });
   });
@@ -473,6 +474,66 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
     expect(res.playerMission.status).toBe('completed');
     expect(res.playerMission.earned_points).toBeGreaterThan(0);
     expect(res.verification).toBeUndefined(); // Nessuna richiesta pendente creata
+  });
+
+  it('13. Gestione lobby pubbliche vs private e chiusura automatica dopo 5 minuti', () => {
+    // 1. Crea una stanza pubblica
+    const { room: pubRoom } = serverStore.createRoom({
+      groupName: 'Lobby Pubblica Roma',
+      mode: 'bar',
+      minPlayers: 3,
+      maxPlayers: 8,
+      durationMinutes: 45,
+      allowedDifficulties: ['facile', 'media'],
+      allowCoop: true,
+      isPublic: true,
+      hostPlayerId: 'p_pub',
+      hostNickname: 'HostPub',
+      hostAvatar: 'cocktail',
+    });
+
+    // 2. Crea una stanza privata
+    const { room: privRoom } = serverStore.createRoom({
+      groupName: 'Lobby Segreta',
+      mode: 'house_party',
+      minPlayers: 3,
+      maxPlayers: 8,
+      durationMinutes: 45,
+      allowedDifficulties: ['facile'],
+      allowCoop: true,
+      isPublic: false,
+      hostPlayerId: 'p_priv',
+      hostNickname: 'HostPriv',
+      hostAvatar: 'ghost',
+    });
+
+    expect(pubRoom.is_public).toBe(true);
+    expect(privRoom.is_public).toBe(false);
+
+    // 3. Verifica lista lobby pubbliche
+    const publicRooms = serverStore.getPublicRooms();
+    expect(publicRooms.some((r) => r.code === pubRoom.code)).toBe(true);
+    expect(publicRooms.some((r) => r.code === privRoom.code)).toBe(false);
+
+    // 4. Simula timeout di 5 minuti (retrodatando created_at a 6 minuti fa)
+    serverStore.updateRoomCreatedAt(pubRoom.code, new Date(Date.now() - 6 * 60 * 1000).toISOString());
+
+    const publicRoomsAfterTimeout = serverStore.getPublicRooms();
+    expect(publicRoomsAfterTimeout.some((r) => r.code === pubRoom.code)).toBe(false);
+
+    const lookup = serverStore.getRoomByCode(pubRoom.code);
+    expect(lookup.isExpired).toBe(true);
+    expect(lookup.room?.status).toBe('abandoned');
+
+    // Tentativo di join deve fallire
+    expect(() => {
+      serverStore.joinRoom({
+        code: pubRoom.code,
+        playerId: 'p_late',
+        nickname: 'LatePlayer',
+        avatarSeed: 'shadow',
+      });
+    }).toThrow('inattività');
   });
 });
 
