@@ -266,7 +266,7 @@ export default function RoomLobbyPage({
                 </span>
                 <span className="text-xs text-slate-400 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
-                  {room.duration_minutes} min
+                  {room.duration_minutes > 0 ? `${room.duration_minutes} min` : '∞ Senza tempo'}
                 </span>
                 <span className="text-xs text-rose-300 flex items-center gap-1 font-semibold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
                   <Target className="w-3.5 h-3.5 text-rose-400" />
@@ -480,7 +480,7 @@ export default function RoomLobbyPage({
             <div className="p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-3 text-xs text-slate-400">
               <span className="capitalize text-slate-200 font-semibold">{room.mode}</span>
               <span>•</span>
-              <span>{room.duration_minutes} min</span>
+              <span>{room.duration_minutes > 0 ? `${room.duration_minutes} min` : '∞ Senza tempo'}</span>
               <span>•</span>
               <span className="font-mono text-rose-400 font-bold">{roomCode}</span>
             </div>

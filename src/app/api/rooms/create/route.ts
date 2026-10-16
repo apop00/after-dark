@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       mode,
       minPlayers: Number(minPlayers) || 3,
       maxPlayers: Number(maxPlayers) || 16,
-      durationMinutes: Number(durationMinutes) || 45,
+      durationMinutes: typeof durationMinutes !== 'undefined' ? Number(durationMinutes) : 45,
       missionsPerPlayer: Number(missionsPerPlayer) || 3,
       allowedDifficulties,
       allowCoop: Boolean(allowCoop),

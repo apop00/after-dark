@@ -361,5 +361,43 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
     const state1 = serverStore.getGameState(game1.id, 'h2');
     expect(state1.myMissions).toHaveLength(1);
   });
+
+  it('10. Partita senza limiti di tempo (durationMinutes: 0) assegna ends_at: null', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Serata Infinita',
+      mode: 'house_party',
+      minPlayers: 2,
+      maxPlayers: 10,
+      durationMinutes: 0,
+      missionsPerPlayer: 3,
+      allowedDifficulties: ['facile', 'media'],
+      allowCoop: true,
+      hostPlayerId: 'host_inf',
+      hostNickname: 'HostInfinito',
+      hostAvatar: 'neon',
+    });
+
+    expect(room.duration_minutes).toBe(0);
+
+    serverStore.joinRoom({
+      code: room.code,
+      playerId: 'guest_inf',
+      nickname: 'Ospite',
+      avatarSeed: 'spark',
+    });
+
+    const { game } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'host_inf',
+    });
+
+    expect(game.config.duration_minutes).toBe(0);
+    expect(game.ends_at).toBeNull();
+
+    // Conclusione manuale della partita senza tempo
+    const { game: finishedGame } = serverStore.finishGame(game.id);
+    expect(finishedGame.status).toBe('completed');
+  });
 });
+
 

@@ -133,7 +133,11 @@ export default function GameHUDPage({
 
   // Sincronizzazione Timer basata su ends_at del Server
   useEffect(() => {
-    if (!game || !game.ends_at) return;
+    if (!game) return;
+    if (!game.ends_at) {
+      setTimeLeftStr('∞ Senza limiti');
+      return;
+    }
 
     const timer = setInterval(() => {
       const remainingMs = new Date(game.ends_at!).getTime() - Date.now();

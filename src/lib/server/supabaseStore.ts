@@ -74,7 +74,7 @@ class SupabaseStore {
       mode: params.mode,
       min_players: params.minPlayers || 3,
       max_players: params.maxPlayers || 16,
-      duration_minutes: params.durationMinutes || 45,
+      duration_minutes: params.durationMinutes !== undefined ? params.durationMinutes : 45,
       allowed_difficulties: params.allowedDifficulties || [
         'facile',
         'media',

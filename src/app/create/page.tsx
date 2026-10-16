@@ -228,15 +228,22 @@ export default function CreateRoomPage() {
 
           {/* Duration Selector */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-slate-300">
-              Durata della Partita
-            </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <Clock className="w-3.5 h-3.5 text-rose-400" />
+                <span>Durata della Partita</span>
+              </label>
+              <span className="text-xs font-extrabold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                {durationMinutes > 0 ? `${durationMinutes} min` : '∞ Senza tempo'}
+              </span>
+            </div>
+            <div className="grid grid-cols-5 gap-1.5">
               {[
-                { label: '30 min', val: 30 },
-                { label: '45 min', val: 45 },
-                { label: '60 min', val: 60 },
-                { label: '90 min', val: 90 },
+                { label: '30m', val: 30, desc: 'Rapida' },
+                { label: '45m', val: 45, desc: 'Standard' },
+                { label: '60m', val: 60, desc: 'Completa' },
+                { label: '90m', val: 90, desc: 'Lunga' },
+                { label: '∞', val: 0, desc: 'Senza tempo' },
               ].map((dur) => (
                 <button
                   key={dur.val}
@@ -245,16 +252,24 @@ export default function CreateRoomPage() {
                     triggerHaptic('light');
                     setDurationMinutes(dur.val);
                   }}
-                  className={`py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                  className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
                     durationMinutes === dur.val
-                      ? 'bg-rose-500/20 border-rose-500 text-rose-300 shadow-md'
-                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+                      ? 'bg-rose-500/25 border-rose-500 text-white shadow-lg shadow-rose-950/40 ring-2 ring-rose-400/50 scale-[1.02]'
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  {dur.label}
+                  <div className="text-sm font-black leading-none">{dur.label}</div>
+                  <div className="text-[9px] mt-1 text-slate-400 font-semibold truncate">
+                    {dur.desc}
+                  </div>
                 </button>
               ))}
             </div>
+            <p className="text-[11px] text-slate-400">
+              {durationMinutes === 0
+                ? 'Partita aperta senza countdown: giocate al vostro ritmo e terminate quando volete.'
+                : `La partita si concluderà automaticamente dopo ${durationMinutes} minuti.`}
+            </p>
           </div>
 
           {/* Missions Per Player Selector */}
