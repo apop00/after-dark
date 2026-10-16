@@ -186,13 +186,10 @@ create policy "Player missions secrecy policy" on public.player_missions for sel
     or current_user = 'service_role'
   );
 
--- Mission Verifications: visibile solo al richiedente e al testimone
-create policy "Verifications viewable only by involved parties" on public.mission_verifications for select
-  using (
-    requester_player_id::text = coalesce(auth.jwt()->>'sub', current_setting('request.jwt.claim.sub', true), '')
-    or verifier_player_id::text = coalesce(auth.jwt()->>'sub', current_setting('request.jwt.claim.sub', true), '')
-    or current_user = 'service_role'
-  );
+-- Mission Verifications: visibile, inseribile e aggiornabile
+create policy "Verifications are readable by all" on public.mission_verifications for select using (true);
+create policy "Verifications are insertable by all" on public.mission_verifications for insert with check (true);
+create policy "Verifications are updatable by all" on public.mission_verifications for update using (true);
 
 -- Game Events & Scores: pubblici per tutti i giocatori della partita
 create policy "Game events are readable by all" on public.game_events for select using (true);

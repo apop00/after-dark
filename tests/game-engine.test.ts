@@ -398,6 +398,83 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
     const { game: finishedGame } = serverStore.finishGame(game.id);
     expect(finishedGame.status).toBe('completed');
   });
+
+  it('11. Missioni Coop assegnate a coppie o triplette con partner esplicito', () => {
+    // Stanza con 5 giocatori (> 4): genera una tripletta e una coppia per coop!
+    const { room } = serverStore.createRoom({
+      groupName: 'Coop Squad Test',
+      mode: 'house_party',
+      minPlayers: 3,
+      maxPlayers: 10,
+      durationMinutes: 45,
+      missionsPerPlayer: 3,
+      allowedDifficulties: ['facile', 'media', 'difficile', 'leggendaria'],
+      allowCoop: true,
+      hostPlayerId: 'p1',
+      hostNickname: 'Player 1',
+      hostAvatar: 'shadow',
+    });
+
+    serverStore.joinRoom({ code: room.code, playerId: 'p2', nickname: 'Player 2', avatarSeed: 'wolf' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p3', nickname: 'Player 3', avatarSeed: 'fox' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p4', nickname: 'Player 4', avatarSeed: 'rebel' });
+    serverStore.joinRoom({ code: room.code, playerId: 'p5', nickname: 'Player 5', avatarSeed: 'ghost' });
+
+    const { game } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p1',
+    });
+
+    const p1State = serverStore.getGameState(game.id, 'p1');
+    const coopMission = p1State.myMissions.find((m) => m.mission?.category === 'collaborazione');
+
+    expect(coopMission).toBeDefined();
+    expect(coopMission?.coop_partner_nickname).toBeTruthy();
+    expect(coopMission?.coop_partner_id).toBeTruthy();
+  });
+
+  it('12. Modalità auto-conferma (require_witness: false) permette completamento immediato', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Auto Conferma Test',
+      mode: 'bar',
+      minPlayers: 2,
+      maxPlayers: 6,
+      durationMinutes: 30,
+      missionsPerPlayer: 2,
+      requireWitness: false,
+      allowedDifficulties: ['facile', 'media'],
+      allowCoop: false,
+      hostPlayerId: 'p_fast',
+      hostNickname: 'FastPlayer',
+      hostAvatar: 'spark',
+    });
+
+    expect(room.require_witness).toBe(false);
+
+    serverStore.joinRoom({ code: room.code, playerId: 'p_other', nickname: 'Other', avatarSeed: 'neon' });
+
+    const { game } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p_fast',
+    });
+
+    expect(game.config.require_witness).toBe(false);
+
+    const state = serverStore.getGameState(game.id, 'p_fast');
+    const targetMission = state.myMissions[0];
+
+    // Completamento immediato senza specificare verifierPlayerId
+    const res = serverStore.submitMissionCompletion({
+      gameId: game.id,
+      playerMissionId: targetMission.id,
+      requesterPlayerId: 'p_fast',
+    });
+
+    expect(res.playerMission.status).toBe('completed');
+    expect(res.playerMission.earned_points).toBeGreaterThan(0);
+    expect(res.verification).toBeUndefined(); // Nessuna richiesta pendente creata
+  });
 });
+
 
 

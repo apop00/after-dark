@@ -120,6 +120,7 @@ class GameServerStore {
     missionsPerPlayer?: number;
     allowedDifficulties: Room['allowed_difficulties'];
     allowCoop: boolean;
+    requireWitness?: boolean;
     hostPlayerId: string;
     hostNickname: string;
     hostAvatar: string;
@@ -143,6 +144,7 @@ class GameServerStore {
       missions_per_player: params.missionsPerPlayer || 3,
       allowed_difficulties: params.allowedDifficulties || ['facile', 'media', 'difficile', 'leggendaria'],
       allow_coop: params.allowCoop ?? true,
+      require_witness: params.requireWitness ?? false,
       host_id: params.hostPlayerId,
       status: 'lobby',
       created_at: new Date().toISOString(),
@@ -265,6 +267,7 @@ class GameServerStore {
         mode: room.mode,
         duration_minutes: room.duration_minutes,
         allow_coop: room.allow_coop,
+        require_witness: room.require_witness ?? false,
         missions_per_player: targetMissions,
       },
     };
@@ -331,9 +334,18 @@ class GameServerStore {
     const allMissions = this.playerMissions.get(gameId) || [];
 
     // PRIVACY POLICY: Filtra per dare SOLO le missioni del giocatore chiamante o dove è coop_partner!
-    const myMissions = allMissions.filter(
-      (pm) => pm.player_id === requestingPlayerId || pm.coop_partner_id === requestingPlayerId
-    );
+    const myMissions = allMissions
+      .filter((pm) => pm.player_id === requestingPlayerId || pm.coop_partner_id === requestingPlayerId)
+      .map((pm) => {
+        if (!pm.coop_partner_nickname && pm.coop_partner_id) {
+          const partnerScore = scores.find((s) => s.player_id === pm.coop_partner_id);
+          return {
+            ...pm,
+            coop_partner_nickname: partnerScore?.nickname || 'Compagno di Squadra',
+          };
+        }
+        return pm;
+      });
 
     // Richieste di verifica in cui il giocatore è coinvolto (come richiedente o testimone)
     const allVerifications = this.verifications.get(gameId) || [];
@@ -368,7 +380,9 @@ class GameServerStore {
     const missions = this.playerMissions.get(params.gameId) || [];
     const pm = missions.find((m) => m.id === params.playerMissionId);
     if (!pm) throw new Error('Missione assegnata non trovata.');
-    if (pm.player_id !== params.requesterPlayerId) {
+    const isOwner = pm.player_id === params.requesterPlayerId;
+    const isCoopPartner = pm.coop_partner_id === params.requesterPlayerId;
+    if (!isOwner && !isCoopPartner) {
       throw new Error('Non sei autorizzato a completare la missione di un altro giocatore.');
     }
     if (pm.status !== 'active') {
@@ -378,22 +392,44 @@ class GameServerStore {
     const missionCatalog = pm.mission;
     if (!missionCatalog) throw new Error('Dati catalogo missione mancanti.');
 
-    // Se è auto-verificabile o non richiede testimone
-    if (missionCatalog.verification_type === 'self_timer') {
+    const game = this.games.get(params.gameId);
+    const requireWitness = Boolean(game?.config?.require_witness);
+
+    if (requireWitness && !params.verifierPlayerId && missionCatalog.verification_type !== 'self_timer') {
+      throw new Error('Questa partita richiede un testimone per confermare la missione.');
+    }
+
+    // Se la missione è self_timer o se non è stato indicato un testimone (auto-conferma):
+    if (missionCatalog.verification_type === 'self_timer' || !params.verifierPlayerId) {
       pm.status = 'completed';
       pm.completed_at = new Date().toISOString();
       const earned = calculateMissionPoints(missionCatalog, this.gameEvents.get(params.gameId) || []);
       pm.earned_points = earned;
 
       this.updateScore(params.gameId, params.requesterPlayerId, earned, 1, 0);
+
+      // Se collaborativa, completa e premia anche il/i compagno/i di squadra!
+      const partnerId = isOwner ? pm.coop_partner_id : pm.player_id;
+      if (partnerId) {
+        const partnerPm = missions.find(
+          (m) =>
+            m.mission_id === pm.mission_id &&
+            m.player_id === partnerId &&
+            m.status === 'active'
+        );
+        if (partnerPm) {
+          partnerPm.status = 'completed';
+          partnerPm.completed_at = new Date().toISOString();
+          partnerPm.earned_points = earned;
+        }
+        this.updateScore(params.gameId, partnerId, earned, 1, 0);
+      }
+
       this.saveToDisk();
       return { playerMission: pm };
     }
 
     // Altrimenti richiede testimone
-    if (!params.verifierPlayerId) {
-      throw new Error('Seleziona un testimone per verificare il completamento della missione.');
-    }
     if (params.verifierPlayerId === params.requesterPlayerId) {
       throw new Error('Non puoi essere il testimone di te stesso per questa missione.');
     }

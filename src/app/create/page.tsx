@@ -76,6 +76,7 @@ export default function CreateRoomPage() {
   const [minPlayers, setMinPlayers] = useState<number>(3);
   const [maxPlayers, setMaxPlayers] = useState<number>(10);
   const [allowCoop, setAllowCoop] = useState<boolean>(true);
+  const [requireWitness, setRequireWitness] = useState<boolean>(false);
   const [difficulties, setDifficulties] = useState<MissionDifficulty[]>([
     'facile',
     'media',
@@ -116,6 +117,7 @@ export default function CreateRoomPage() {
           missionsPerPlayer,
           allowedDifficulties: difficulties,
           allowCoop,
+          requireWitness,
           hostPlayerId: session.playerId,
           hostNickname: session.nickname,
           hostAvatar: session.avatarSeed,
@@ -379,6 +381,68 @@ export default function CreateRoomPage() {
                   </button>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Validation Mode Selector */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <Shield className="w-3.5 h-3.5 text-rose-400" />
+                <span>Modalità di Validazione</span>
+              </label>
+              <span
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  !requireWitness
+                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                    : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                }`}
+              >
+                {!requireWitness ? '⚡ Auto-conferma' : '👁️ Con testimone'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setRequireWitness(false);
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  !requireWitness
+                    ? 'bg-emerald-500/15 border-emerald-500 text-white shadow-lg shadow-emerald-950/40 ring-2 ring-emerald-400/40'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Zap className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="font-bold text-xs text-white">⚡ Auto-conferma</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Nessun testimone richiesto: completi subito sulla fiducia.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setRequireWitness(true);
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  requireWitness
+                    ? 'bg-amber-500/15 border-amber-500 text-white shadow-lg shadow-amber-950/40 ring-2 ring-amber-400/40'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="font-bold text-xs text-white">👁️ Con Testimone</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Un compagno deve approvare sul suo schermo.
+                </p>
+              </button>
             </div>
           </div>
 

@@ -29,6 +29,50 @@ export interface MissionAssignmentConfig {
 }
 
 /**
+ * Raggruppa i giocatori in coppie (o triplette se > 4 giocatori) per le missioni di cooperazione
+ */
+export function partitionPlayersIntoCoopTeams<T extends { playerId: string; nickname: string }>(
+  players: T[]
+): T[][] {
+  if (players.length < 2) return [];
+  if (players.length === 2) return [[players[0], players[1]]];
+  if (players.length === 3) return [[players[0], players[1], players[2]]];
+  if (players.length === 4) return [[players[0], players[1]], [players[2], players[3]]];
+
+  // Per più di 4 giocatori: raggruppa in triplette e coppie in modo bilanciato
+  const shuffled = [...players].sort(() => Math.random() - 0.5);
+  const teams: T[][] = [];
+  const n = shuffled.length;
+  let i = 0;
+
+  if (n % 3 === 0) {
+    while (i < n) {
+      teams.push([shuffled[i], shuffled[i + 1], shuffled[i + 2]]);
+      i += 3;
+    }
+  } else if (n % 3 === 2) {
+    teams.push([shuffled[i], shuffled[i + 1]]);
+    i += 2;
+    while (i < n) {
+      teams.push([shuffled[i], shuffled[i + 1], shuffled[i + 2]]);
+      i += 3;
+    }
+  } else {
+    // n % 3 === 1 (es. 7 = 2 + 2 + 3)
+    teams.push([shuffled[i], shuffled[i + 1]]);
+    i += 2;
+    teams.push([shuffled[i], shuffled[i + 1]]);
+    i += 2;
+    while (i < n) {
+      teams.push([shuffled[i], shuffled[i + 1], shuffled[i + 2]]);
+      i += 3;
+    }
+  }
+
+  return teams;
+}
+
+/**
  * Distribuisce missioni segrete ai giocatori in modo bilanciato ed equo
  */
 export function assignMissionsToPlayers(
@@ -55,48 +99,84 @@ export function assignMissionsToPlayers(
     throw new Error(`Nessuna missione trovata per la modalità ${config.mode}`);
   }
 
-  // Shuffle delle missioni eleggibili
-  const shuffled = [...eligibleMissions].sort(() => Math.random() - 0.5);
-
   const assignedPlayerMissions: PlayerMission[] = [];
   const usedMissionIds = new Set<string>();
 
-  // Per ogni giocatore, cerchiamo di assegnare:
-  // 1 Facile/Media, 1 Media/Difficile, 1 Specifica per la modalità
+  const coopMissions = eligibleMissions.filter((m) => m.category === 'collaborazione');
+  const individualMissions = eligibleMissions.filter((m) => m.category !== 'collaborazione');
+
+  // Mappa conteggio missioni assegnate per giocatore
+  const playerAssignedCounts: Record<string, number> = {};
+  players.forEach((p) => {
+    playerAssignedCounts[p.playerId] = 0;
+  });
+
+  // Se coop è abilitata e ci sono almeno 2 giocatori e missioni coop disponibili:
+  // Assegniamo 1 missione di squadra condivisa a ogni coppia/tripletta!
+  if (config.allowCoop && players.length >= 2 && coopMissions.length > 0 && missionsPerPlayer >= 1) {
+    const teams = partitionPlayersIntoCoopTeams(players);
+    const shuffledCoop = [...coopMissions].sort(() => Math.random() - 0.5);
+
+    teams.forEach((team, teamIdx) => {
+      const teamMission = shuffledCoop[teamIdx % shuffledCoop.length];
+      usedMissionIds.add(teamMission.id);
+
+      team.forEach((member) => {
+        const partners = team.filter((m) => m.playerId !== member.playerId);
+        const partnerNicknames = partners.map((p) => p.nickname).join(' & ');
+        const primaryPartnerId = partners[0]?.playerId || null;
+
+        assignedPlayerMissions.push({
+          id: `pm_${Date.now()}_${member.playerId.slice(0, 4)}_${playerAssignedCounts[member.playerId]}`,
+          game_id: gameId,
+          player_id: member.playerId,
+          mission_id: teamMission.id,
+          coop_partner_id: primaryPartnerId,
+          coop_partner_nickname: partnerNicknames,
+          coop_team_nicknames: partners.map((p) => p.nickname),
+          status: 'active',
+          assigned_at: new Date().toISOString(),
+          earned_points: 0,
+          mission: teamMission,
+        });
+
+        playerAssignedCounts[member.playerId]++;
+      });
+    });
+  }
+
+  // Completa il resto delle missioni per ciascun giocatore con missioni individuali
+  const individualPool = (individualMissions.length > 0 ? individualMissions : eligibleMissions)
+    .sort(() => Math.random() - 0.5);
+
   players.forEach((player, playerIdx) => {
-    let assignedCount = 0;
-    const playerPool = [...shuffled];
+    let poolIdx = 0;
+    while (
+      playerAssignedCounts[player.playerId] < missionsPerPlayer &&
+      poolIdx < individualPool.length * 3
+    ) {
+      const mission = individualPool[poolIdx % individualPool.length];
+      poolIdx++;
 
-    for (const mission of playerPool) {
-      if (assignedCount >= missionsPerPlayer) break;
+      // Non duplicare missioni per lo stesso giocatore
+      const alreadyHas = assignedPlayerMissions.some(
+        (pm) => pm.player_id === player.playerId && pm.mission_id === mission.id
+      );
+      if (alreadyHas) continue;
 
-      // Evita duplicati nella stessa partita se possibile
-      if (usedMissionIds.has(mission.id) && usedMissionIds.size < eligibleMissions.length) {
-        continue;
-      }
-
-      // Se è collaborativa, seleziona un partner diverso dal giocatore attuale
-      let coopPartnerId: string | null = null;
-      if (mission.category === 'collaborazione' && config.allowCoop && players.length > 1) {
-        const otherPlayers = players.filter((p) => p.playerId !== player.playerId);
-        const partner = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
-        coopPartnerId = partner.playerId;
-      }
-
-      usedMissionIds.add(mission.id);
       assignedPlayerMissions.push({
-        id: `pm_${Date.now()}_${playerIdx}_${assignedCount}`,
+        id: `pm_${Date.now()}_${playerIdx}_${playerAssignedCounts[player.playerId]}`,
         game_id: gameId,
         player_id: player.playerId,
         mission_id: mission.id,
-        coop_partner_id: coopPartnerId,
+        coop_partner_id: null,
         status: 'active',
         assigned_at: new Date().toISOString(),
         earned_points: 0,
         mission: mission,
       });
 
-      assignedCount++;
+      playerAssignedCounts[player.playerId]++;
     }
   });
 

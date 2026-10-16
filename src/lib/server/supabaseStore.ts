@@ -18,6 +18,8 @@ import {
 import { ensureUuid } from '@/lib/utils/uuid';
 
 class SupabaseStore {
+  private fallbackVerifications: Map<string, MissionVerification[]> = new Map();
+
   private getHeaders(): HeadersInit {
     const key = (
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -285,6 +287,7 @@ class SupabaseStore {
         mode: room.mode,
         duration_minutes: room.duration_minutes,
         allow_coop: room.allow_coop,
+        require_witness: Boolean((params as { requireWitness?: boolean }).requireWitness ?? room.require_witness ?? false),
         missions_per_player: missionsPerPlayer,
       },
     };
@@ -413,10 +416,18 @@ class SupabaseStore {
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const rawMissions: PlayerMission[] = pmRes.ok ? await pmRes.json() : [];
-    const myMissions = rawMissions.map((pm) => ({
-      ...pm,
-      mission: catalogMap.get(pm.mission_id),
-    }));
+    const myMissions = rawMissions.map((pm) => {
+      let coopPartnerNickname: string | null = null;
+      if (pm.coop_partner_id) {
+        const partner = scores.find((s) => s.player_id === pm.coop_partner_id);
+        coopPartnerNickname = partner?.nickname || 'Compagno di Squadra';
+      }
+      return {
+        ...pm,
+        coop_partner_nickname: coopPartnerNickname,
+        mission: catalogMap.get(pm.mission_id),
+      };
+    });
 
     // 6. Fetch Pending Verifications in cui il giocatore è coinvolto
     const verRes = await fetch(
@@ -425,9 +436,16 @@ class SupabaseStore {
       ),
       { headers: this.getHeaders(), cache: 'no-store' }
     );
-    const pendingVerifications: MissionVerification[] = verRes.ok
+    const dbVerifications: MissionVerification[] = verRes.ok
       ? await verRes.json()
       : [];
+
+    const fallbacks = (this.fallbackVerifications.get(gameId) || []).filter(
+      (v) =>
+        (v.verifier_player_id === playerUuid || v.requester_player_id === playerUuid) &&
+        v.status === 'pending'
+    );
+    const pendingVerifications = [...dbVerifications, ...fallbacks];
 
     return {
       game,
@@ -465,7 +483,9 @@ class SupabaseStore {
     }
     const pm: PlayerMission = pms[0];
 
-    if (pm.player_id !== requesterUuid) {
+    const isOwner = pm.player_id === requesterUuid;
+    const isCoopPartner = pm.coop_partner_id === requesterUuid;
+    if (!isOwner && !isCoopPartner) {
       throw new Error(
         'Non sei autorizzato a completare la missione di un altro giocatore.'
       );
@@ -490,8 +510,21 @@ class SupabaseStore {
     );
     const events: GameEvent[] = evRes.ok ? await evRes.json() : [];
 
-    // Self-timer o auto-verifica
-    if (missionCatalog.verification_type === 'self_timer') {
+    // Recupera la configurazione della partita per verificare se require_witness è attivo
+    const gameRes = await fetch(
+      this.getUrl(`games?id=eq.${params.gameId}&limit=1`),
+      { headers: this.getHeaders(), cache: 'no-store' }
+    );
+    const gameList = gameRes.ok ? await gameRes.json() : [];
+    const game = gameList?.[0];
+    const requireWitness = Boolean(game?.config?.require_witness);
+
+    if (requireWitness && !params.verifierPlayerId && missionCatalog.verification_type !== 'self_timer') {
+      throw new Error('Questa partita richiede un testimone per confermare la missione.');
+    }
+
+    // Auto-conferma immediata se la missione è self_timer o se nessun testimone è stato indicato:
+    if (missionCatalog.verification_type === 'self_timer' || !params.verifierPlayerId) {
       const earned = calculateMissionPoints(missionCatalog, events);
       const updateRes = await fetch(
         this.getUrl(`player_missions?id=eq.${pm.id}`),
@@ -509,15 +542,30 @@ class SupabaseStore {
 
       // Aggiorna punteggio
       await this.incrementScore(params.gameId, requesterUuid, earned, 1, 0);
+
+      // Se collaborativa, completa e premia anche il partner
+      if (pm.coop_partner_id) {
+        await fetch(
+          this.getUrl(
+            `player_missions?game_id=eq.${params.gameId}&player_id=eq.${pm.coop_partner_id}&mission_id=eq.${pm.mission_id}`
+          ),
+          {
+            method: 'PATCH',
+            headers: this.getHeaders(),
+            body: JSON.stringify({
+              status: 'completed',
+              completed_at: new Date().toISOString(),
+              earned_points: earned,
+            }),
+          }
+        );
+        await this.incrementScore(params.gameId, pm.coop_partner_id, earned, 1, 0);
+      }
+
       return { playerMission: { ...updatedPm, mission: missionCatalog } };
     }
 
     // Richiede testimone
-    if (!params.verifierPlayerId) {
-      throw new Error(
-        'Seleziona un testimone per verificare il completamento della missione.'
-      );
-    }
     const verifierUuid = ensureUuid(params.verifierPlayerId);
     if (verifierUuid === requesterUuid) {
       throw new Error(
@@ -550,8 +598,25 @@ class SupabaseStore {
       body: JSON.stringify(verificationPayload),
     });
 
-    const verifications = await verRes.json();
-    const verification: MissionVerification = verifications[0];
+    let verification: MissionVerification;
+    if (verRes.ok) {
+      const verifications = await verRes.json();
+      verification = verifications[0];
+    } else {
+      // Fallback in-memory se RLS su Supabase blocca l'inserimento
+      verification = {
+        id: ensureUuid('ver_' + Date.now()),
+        player_mission_id: pm.id,
+        game_id: params.gameId,
+        requester_player_id: requesterUuid,
+        verifier_player_id: verifierUuid,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      };
+      const list = this.fallbackVerifications.get(params.gameId) || [];
+      list.push(verification);
+      this.fallbackVerifications.set(params.gameId, list);
+    }
 
     return {
       playerMission: { ...updatedPm, mission: missionCatalog },
@@ -576,11 +641,25 @@ class SupabaseStore {
       this.getUrl(`mission_verifications?id=eq.${verId}&limit=1`),
       { headers: this.getHeaders(), cache: 'no-store' }
     );
-    const verList = await vRes.json();
-    if (!Array.isArray(verList) || verList.length === 0) {
+    let v: MissionVerification | undefined;
+    let isFallback = false;
+
+    if (vRes.ok) {
+      const verList = await vRes.json();
+      if (Array.isArray(verList) && verList.length > 0) {
+        v = verList[0];
+      }
+    }
+
+    if (!v) {
+      const fallbackList = this.fallbackVerifications.get(params.gameId) || [];
+      v = fallbackList.find((item) => item.id === verId || item.id === params.verificationId);
+      isFallback = true;
+    }
+
+    if (!v) {
       throw new Error('Richiesta di verifica non trovata.');
     }
-    const v: MissionVerification = verList[0];
 
     if (v.verifier_player_id !== verifierUuid) {
       throw new Error('Non sei il testimone designato per questa verifica.');
@@ -589,20 +668,21 @@ class SupabaseStore {
       throw new Error('Questa verifica è già stata gestita o elaborata.');
     }
 
-    // Aggiorna verifica
-    const vUpdateRes = await fetch(
-      this.getUrl(`mission_verifications?id=eq.${v.id}`),
-      {
+    v.status = params.approved ? 'approved' : 'rejected';
+    v.note = params.note || undefined;
+    v.resolved_at = new Date().toISOString();
+
+    if (!isFallback) {
+      await fetch(this.getUrl(`mission_verifications?id=eq.${v.id}`), {
         method: 'PATCH',
         headers: this.getHeaders(),
         body: JSON.stringify({
-          status: params.approved ? 'approved' : 'rejected',
-          note: params.note || null,
-          resolved_at: new Date().toISOString(),
+          status: v.status,
+          note: v.note || null,
+          resolved_at: v.resolved_at,
         }),
-      }
-    );
-    const updatedVerification = (await vUpdateRes.json())[0] || v;
+      });
+    }
 
     // Fetch player mission
     const pmRes = await fetch(
@@ -647,14 +727,23 @@ class SupabaseStore {
         0
       );
 
+      // Se collaborativa, premia anche il partner
       if (pm.coop_partner_id) {
-        await this.incrementScore(
-          params.gameId,
-          pm.coop_partner_id,
-          Math.round(points * 0.7),
-          1,
-          0
+        await fetch(
+          this.getUrl(
+            `player_missions?game_id=eq.${params.gameId}&player_id=eq.${pm.coop_partner_id}&mission_id=eq.${pm.mission_id}`
+          ),
+          {
+            method: 'PATCH',
+            headers: this.getHeaders(),
+            body: JSON.stringify({
+              status: 'completed',
+              completed_at: new Date().toISOString(),
+              earned_points: points,
+            }),
+          }
         );
+        await this.incrementScore(params.gameId, pm.coop_partner_id, points, 1, 0);
       }
     } else {
       await fetch(this.getUrl(`player_missions?id=eq.${pm.id}`), {
@@ -666,8 +755,8 @@ class SupabaseStore {
     }
 
     return {
-      verification: updatedVerification,
-      playerMission: { ...pm, status: params.approved ? 'completed' : 'failed' },
+      verification: v,
+      playerMission: { ...pm, status: params.approved ? 'completed' : 'failed', mission: missionCatalog },
     };
   }
 

@@ -48,6 +48,7 @@ export interface Room {
   duration_minutes: number; // 30, 45, 60, 90, 120 (0 = open ended)
   allowed_difficulties: MissionDifficulty[];
   allow_coop: boolean;
+  require_witness?: boolean;
   missions_per_player?: number;
   host_id: string; // player_id of creator
   status: RoomStatus;
@@ -80,6 +81,7 @@ export interface Game {
     mode: GameMode;
     duration_minutes: number;
     allow_coop: boolean;
+    require_witness?: boolean;
     missions_per_player: number;
   };
 }
@@ -97,6 +99,8 @@ export interface PlayerMission {
   player_id: string;
   mission_id: string;
   coop_partner_id?: string | null;
+  coop_partner_nickname?: string | null;
+  coop_team_nicknames?: string[] | null;
   status: PlayerMissionStatus;
   assigned_at: string;
   completed_at?: string | null;

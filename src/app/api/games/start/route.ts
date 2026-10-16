@@ -6,7 +6,7 @@ import { supabaseStore } from '@/lib/server/supabaseStore';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { roomCode, hostPlayerId, missionsPerPlayer } = body;
+    const { roomCode, hostPlayerId, missionsPerPlayer, requireWitness } = body;
 
     if (!roomCode || !hostPlayerId) {
       return NextResponse.json(
@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       roomCode,
       hostPlayerId,
       missionsPerPlayer: Number(missionsPerPlayer) || undefined,
+      requireWitness: typeof requireWitness !== 'undefined' ? Boolean(requireWitness) : undefined,
     };
     const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
     const { game, missionsAssignedCount } = isProdDb

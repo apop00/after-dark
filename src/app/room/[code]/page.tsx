@@ -14,6 +14,7 @@ import {
   Wifi,
   AlertCircle,
   Shield,
+  Zap,
   LogIn,
   User,
   Target,
@@ -147,6 +148,7 @@ export default function RoomLobbyPage({
           roomCode,
           hostPlayerId: myPlayerId,
           missionsPerPlayer,
+          requireWitness: room.require_witness,
         }),
       });
 
@@ -271,6 +273,20 @@ export default function RoomLobbyPage({
                 <span className="text-xs text-rose-300 flex items-center gap-1 font-semibold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
                   <Target className="w-3.5 h-3.5 text-rose-400" />
                   {missionsPerPlayer} task
+                </span>
+                <span
+                  className={`text-xs flex items-center gap-1 font-semibold px-2 py-0.5 rounded-full border ${
+                    !room.require_witness
+                      ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20'
+                      : 'text-amber-300 bg-amber-500/10 border-amber-500/20'
+                  }`}
+                >
+                  {!room.require_witness ? (
+                    <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Shield className="w-3.5 h-3.5 text-amber-400" />
+                  )}
+                  {!room.require_witness ? 'Auto-conferma' : 'Con Testimone'}
                 </span>
               </div>
             </div>

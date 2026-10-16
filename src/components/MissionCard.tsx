@@ -37,9 +37,11 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export function MissionCard({
   playerMission,
+  requireWitness = false,
   onCompleteRequest,
 }: {
   playerMission: PlayerMission;
+  requireWitness?: boolean;
   onCompleteRequest: (mission: PlayerMission) => void;
 }) {
   const [isRevealed, setIsRevealed] = useState(false);
@@ -92,6 +94,21 @@ export function MissionCard({
 
       {/* Main Body */}
       <div className="p-5">
+        {/* Coop Partner Badge */}
+        {playerMission.coop_partner_nickname && (
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-gradient-to-r from-purple-950/60 to-pink-950/60 border border-purple-500/40 text-purple-200 text-xs font-semibold mb-3 shadow-lg shadow-purple-950/40">
+            <Users className="w-4 h-4 text-purple-300 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] uppercase tracking-wider text-purple-400 font-bold block">
+                Missione di Squadra Condivisa
+              </span>
+              <p className="text-xs text-white truncate">
+                In coppia/trio con: <strong className="text-pink-300 font-extrabold">{playerMission.coop_partner_nickname}</strong>
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Title */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <h3 className="text-lg font-bold text-white tracking-tight">
@@ -161,8 +178,8 @@ export function MissionCard({
 
           <div className="flex items-center gap-1.5 ml-auto">
             <span className="text-[11px] text-slate-500">
-              {mission.verification_type === 'self_timer'
-                ? 'Autoverifica'
+              {!requireWitness || mission.verification_type === 'self_timer'
+                ? '⚡ Auto-conferma'
                 : 'Testimone richiesto'}
             </span>
           </div>
@@ -193,10 +210,10 @@ export function MissionCard({
               triggerHaptic('medium');
               onCompleteRequest(playerMission);
             }}
-            className="w-full py-3.5 px-4 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wide uppercase flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 px-4 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wide uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-rose-950/40"
           >
             <CheckCircle2 className="w-5 h-5 filter drop-shadow" />
-            <span>Dichiara Completata</span>
+            <span>{!requireWitness ? 'Completa Missione ⚡' : 'Richiedi Testimone'}</span>
           </button>
         )}
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, use } from 'react';
+import React, { useState, useEffect, useCallback, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Shield,
@@ -53,6 +53,21 @@ export default function GameHUDPage({
   // Modal states
   const [selectedMissionToComplete, setSelectedMissionToComplete] = useState<PlayerMission | null>(null);
   const [isWitnessModalOpen, setIsWitnessModalOpen] = useState(false);
+
+  // Verifiche in ingresso in cui questo giocatore è il testimone designato
+  const incomingVerifications = pendingVerifications.filter(
+    (v) => v.verifier_player_id === myPlayerId && v.status === 'pending'
+  );
+  const prevIncomingCountRef = useRef(0);
+
+  // Suono e vibrazione immediata all'arrivo di una nuova richiesta di testimonianza
+  useEffect(() => {
+    if (incomingVerifications.length > prevIncomingCountRef.current) {
+      sounds.playChaosAlert();
+      triggerHaptic('warning');
+    }
+    prevIncomingCountRef.current = incomingVerifications.length;
+  }, [incomingVerifications.length]);
 
   const fetchGameState = useCallback(async () => {
     try {
@@ -160,8 +175,8 @@ export default function GameHUDPage({
 
   // Completamento missione
   const handleInitiateComplete = (pm: PlayerMission) => {
-    if (pm.mission?.verification_type === 'self_timer') {
-      // Auto-completamento immediato
+    // Se la stanza è in modalità auto-conferma o la missione è self_timer, completa subito senza testimone!
+    if (!game?.config?.require_witness || pm.mission?.verification_type === 'self_timer') {
       executeCompletion(pm.id);
     } else {
       setSelectedMissionToComplete(pm);
@@ -322,9 +337,9 @@ export default function GameHUDPage({
 
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-4 space-y-4">
         {/* Incoming Verification Alert (if someone asked me to witness) */}
-        {pendingVerifications.length > 0 && (
-          <div className="space-y-2">
-            {pendingVerifications.map((v) => {
+        {incomingVerifications.length > 0 && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+            {incomingVerifications.map((v) => {
               const requester = scores.find((s) => s.player_id === v.requester_player_id);
               return (
                 <IncomingVerificationDrawer
@@ -379,6 +394,7 @@ export default function GameHUDPage({
                 <MissionCard
                   key={pm.id}
                   playerMission={pm}
+                  requireWitness={game?.config?.require_witness ?? false}
                   onCompleteRequest={handleInitiateComplete}
                 />
               ))
