@@ -184,6 +184,8 @@ export interface PlayerSession {
   nickname: string;
   avatarSeed: string;
   gender?: PlayerGender;
+  soundEnabled?: boolean;
+  hapticEnabled?: boolean;
   currentRoomCode?: string;
   currentGameId?: string;
 }

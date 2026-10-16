@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Wine,
@@ -99,6 +99,19 @@ export default function CreateRoomPage() {
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const paramMode = new URLSearchParams(window.location.search).get('mode') as GameMode | null;
+      const validModes: GameMode[] = ['jeffrey_island', 'bar', 'discoteca', 'house_party', 'outdoor', 'chaos'];
+      if (paramMode && validModes.includes(paramMode)) {
+        setSelectedMode(paramMode);
+        if (paramMode === 'jeffrey_island') {
+          setIncludeJeffreyPack(true);
+        }
+      }
+    }
+  }, []);
 
   const toggleDifficulty = (d: MissionDifficulty) => {
     triggerHaptic('light');

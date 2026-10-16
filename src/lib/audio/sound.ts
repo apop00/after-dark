@@ -4,6 +4,12 @@ class SoundEffects {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
 
+  constructor() {
+    if (typeof window !== 'undefined') {
+      this.isMuted = localStorage.getItem('after_dark_sound_muted') === 'true';
+    }
+  }
+
   private initCtx() {
     if (!this.ctx && typeof window !== 'undefined') {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -18,9 +24,18 @@ class SoundEffects {
 
   public setMuted(muted: boolean) {
     this.isMuted = muted;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('after_dark_sound_muted', muted ? 'true' : 'false');
+    }
   }
 
   public getMuted(): boolean {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('after_dark_sound_muted');
+      if (stored !== null) {
+        this.isMuted = stored === 'true';
+      }
+    }
     return this.isMuted;
   }
 

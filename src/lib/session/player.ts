@@ -70,8 +70,13 @@ export function getOrCreatePlayerSession(initialNickname?: string): PlayerSessio
         changed = true;
       }
 
-      if (initialNickname && initialNickname !== parsed.nickname) {
-        parsed.nickname = initialNickname;
+      if (parsed.soundEnabled === undefined) {
+        parsed.soundEnabled = true;
+        changed = true;
+      }
+
+      if (parsed.hapticEnabled === undefined) {
+        parsed.hapticEnabled = true;
         changed = true;
       }
 
@@ -92,6 +97,8 @@ export function getOrCreatePlayerSession(initialNickname?: string): PlayerSessio
     nickname: initialNickname || 'Giocatore_' + Math.floor(100 + Math.random() * 900),
     avatarSeed: randomAvatar,
     gender: 'neutro',
+    soundEnabled: true,
+    hapticEnabled: true,
   };
 
   localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
@@ -123,4 +130,30 @@ export function updatePlayerGender(gender: PlayerGender): PlayerSession {
     localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
   }
   return session;
+}
+
+export function updatePlayerSound(enabled: boolean): PlayerSession {
+  const session = getOrCreatePlayerSession();
+  session.soundEnabled = enabled;
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+  }
+  return session;
+}
+
+export function updatePlayerHaptic(enabled: boolean): PlayerSession {
+  const session = getOrCreatePlayerSession();
+  session.hapticEnabled = enabled;
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+    localStorage.setItem('after_dark_haptic_enabled', enabled ? 'true' : 'false');
+  }
+  return session;
+}
+
+export function resetPlayerIdentity(): PlayerSession {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+  }
+  return getOrCreatePlayerSession();
 }

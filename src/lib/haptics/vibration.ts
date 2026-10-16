@@ -6,6 +6,9 @@ export function triggerHaptic(type: 'light' | 'medium' | 'success' | 'warning' |
   }
 
   try {
+    if (localStorage.getItem('after_dark_haptic_enabled') === 'false') {
+      return;
+    }
     switch (type) {
       case 'light':
         navigator.vibrate(15);
