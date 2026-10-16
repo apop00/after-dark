@@ -44,7 +44,16 @@ export async function PATCH(
   try {
     const { code } = await context.params;
     const body = await req.json();
-    const { hostPlayerId, missionsPerPlayer, hideTasks } = body;
+    const {
+      hostPlayerId,
+      missionsPerPlayer,
+      hideTasks,
+      progressionMode,
+      scoringMode,
+      missionDistribution,
+      maxSkipsPerPlayer,
+      skipDifficultyRule,
+    } = body;
 
     if (!hostPlayerId) {
       return NextResponse.json({ error: 'hostPlayerId obbligatorio' }, { status: 400 });
@@ -56,6 +65,11 @@ export async function PATCH(
       hostPlayerId,
       missionsPerPlayer: missionsPerPlayer !== undefined ? Number(missionsPerPlayer) : undefined,
       hideTasks: hideTasks !== undefined ? Boolean(hideTasks) : undefined,
+      progressionMode,
+      scoringMode,
+      missionDistribution,
+      maxSkipsPerPlayer: maxSkipsPerPlayer !== undefined ? Number(maxSkipsPerPlayer) : undefined,
+      skipDifficultyRule,
     };
 
     const updatedRoom = isProdDb

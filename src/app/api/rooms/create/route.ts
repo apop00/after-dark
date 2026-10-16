@@ -24,6 +24,11 @@ export async function POST(req: NextRequest) {
       missionsPerPlayer,
       isPublic,
       hideTasks,
+      progressionMode,
+      scoringMode,
+      missionDistribution,
+      maxSkipsPerPlayer,
+      skipDifficultyRule,
     } = body;
 
     if (!mode || !hostPlayerId) {
@@ -47,6 +52,11 @@ export async function POST(req: NextRequest) {
       includeJeffreyPack: mode === 'jeffrey_island' || Boolean(includeJeffreyPack),
       isPublic: isPublic !== undefined ? Boolean(isPublic) : true,
       hideTasks: hideTasks !== undefined ? Boolean(hideTasks) : true,
+      progressionMode: progressionMode || 'free',
+      scoringMode: scoringMode || 'points',
+      missionDistribution: missionDistribution || 'fair',
+      maxSkipsPerPlayer: maxSkipsPerPlayer !== undefined ? Number(maxSkipsPerPlayer) : 1,
+      skipDifficultyRule: skipDifficultyRule || 'same',
       hostPlayerId,
       hostNickname: hostNickname || 'Host',
       hostAvatar: hostAvatar || 'shadow',

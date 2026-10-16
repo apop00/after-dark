@@ -7,6 +7,10 @@ import {
   GameAward,
   GameEvent,
   PlayerGender,
+  ProgressionMode,
+  ScoringMode,
+  MissionDistribution,
+  SkipDifficultyRule,
 } from '@/types/game';
 import { MISSIONS_DATABASE } from '@/data/missions';
 
@@ -29,6 +33,11 @@ export interface MissionAssignmentConfig {
   missionsPerPlayer?: number; // di default 3
   enableGenderMissions?: boolean;
   includeJeffreyPack?: boolean;
+  progressionMode?: ProgressionMode;
+  scoringMode?: ScoringMode;
+  missionDistribution?: MissionDistribution;
+  maxSkipsPerPlayer?: number;
+  skipDifficultyRule?: SkipDifficultyRule;
 }
 
 /**
@@ -188,6 +197,12 @@ export function assignMissionsToPlayers(
   const basePool = (individualMissions.length > 0 ? individualMissions : eligibleMissions)
     .sort(() => Math.random() - 0.5);
 
+  // Template di difficoltà equo per "Fair Mode" (es. facile, media, difficile, ...)
+  const isFairMode = config.missionDistribution === 'fair';
+  const difficultyCycle: MissionDifficulty[] = allowedDifficulties.length > 0
+    ? allowedDifficulties
+    : ['facile', 'media', 'difficile'];
+
   players.forEach((player, playerIdx) => {
     const playerAssignedSet = assignedMissionIdsByPlayer.get(player.playerId) || new Set<string>();
 
@@ -208,35 +223,80 @@ export function assignMissionsToPlayers(
       return aUsed - bUsed;
     });
 
-    let poolIdx = 0;
-    while (
-      playerAssignedCounts[player.playerId] < missionsPerPlayer &&
-      poolIdx < sortedPool.length
-    ) {
-      const mission = sortedPool[poolIdx];
-      poolIdx++;
+    let assignedForThisPlayer = playerAssignedCounts[player.playerId];
+    let slotIndex = 0;
 
-      // REGOLA FERREA: MAI duplicare la stessa missione per lo stesso giocatore
-      if (playerAssignedSet.has(mission.id)) continue;
+    while (
+      assignedForThisPlayer < missionsPerPlayer &&
+      slotIndex < missionsPerPlayer * 10
+    ) {
+      // In Fair Mode, cerchiamo prima una missione della difficoltà prevista per questo slot
+      let chosenMission: Mission | undefined;
+
+      if (isFairMode) {
+        const targetDiff = difficultyCycle[slotIndex % difficultyCycle.length];
+        chosenMission = sortedPool.find(
+          (m) =>
+            m.difficulty === targetDiff &&
+            !playerAssignedSet.has(m.id) &&
+            !usedMissionIds.has(m.id)
+        );
+        // Fallback: se usata in stanza ma non ancora assegnata a questo giocatore
+        if (!chosenMission) {
+          chosenMission = sortedPool.find(
+            (m) => m.difficulty === targetDiff && !playerAssignedSet.has(m.id)
+          );
+        }
+      }
+
+      // Se non è Fair Mode (Chaos/Random) o se non abbiamo trovato la difficoltà target:
+      if (!chosenMission) {
+        chosenMission = sortedPool.find(
+          (m) => !playerAssignedSet.has(m.id) && !usedMissionIds.has(m.id)
+        );
+        if (!chosenMission) {
+          chosenMission = sortedPool.find((m) => !playerAssignedSet.has(m.id));
+        }
+      }
+
+      slotIndex++;
+      if (!chosenMission) break;
 
       const randomSuffix = Math.random().toString(36).substring(2, 7);
       assignedPlayerMissions.push({
-        id: `pm_${Date.now()}_${playerIdx}_${playerAssignedCounts[player.playerId]}_${randomSuffix}`,
+        id: `pm_${Date.now()}_${playerIdx}_${assignedForThisPlayer}_${randomSuffix}`,
         game_id: gameId,
         player_id: player.playerId,
-        mission_id: mission.id,
+        mission_id: chosenMission.id,
         coop_partner_id: null,
         status: 'active',
         assigned_at: new Date().toISOString(),
         earned_points: 0,
-        mission: mission,
+        mission: chosenMission,
       });
 
-      playerAssignedSet.add(mission.id);
-      usedMissionIds.add(mission.id);
-      playerAssignedCounts[player.playerId]++;
+      playerAssignedSet.add(chosenMission.id);
+      usedMissionIds.add(chosenMission.id);
+      assignedForThisPlayer++;
+      playerAssignedCounts[player.playerId] = assignedForThisPlayer;
     }
   });
+
+  // Se è attiva la modalità sequenziale "Catena di Sfide", ordiniamo le missioni di ciascun giocatore per difficoltà crescente (crescendo)
+  if (config.progressionMode === 'sequential') {
+    const diffRank: Record<MissionDifficulty, number> = {
+      facile: 1,
+      media: 2,
+      difficile: 3,
+      leggendaria: 4,
+    };
+    assignedPlayerMissions.sort((a, b) => {
+      if (a.player_id !== b.player_id) return 0;
+      const rankA = a.mission ? diffRank[a.mission.difficulty] || 2 : 2;
+      const rankB = b.mission ? diffRank[b.mission.difficulty] || 2 : 2;
+      return rankA - rankB;
+    });
+  }
 
   return assignedPlayerMissions;
 }

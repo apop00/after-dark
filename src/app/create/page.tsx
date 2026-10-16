@@ -21,10 +21,23 @@ import {
   Timer,
   Eye,
   EyeOff,
+  ListOrdered,
+  Coins,
+  Scale,
+  Dices,
+  RotateCcw,
+  Shuffle,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { ModeGraphic } from '@/components/ModeGraphics';
-import { GameMode, MissionDifficulty } from '@/types/game';
+import {
+  GameMode,
+  MissionDifficulty,
+  ProgressionMode,
+  ScoringMode,
+  MissionDistribution,
+  SkipDifficultyRule,
+} from '@/types/game';
 import { getOrCreatePlayerSession } from '@/lib/session/player';
 import { triggerHaptic } from '@/lib/haptics/vibration';
 import { sounds } from '@/lib/audio/sound';
@@ -94,6 +107,11 @@ export default function CreateRoomPage() {
   const [includeJeffreyPack, setIncludeJeffreyPack] = useState<boolean>(false);
   const [isPublic, setIsPublic] = useState<boolean>(true);
   const [hideTasks, setHideTasks] = useState<boolean>(true);
+  const [progressionMode, setProgressionMode] = useState<ProgressionMode>('free');
+  const [scoringMode, setScoringMode] = useState<ScoringMode>('points');
+  const [missionDistribution, setMissionDistribution] = useState<MissionDistribution>('fair');
+  const [maxSkipsPerPlayer, setMaxSkipsPerPlayer] = useState<number>(1);
+  const [skipDifficultyRule, setSkipDifficultyRule] = useState<SkipDifficultyRule>('same');
   const [difficulties, setDifficulties] = useState<MissionDifficulty[]>([
     'facile',
     'media',
@@ -152,6 +170,11 @@ export default function CreateRoomPage() {
           includeJeffreyPack: selectedMode === 'jeffrey_island' || includeJeffreyPack,
           isPublic,
           hideTasks,
+          progressionMode,
+          scoringMode,
+          missionDistribution,
+          maxSkipsPerPlayer,
+          skipDifficultyRule,
           hostPlayerId: session.playerId,
           hostNickname: session.nickname,
           hostAvatar: session.avatarSeed,
@@ -178,17 +201,14 @@ export default function CreateRoomPage() {
       <Navbar />
 
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-4 space-y-5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Indietro</span>
           </button>
-          <span className="text-xs uppercase tracking-widest text-rose-400 font-bold">
-            Nuova Stanza
-          </span>
         </div>
 
         <div>
@@ -479,6 +499,263 @@ export default function CreateRoomPage() {
                 </p>
               </button>
             </div>
+          </div>
+
+          {/* Progression Mode: Tutte Insieme vs Catena di Sfide */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <ListOrdered className="w-3.5 h-3.5 text-rose-400" />
+                <span>Progressione delle Missioni</span>
+              </label>
+              <span
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  progressionMode === 'sequential'
+                    ? 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+                    : 'bg-white/10 text-slate-300 border-white/10'
+                }`}
+              >
+                {progressionMode === 'sequential' ? '⛓️ Step by Step' : '🔓 Libere'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setProgressionMode('free');
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  progressionMode === 'free'
+                    ? 'bg-rose-500/15 border-rose-500 text-white ring-2 ring-rose-400/40 shadow-lg shadow-rose-950/40'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-xs text-white">Tutte Insieme</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Tutte le task sono sbloccate e completabili in qualsiasi ordine.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('medium');
+                  setProgressionMode('sequential');
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  progressionMode === 'sequential'
+                    ? 'bg-gradient-to-r from-rose-950/50 to-purple-950/50 border-rose-500 text-white ring-2 ring-rose-400/40 shadow-lg shadow-rose-950/40'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-xs text-rose-300">Catena di Sfide 🔥</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Una task per volta! Devi completare la tappa corrente per sbloccare la successiva.
+                </p>
+              </button>
+            </div>
+          </div>
+
+          {/* Scoring Mode: A Punti vs Solo Numero di Missioni */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <Coins className="w-3.5 h-3.5 text-amber-400" />
+                <span>Obiettivo & Punteggio</span>
+              </label>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-white/10 text-slate-300 border-white/10">
+                {scoringMode === 'points' ? '🏆 A Punti' : '🎯 Solo Numero Task'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setScoringMode('points');
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  scoringMode === 'points'
+                    ? 'bg-amber-500/15 border-amber-500 text-white ring-2 ring-amber-400/40 shadow-lg shadow-amber-950/40'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-xs text-white">A Punti Classico</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Punti in base alla difficoltà delle task. Vince chi totalizza più punti.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('medium');
+                  setScoringMode('mission_count');
+                }}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  scoringMode === 'mission_count'
+                    ? 'bg-cyan-500/15 border-cyan-500 text-white ring-2 ring-cyan-400/40 shadow-lg shadow-cyan-950/40'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-xs text-cyan-300">Solo Conteggio Task</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                  Senza punteggio numerico: vince chi completa più missioni!
+                </p>
+              </button>
+            </div>
+
+            {/* Sotto-selettore per Solo Conteggio: Fair Mode vs Chaos Roulette */}
+            {scoringMode === 'mission_count' && (
+              <div className="p-3 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 space-y-2 animate-in fade-in">
+                <span className="text-[11px] font-bold text-cyan-200 block">
+                  Distribuzione Difficoltà per Giocatore:
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setMissionDistribution('fair');
+                    }}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      missionDistribution === 'fair'
+                        ? 'bg-cyan-500/20 border-cyan-400 text-white font-bold'
+                        : 'bg-white/5 border-white/10 text-slate-400'
+                    }`}
+                  >
+                    <div className="text-xs font-bold text-white flex items-center gap-1">
+                      <Scale className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Fair Mode</span>
+                    </div>
+                    <span className="text-[9px] text-slate-300 block mt-0.5">
+                      Difficoltà simili e bilanciate per tutti i giocatori.
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setMissionDistribution('random');
+                    }}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      missionDistribution === 'random'
+                        ? 'bg-rose-500/20 border-rose-400 text-white font-bold'
+                        : 'bg-white/5 border-white/10 text-slate-400'
+                    }`}
+                  >
+                    <div className="text-xs font-bold text-white flex items-center gap-1">
+                      <Dices className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Chaos Roulette</span>
+                    </div>
+                    <span className="text-[9px] text-slate-300 block mt-0.5">
+                      Difficoltà casuali: alcuni favoriti, altri con compiti tosti!
+                    </span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Skip / Cambio Task */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <RotateCcw className="w-3.5 h-3.5 text-purple-400" />
+                <span>Cambi Missione (Skip Task)</span>
+              </label>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-purple-500/10 text-purple-300 border-purple-500/20">
+                {maxSkipsPerPlayer === 0 ? 'Disattivati' : `${maxSkipsPerPlayer} per giocatore`}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-4 gap-1.5">
+              {[0, 1, 2, 3].map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setMaxSkipsPerPlayer(val);
+                  }}
+                  className={`py-2 px-2 rounded-xl border text-xs font-bold transition-all cursor-pointer text-center ${
+                    maxSkipsPerPlayer === val
+                      ? 'bg-purple-600 border-purple-400 text-white shadow-md shadow-purple-950/50'
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {val === 0 ? 'Nessuno' : `${val} Skip`}
+                </button>
+              ))}
+            </div>
+
+            {/* Sotto-selettore Regola di Cambio */}
+            {maxSkipsPerPlayer > 0 && (
+              <div className="p-3 rounded-2xl bg-purple-950/20 border border-purple-500/30 space-y-2 animate-in fade-in">
+                <span className="text-[11px] font-bold text-purple-200 block">
+                  Regola sulla Nuova Missione:
+                </span>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setSkipDifficultyRule('same');
+                    }}
+                    className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                      skipDifficultyRule === 'same'
+                        ? 'bg-purple-500/25 border-purple-400 text-white font-bold'
+                        : 'bg-white/5 border-white/10 text-slate-400'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-white block">Stesso Livello</span>
+                    <span className="text-[8px] text-slate-400 block mt-0.5">Equo</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setSkipDifficultyRule('harder');
+                    }}
+                    className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                      skipDifficultyRule === 'harder'
+                        ? 'bg-rose-500/25 border-rose-400 text-white font-bold'
+                        : 'bg-white/5 border-white/10 text-slate-400'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-rose-300 block">Più Difficile</span>
+                    <span className="text-[8px] text-slate-400 block mt-0.5">+Sfida / Malus</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setSkipDifficultyRule('random');
+                    }}
+                    className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                      skipDifficultyRule === 'random'
+                        ? 'bg-amber-500/25 border-amber-400 text-white font-bold'
+                        : 'bg-white/5 border-white/10 text-slate-400'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-amber-300 block">Casuale</span>
+                    <span className="text-[8px] text-slate-400 block mt-0.5">Imprevisto</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Nascondi Task (Modalità Privacy) Toggle */}

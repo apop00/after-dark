@@ -88,13 +88,6 @@ export function Navbar({
           >
             {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
           </button>
-
-          {!isHome && nickname && (
-            <div className="flex items-center gap-1.5 pl-2 border-l border-white/10 text-xs text-slate-300 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="max-w-[70px] truncate">{nickname}</span>
-            </div>
-          )}
         </div>
       </div>
     </header>

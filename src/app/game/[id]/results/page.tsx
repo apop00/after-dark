@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { getAvatarEmoji } from '@/components/AvatarPicker';
-import { PlayerScore, GameAward } from '@/types/game';
+import { PlayerScore, GameAward, Game } from '@/types/game';
 import { getOrCreatePlayerSession } from '@/lib/session/player';
 import { triggerHaptic } from '@/lib/haptics/vibration';
 import { sounds } from '@/lib/audio/sound';
@@ -33,6 +33,7 @@ export default function GameResultsPage({
   const resolvedParams = use(params);
   const gameId = resolvedParams.id;
 
+  const [game, setGame] = useState<Game | null>(null);
   const [scores, setScores] = useState<PlayerScore[]>([]);
   const [awards, setAwards] = useState<GameAward[]>([]);
   const [room, setRoom] = useState<{ id: string; code: string; host_id: string; status: string; group_name: string } | null>(null);
@@ -51,6 +52,7 @@ export default function GameResultsPage({
           headers: { 'x-player-id': session.playerId },
         });
         const data = await res.json();
+        if (data.game) setGame(data.game);
         if (data.scores) setScores(data.scores);
         if (data.awards) setAwards(data.awards);
         if (data.room) setRoom(data.room);
@@ -131,7 +133,17 @@ export default function GameResultsPage({
     );
   }
 
-  const sortedScores = [...scores].sort((a, b) => b.total_points - a.total_points);
+  const isMissionCountMode = game?.config?.scoring_mode === 'mission_count';
+
+  const sortedScores = [...scores].sort((a, b) => {
+    if (isMissionCountMode) {
+      if (b.completed_count !== a.completed_count) {
+        return b.completed_count - a.completed_count;
+      }
+      return (a.skips_used ?? 0) - (b.skips_used ?? 0);
+    }
+    return b.total_points - a.total_points;
+  });
   const winner = sortedScores[0];
   const second = sortedScores[1];
   const third = sortedScores[2];
@@ -151,7 +163,9 @@ export default function GameResultsPage({
             I VERDETTI DELLA NOTTE
           </h2>
           <p className="text-xs text-slate-400">
-            La partita è conclusa. Ecco chi ha dominato e chi ha fallito con onore.
+            {isMissionCountMode
+              ? 'La partita è conclusa. Ecco chi ha completato più sfide e conquistato la vetta.'
+              : 'La partita è conclusa. Ecco chi ha dominato e chi ha fallito con onore.'}
           </p>
         </div>
 
@@ -163,7 +177,9 @@ export default function GameResultsPage({
               <div className="flex flex-col items-center">
                 <span className="text-3xl mb-1">{getAvatarEmoji(second.avatar_seed)}</span>
                 <p className="text-xs font-bold text-white truncate max-w-[85px]">{second.nickname}</p>
-                <span className="text-[11px] text-slate-400 font-semibold">{second.total_points} PT</span>
+                <span className="text-[11px] text-slate-400 font-semibold">
+                  {isMissionCountMode ? `${second.completed_count} Missioni` : `${second.total_points} PT`}
+                </span>
                 <div className="w-full h-20 mt-2 bg-gradient-to-t from-slate-800 to-slate-700/80 rounded-t-2xl border-t border-slate-600 flex items-center justify-center font-black text-slate-300 text-xl shadow-lg">
                   2
                 </div>
@@ -176,7 +192,9 @@ export default function GameResultsPage({
                 <Crown className="w-6 h-6 text-amber-400 mb-1 animate-bounce" />
                 <span className="text-4xl mb-1">{getAvatarEmoji(winner.avatar_seed)}</span>
                 <p className="text-sm font-black text-amber-300 truncate max-w-[95px]">{winner.nickname}</p>
-                <span className="text-xs text-rose-400 font-black">{winner.total_points} PT</span>
+                <span className="text-xs text-rose-400 font-black">
+                  {isMissionCountMode ? `${winner.completed_count} Missioni 🎯` : `${winner.total_points} PT`}
+                </span>
                 <div className="w-full h-28 mt-2 bg-gradient-to-t from-amber-900/60 via-amber-600/40 to-amber-500/30 rounded-t-2xl border-t-2 border-amber-400 flex items-center justify-center font-black text-amber-300 text-3xl shadow-xl shadow-amber-950/50">
                   1
                 </div>
@@ -188,7 +206,9 @@ export default function GameResultsPage({
               <div className="flex flex-col items-center">
                 <span className="text-3xl mb-1">{getAvatarEmoji(third.avatar_seed)}</span>
                 <p className="text-xs font-bold text-white truncate max-w-[85px]">{third.nickname}</p>
-                <span className="text-[11px] text-slate-400 font-semibold">{third.total_points} PT</span>
+                <span className="text-[11px] text-slate-400 font-semibold">
+                  {isMissionCountMode ? `${third.completed_count} Missioni` : `${third.total_points} PT`}
+                </span>
                 <div className="w-full h-14 mt-2 bg-gradient-to-t from-amber-950 to-amber-900/60 rounded-t-2xl border-t border-amber-800 flex items-center justify-center font-black text-amber-600 text-lg shadow-md">
                   3
                 </div>
@@ -232,7 +252,7 @@ export default function GameResultsPage({
         {/* Detailed Stats */}
         <div className="space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1 block">
-            Tutti i Punteggi
+            {isMissionCountMode ? 'Tutte le Sfide Completate' : 'Tutti i Punteggi'}
           </span>
           <div className="space-y-1.5">
             {sortedScores.map((sc, idx) => (
@@ -248,8 +268,11 @@ export default function GameResultsPage({
                 <div className="flex items-center gap-4">
                   <span className="text-slate-400">
                     {sc.completed_count} completate
+                    {typeof sc.skips_used === 'number' && sc.skips_used > 0 && ` (${sc.skips_used} cambi)`}
                   </span>
-                  <span className="font-black text-rose-400">{sc.total_points} PT</span>
+                  <span className="font-black text-rose-400">
+                    {isMissionCountMode ? `${sc.completed_count} 🎯` : `${sc.total_points} PT`}
+                  </span>
                 </div>
               </div>
             ))}

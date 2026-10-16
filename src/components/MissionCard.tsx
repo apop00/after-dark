@@ -9,10 +9,9 @@ import {
   CheckCircle2,
   Clock,
   Users,
-  Flame,
-  Award,
   AlertCircle,
-  HelpCircle,
+  Lock,
+  RefreshCw,
 } from 'lucide-react';
 import { sounds } from '@/lib/audio/sound';
 import { triggerHaptic } from '@/lib/haptics/vibration';
@@ -40,15 +39,57 @@ export function MissionCard({
   playerMission,
   requireWitness = false,
   hideTasks = true,
+  isLocked = false,
+  lockedStep,
+  totalSteps,
+  scoringMode = 'points',
+  skipsRemaining = 0,
   onCompleteRequest,
+  onSkipRequest,
+  isSkipping = false,
 }: {
   playerMission: PlayerMission;
   requireWitness?: boolean;
   hideTasks?: boolean;
+  isLocked?: boolean;
+  lockedStep?: number;
+  totalSteps?: number;
+  scoringMode?: 'points' | 'mission_count';
+  skipsRemaining?: number;
   onCompleteRequest: (mission: PlayerMission) => void;
+  onSkipRequest?: (mission: PlayerMission) => void;
+  isSkipping?: boolean;
 }) {
   const [isRevealed, setIsRevealed] = useState(!hideTasks);
   const mission = playerMission.mission;
+
+  if (isLocked) {
+    return (
+      <div className="relative rounded-3xl border border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden p-5 shadow-lg select-none opacity-80">
+        <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-slate-400" />
+            <span className="text-xs uppercase tracking-wider text-slate-400 font-extrabold">
+              {lockedStep && totalSteps ? `Tappa ${lockedStep} di ${totalSteps}` : 'Tappa Successiva'}
+            </span>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-400">
+            🔒 Bloccata
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 text-slate-500">
+            <Lock className="w-6 h-6" />
+          </div>
+          <h4 className="text-sm font-bold text-white mb-1">Missione Bloccata</h4>
+          <p className="text-xs text-slate-400 max-w-xs leading-relaxed">
+            Completa o cambia la missione precedente per sbloccare e scoprire questa sfida!
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!mission) return null;
 
@@ -91,12 +132,23 @@ export function MissionCard({
         </div>
 
         <div className="flex items-center gap-2">
+          {lockedStep && totalSteps && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              Tappa {lockedStep}/{totalSteps}
+            </span>
+          )}
           <span className={`text-xs px-2.5 py-0.5 rounded-full border ${diffStyle.bg} ${diffStyle.text}`}>
             {diffStyle.label}
           </span>
-          <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300">
-            +{mission.base_points} PT
-          </span>
+          {scoringMode === 'points' ? (
+            <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300">
+              +{mission.base_points} PT
+            </span>
+          ) : (
+            <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-violet-500/20 border border-violet-500/40 text-violet-300">
+              🎯 Sfida
+            </span>
+          )}
         </div>
       </div>
 
@@ -208,7 +260,9 @@ export function MissionCard({
         {isCompleted ? (
           <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
             <CheckCircle2 className="w-5 h-5" />
-            <span>Completata! (+{playerMission.earned_points} PT)</span>
+            <span>
+              Completata! {scoringMode === 'points' ? `(+${playerMission.earned_points} PT)` : '✓'}
+            </span>
           </div>
         ) : isPending ? (
           <div className="flex items-center gap-2 text-amber-400 text-sm">
@@ -221,17 +275,34 @@ export function MissionCard({
             <span>Non confermata dal testimone</span>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic('medium');
-              onCompleteRequest(playerMission);
-            }}
-            className="w-full py-3.5 px-4 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wide uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-rose-950/40"
-          >
-            <CheckCircle2 className="w-5 h-5 filter drop-shadow" />
-            <span>{!requireWitness ? 'Completa Missione ⚡' : 'Richiedi Testimone'}</span>
-          </button>
+          <div className="flex items-center gap-2 w-full">
+            {skipsRemaining > 0 && onSkipRequest && (
+              <button
+                type="button"
+                disabled={isSkipping}
+                onClick={() => {
+                  triggerHaptic('light');
+                  onSkipRequest(playerMission);
+                }}
+                className="py-3.5 px-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-200 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 shrink-0 cursor-pointer"
+                title={`Cambia missione (${skipsRemaining} cambi disponibili)`}
+              >
+                <RefreshCw className={`w-4 h-4 text-cyan-400 ${isSkipping ? 'animate-spin' : ''}`} />
+                <span>Cambia ({skipsRemaining})</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic('medium');
+                onCompleteRequest(playerMission);
+              }}
+              className="flex-1 py-3.5 px-4 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wide uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-rose-950/40"
+            >
+              <CheckCircle2 className="w-5 h-5 filter drop-shadow" />
+              <span>{!requireWitness ? 'Completa Missione ⚡' : 'Richiedi Testimone'}</span>
+            </button>
+          </div>
         )}
       </div>
     </div>

@@ -40,6 +40,11 @@ export interface Mission {
   gender_target?: PlayerGender; // 'neutro' (default, per tutti) | 'uomo' | 'donna'
 }
 
+export type ProgressionMode = 'free' | 'sequential'; // 'free' (Tutte Insieme) | 'sequential' (Catena di Sfide 🔥)
+export type ScoringMode = 'points' | 'mission_count'; // 'points' (A Punti) | 'mission_count' (Numero di Missioni)
+export type MissionDistribution = 'fair' | 'random'; // 'fair' (Difficoltà Simile) | 'random' (Difficoltà Casuali)
+export type SkipDifficultyRule = 'same' | 'harder' | 'random'; // 'same' (Stesso Livello) | 'harder' (Più Difficile) | 'random' (Casuale)
+
 export type RoomStatus = 'lobby' | 'playing' | 'finished' | 'abandoned' | 'expired';
 
 export interface Room {
@@ -58,6 +63,11 @@ export interface Room {
   include_jeffrey_pack?: boolean;
   is_public?: boolean; // Se true, compare nell'elenco delle lobby pubbliche aperte
   hide_tasks?: boolean; // Se true (default), le task partono coperte con tocca per rivelare; se false, sono palesi / scoperte
+  progression_mode?: ProgressionMode; // 'free' o 'sequential' (Catena di Sfide)
+  scoring_mode?: ScoringMode; // 'points' o 'mission_count'
+  mission_distribution?: MissionDistribution; // 'fair' o 'random'
+  max_skips_per_player?: number; // 0, 1, 2, 3
+  skip_difficulty_rule?: SkipDifficultyRule; // 'same', 'harder', 'random'
   host_id: string; // player_id of creator
   status: RoomStatus;
   created_at: string;
@@ -95,6 +105,11 @@ export interface Game {
     enable_gender_missions?: boolean;
     include_jeffrey_pack?: boolean;
     hide_tasks?: boolean;
+    progression_mode?: ProgressionMode;
+    scoring_mode?: ScoringMode;
+    mission_distribution?: MissionDistribution;
+    max_skips_per_player?: number;
+    skip_difficulty_rule?: SkipDifficultyRule;
     real_mission_ids?: Record<string, string>;
   };
 }
@@ -167,6 +182,7 @@ export interface PlayerScore {
   completed_count: number;
   failed_count: number;
   bonus_points: number;
+  skips_used?: number;
   awarded_titles: string[];
   updated_at: string;
 }

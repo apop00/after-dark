@@ -8,7 +8,12 @@ import {
   PlayerScore,
   GameAward,
   Mission,
+  MissionDifficulty,
   PlayerGender,
+  ProgressionMode,
+  ScoringMode,
+  MissionDistribution,
+  SkipDifficultyRule,
 } from '@/types/game';
 import {
   generateRoomCode,
@@ -39,6 +44,11 @@ interface RoomMeta {
   requireWitness?: boolean;
   isPublic?: boolean;
   hideTasks?: boolean;
+  progressionMode?: ProgressionMode;
+  scoringMode?: ScoringMode;
+  missionDistribution?: MissionDistribution;
+  maxSkipsPerPlayer?: number;
+  skipDifficultyRule?: SkipDifficultyRule;
 }
 
 const META_PREFIX = '⟦AD_CFG:';
@@ -129,6 +139,14 @@ class SupabaseStore {
     const hideTasks = (params as { hideTasks?: boolean }).hideTasks !== undefined
       ? Boolean((params as { hideTasks?: boolean }).hideTasks)
       : true;
+    const progressionMode = (params as { progressionMode?: ProgressionMode }).progressionMode || 'free';
+    const scoringMode = (params as { scoringMode?: ScoringMode }).scoringMode || 'points';
+    const missionDistribution = (params as { missionDistribution?: MissionDistribution }).missionDistribution || 'fair';
+    const maxSkipsPerPlayer = (params as { maxSkipsPerPlayer?: number }).maxSkipsPerPlayer !== undefined
+      ? (params as { maxSkipsPerPlayer?: number }).maxSkipsPerPlayer
+      : 1;
+    const skipDifficultyRule = (params as { skipDifficultyRule?: SkipDifficultyRule }).skipDifficultyRule || 'same';
+
     const encodedGroupName = encodeRoomMeta(params.groupName.trim() || 'I Guerrieri della Notte', {
       mode: params.mode,
       includeJeffreyPack: isJeffrey,
@@ -137,6 +155,11 @@ class SupabaseStore {
       requireWitness: Boolean(params.requireWitness),
       isPublic: params.isPublic !== undefined ? Boolean(params.isPublic) : true,
       hideTasks,
+      progressionMode,
+      scoringMode,
+      missionDistribution,
+      maxSkipsPerPlayer,
+      skipDifficultyRule,
     });
 
     // Se la modalità è jeffrey_island, salva 'house_party' su DB per non violare rooms_mode_check su Supabase
@@ -193,6 +216,11 @@ class SupabaseStore {
     createdRoom.include_jeffrey_pack = isJeffrey;
     createdRoom.is_public = params.isPublic ?? true;
     createdRoom.hide_tasks = hideTasks;
+    createdRoom.progression_mode = progressionMode;
+    createdRoom.scoring_mode = scoringMode;
+    createdRoom.mission_distribution = missionDistribution;
+    createdRoom.max_skips_per_player = maxSkipsPerPlayer;
+    createdRoom.skip_difficulty_rule = skipDifficultyRule;
 
     // Inserisci host come primo membro
     const memberPayload = {
@@ -259,6 +287,11 @@ class SupabaseStore {
     if (meta.isPublic !== undefined) row.is_public = meta.isPublic;
     if (meta.hideTasks !== undefined) row.hide_tasks = meta.hideTasks;
     else row.hide_tasks = true;
+    row.progression_mode = meta.progressionMode || 'free';
+    row.scoring_mode = meta.scoringMode || 'points';
+    row.mission_distribution = meta.missionDistribution || 'fair';
+    row.max_skips_per_player = meta.maxSkipsPerPlayer !== undefined ? meta.maxSkipsPerPlayer : 1;
+    row.skip_difficulty_rule = meta.skipDifficultyRule || 'same';
 
     const room: Room = row;
 
@@ -502,6 +535,11 @@ class SupabaseStore {
     hostPlayerId: string;
     missionsPerPlayer?: number;
     hideTasks?: boolean;
+    progressionMode?: ProgressionMode;
+    scoringMode?: ScoringMode;
+    missionDistribution?: MissionDistribution;
+    maxSkipsPerPlayer?: number;
+    skipDifficultyRule?: SkipDifficultyRule;
   }): Promise<Room> {
     const cleanCode = params.code.trim().toUpperCase();
     const res = await fetch(
@@ -520,6 +558,11 @@ class SupabaseStore {
     const { cleanName, meta } = decodeRoomMeta(row.group_name);
     if (params.missionsPerPlayer !== undefined) meta.missionsPerPlayer = params.missionsPerPlayer;
     if (params.hideTasks !== undefined) meta.hideTasks = params.hideTasks;
+    if (params.progressionMode !== undefined) meta.progressionMode = params.progressionMode;
+    if (params.scoringMode !== undefined) meta.scoringMode = params.scoringMode;
+    if (params.missionDistribution !== undefined) meta.missionDistribution = params.missionDistribution;
+    if (params.maxSkipsPerPlayer !== undefined) meta.maxSkipsPerPlayer = params.maxSkipsPerPlayer;
+    if (params.skipDifficultyRule !== undefined) meta.skipDifficultyRule = params.skipDifficultyRule;
 
     const newGroupName = encodeRoomMeta(cleanName, meta);
     await fetch(this.getUrl(`rooms?id=eq.${row.id}`), {
@@ -563,6 +606,14 @@ class SupabaseStore {
       Number(params.missionsPerPlayer) || room.missions_per_player || 3;
     const hideTasks = params.hideTasks !== undefined ? params.hideTasks : (room.hide_tasks ?? true);
 
+    const progressionMode = (params as { progressionMode?: ProgressionMode }).progressionMode || room.progression_mode || 'free';
+    const scoringMode = (params as { scoringMode?: ScoringMode }).scoringMode || room.scoring_mode || 'points';
+    const missionDistribution = (params as { missionDistribution?: MissionDistribution }).missionDistribution || room.mission_distribution || 'fair';
+    const maxSkips = (params as { maxSkipsPerPlayer?: number }).maxSkipsPerPlayer !== undefined
+      ? (params as { maxSkipsPerPlayer?: number }).maxSkipsPerPlayer
+      : (room.max_skips_per_player ?? 1);
+    const skipRule = (params as { skipDifficultyRule?: SkipDifficultyRule }).skipDifficultyRule || room.skip_difficulty_rule || 'same';
+
     // Crea record Game
     const gamePayload = {
       room_id: room.id,
@@ -579,6 +630,11 @@ class SupabaseStore {
         enable_gender_missions: room.enable_gender_missions ?? false,
         include_jeffrey_pack: room.include_jeffrey_pack ?? false,
         hide_tasks: hideTasks,
+        progression_mode: progressionMode,
+        scoring_mode: scoringMode,
+        mission_distribution: missionDistribution,
+        max_skips_per_player: maxSkips,
+        skip_difficulty_rule: skipRule,
       },
     };
 
@@ -618,6 +674,11 @@ class SupabaseStore {
       missionsPerPlayer,
       enableGenderMissions: room.enable_gender_missions ?? false,
       includeJeffreyPack: isJeffrey,
+      progressionMode,
+      scoringMode,
+      missionDistribution,
+      maxSkipsPerPlayer: maxSkips,
+      skipDifficultyRule: skipRule,
     });
 
     // Mappa di associazione ID reale per missioni speciali (es. jeffrey_* non presenti in DB FK di PostgreSQL)
@@ -823,6 +884,11 @@ class SupabaseStore {
       }
     }
 
+    const maxSkips = game.config?.max_skips_per_player !== undefined ? game.config.max_skips_per_player : 1;
+    const myScore = scores.find((s) => s.player_id === playerUuid || s.player_id === requestingPlayerId);
+    const skipsUsed = myScore?.skips_used || 0;
+    const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
+
     return {
       game,
       room: roomInfo,
@@ -831,6 +897,7 @@ class SupabaseStore {
       myMissions,
       pendingVerifications,
       awards: [] as GameAward[],
+      skipsRemaining,
     };
   }
 
@@ -1272,6 +1339,150 @@ class SupabaseStore {
 
     const awards = calculateEndGameAwards(scores, completed);
     return { game, awards, scores };
+  }
+
+  async skipMission(params: {
+    gameId: string;
+    playerMissionId: string;
+    playerId: string;
+  }): Promise<{ playerMission: PlayerMission; skipsRemaining: number }> {
+    const playerUuid = ensureUuid(params.playerId);
+
+    // 1. Fetch Game
+    const gameRes = await fetch(this.getUrl(`games?id=eq.${params.gameId}&limit=1`), {
+      headers: this.getHeaders(),
+      cache: 'no-store',
+    });
+    const games = await gameRes.json();
+    if (!Array.isArray(games) || games.length === 0) {
+      throw new Error('Partita non trovata.');
+    }
+    const game: Game = games[0];
+    if (game.status !== 'active') throw new Error('La partita non è più attiva.');
+
+    const maxSkips = game.config?.max_skips_per_player !== undefined ? game.config.max_skips_per_player : 1;
+    if (maxSkips <= 0) {
+      throw new Error('I cambi di missione sono disabilitati per questa partita.');
+    }
+
+    // 2. Fetch Scores to verify skips remaining
+    const scoresRes = await fetch(
+      this.getUrl(`scores?game_id=eq.${params.gameId}&player_id=eq.${playerUuid}&limit=1`),
+      { headers: this.getHeaders(), cache: 'no-store' }
+    );
+    const scoreRows = scoresRes.ok ? await scoresRes.json() : [];
+    const myScore: PlayerScore | undefined = scoreRows?.[0];
+    const skipsUsed = myScore?.skips_used || 0;
+    if (skipsUsed >= maxSkips) {
+      throw new Error(`Hai esaurito i tuoi cambi missione disponibili (${maxSkips}/${maxSkips} usati).`);
+    }
+
+    // 3. Fetch all player missions for this game and this player
+    const pmUuid = ensureUuid(params.playerMissionId);
+    const pmRes = await fetch(
+      this.getUrl(`player_missions?game_id=eq.${params.gameId}&player_id=eq.${playerUuid}`),
+      { headers: this.getHeaders(), cache: 'no-store' }
+    );
+    const playerMissions: PlayerMission[] = pmRes.ok ? await pmRes.json() : [];
+    const targetPm = playerMissions.find((pm) => pm.id === pmUuid || pm.id === params.playerMissionId);
+    if (!targetPm) {
+      throw new Error('Missione non trovata per questo giocatore.');
+    }
+    if (targetPm.status !== 'active') {
+      throw new Error('Puoi cambiare solo una missione attiva non ancora completata.');
+    }
+
+    const realMissionMap = (game.config?.real_mission_ids as Record<string, string>) || {};
+    const oldActualId = realMissionMap[targetPm.id] || targetPm.mission_id;
+    const oldMission = MISSIONS_DATABASE.find((m) => m.id === oldActualId);
+    const oldDifficulty = oldMission?.difficulty || 'media';
+    const rule = game.config?.skip_difficulty_rule || 'same';
+
+    let targetDifficulty: MissionDifficulty = oldDifficulty;
+    if (rule === 'harder') {
+      if (oldDifficulty === 'facile') targetDifficulty = 'media';
+      else if (oldDifficulty === 'media') targetDifficulty = 'difficile';
+      else if (oldDifficulty === 'difficile') targetDifficulty = 'leggendaria';
+      else targetDifficulty = 'leggendaria';
+    }
+
+    const assignedIdsForPlayer = new Set(
+      playerMissions.map((pm) => realMissionMap[pm.id] || pm.mission_id)
+    );
+
+    const isJeffreyMode = game.config?.mode === 'jeffrey_island';
+    const includeJeffrey = isJeffreyMode || Boolean(game.config?.include_jeffrey_pack);
+
+    const candidateMissions = MISSIONS_DATABASE.filter((m) => {
+      if (assignedIdsForPlayer.has(m.id)) return false;
+      if (m.category === 'collaborazione') return false;
+
+      if (isJeffreyMode) {
+        if (m.category !== 'jeffrey_island' && !m.compatible_modes.includes('jeffrey_island')) return false;
+      } else {
+        const matchesMode = m.compatible_modes.includes(game.config?.mode || 'house_party');
+        const matchesJeffrey = includeJeffrey && (m.category === 'jeffrey_island' || m.compatible_modes.includes('jeffrey_island'));
+        if (!matchesMode && !matchesJeffrey) return false;
+      }
+
+      if (rule === 'same' || rule === 'harder') {
+        return m.difficulty === targetDifficulty;
+      }
+      return true;
+    });
+
+    let selectedMission: Mission;
+    if (candidateMissions.length > 0) {
+      selectedMission = candidateMissions[Math.floor(Math.random() * candidateMissions.length)];
+    } else {
+      const fallbackList = MISSIONS_DATABASE.filter(
+        (m) => !assignedIdsForPlayer.has(m.id) && m.category !== 'collaborazione'
+      );
+      selectedMission = fallbackList[Math.floor(Math.random() * fallbackList.length)] || MISSIONS_DATABASE[0];
+    }
+
+    // Aggiorna mappa real_mission_ids
+    realMissionMap[targetPm.id] = selectedMission.id;
+    await fetch(this.getUrl(`games?id=eq.${params.gameId}`), {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ config: { ...game.config, real_mission_ids: realMissionMap } }),
+    });
+
+    // Aggiorna player_missions su Supabase
+    const safeMissionId = selectedMission.id.startsWith('jeffrey_')
+      ? DB_SAFE_FALLBACK_MISSION_IDS[0]
+      : selectedMission.id;
+
+    await fetch(this.getUrl(`player_missions?id=eq.${targetPm.id}`), {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({
+        mission_id: safeMissionId,
+        assigned_at: new Date().toISOString(),
+      }),
+    });
+
+    // Incrementa skips_used in scores se presente
+    if (myScore) {
+      await fetch(this.getUrl(`scores?id=eq.${myScore.id}`), {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ skips_used: skipsUsed + 1 }),
+      });
+    }
+
+    const updatedPm: PlayerMission = {
+      ...targetPm,
+      mission_id: selectedMission.id,
+      mission: selectedMission,
+      assigned_at: new Date().toISOString(),
+    };
+
+    return {
+      playerMission: updatedPm,
+      skipsRemaining: maxSkips - (skipsUsed + 1),
+    };
   }
 }
 

@@ -10,6 +10,12 @@ import {
   PlayerScore,
   GameAward,
   PlayerGender,
+  Mission,
+  MissionDifficulty,
+  ProgressionMode,
+  ScoringMode,
+  MissionDistribution,
+  SkipDifficultyRule,
 } from '@/types/game';
 import {
   generateRoomCode,
@@ -17,6 +23,7 @@ import {
   calculateMissionPoints,
   calculateEndGameAwards,
 } from '@/lib/game/engine';
+import { MISSIONS_DATABASE } from '@/data/missions';
 
 interface StoreData {
   rooms: [string, Room][];
@@ -132,6 +139,11 @@ class GameServerStore {
     includeJeffreyPack?: boolean;
     isPublic?: boolean;
     hideTasks?: boolean;
+    progressionMode?: ProgressionMode;
+    scoringMode?: ScoringMode;
+    missionDistribution?: MissionDistribution;
+    maxSkipsPerPlayer?: number;
+    skipDifficultyRule?: SkipDifficultyRule;
     hostPlayerId: string;
     hostNickname: string;
     hostAvatar: string;
@@ -161,6 +173,11 @@ class GameServerStore {
       include_jeffrey_pack: params.mode === 'jeffrey_island' || Boolean(params.includeJeffreyPack),
       is_public: params.isPublic ?? true,
       hide_tasks: params.hideTasks !== undefined ? Boolean(params.hideTasks) : true,
+      progression_mode: params.progressionMode || 'free',
+      scoring_mode: params.scoringMode || 'points',
+      mission_distribution: params.missionDistribution || 'fair',
+      max_skips_per_player: params.maxSkipsPerPlayer !== undefined ? params.maxSkipsPerPlayer : 1,
+      skip_difficulty_rule: params.skipDifficultyRule || 'same',
       host_id: params.hostPlayerId,
       status: 'lobby',
       created_at: new Date().toISOString(),
@@ -352,6 +369,11 @@ class GameServerStore {
     hostPlayerId: string;
     missionsPerPlayer?: number;
     hideTasks?: boolean;
+    progressionMode?: ProgressionMode;
+    scoringMode?: ScoringMode;
+    missionDistribution?: MissionDistribution;
+    maxSkipsPerPlayer?: number;
+    skipDifficultyRule?: SkipDifficultyRule;
   }): Room {
     this.loadFromDisk();
     const room = this.rooms.get(params.code.toUpperCase());
@@ -365,6 +387,21 @@ class GameServerStore {
     if (params.hideTasks !== undefined) {
       room.hide_tasks = params.hideTasks;
     }
+    if (params.progressionMode !== undefined) {
+      room.progression_mode = params.progressionMode;
+    }
+    if (params.scoringMode !== undefined) {
+      room.scoring_mode = params.scoringMode;
+    }
+    if (params.missionDistribution !== undefined) {
+      room.mission_distribution = params.missionDistribution;
+    }
+    if (params.maxSkipsPerPlayer !== undefined) {
+      room.max_skips_per_player = params.maxSkipsPerPlayer;
+    }
+    if (params.skipDifficultyRule !== undefined) {
+      room.skip_difficulty_rule = params.skipDifficultyRule;
+    }
     this.saveToDisk();
     return room;
   }
@@ -377,6 +414,11 @@ class GameServerStore {
     hostPlayerId: string;
     missionsPerPlayer?: number;
     hideTasks?: boolean;
+    progressionMode?: ProgressionMode;
+    scoringMode?: ScoringMode;
+    missionDistribution?: MissionDistribution;
+    maxSkipsPerPlayer?: number;
+    skipDifficultyRule?: SkipDifficultyRule;
   }): { game: Game; missionsAssignedCount: number } {
     this.loadFromDisk();
     const { room, members } = this.getRoomByCode(params.roomCode);
@@ -390,6 +432,12 @@ class GameServerStore {
 
     const targetMissions = params.missionsPerPlayer || room.missions_per_player || 3;
     const hideTasks = params.hideTasks !== undefined ? params.hideTasks : (room.hide_tasks ?? true);
+    const progressionMode = params.progressionMode || room.progression_mode || 'free';
+    const scoringMode = params.scoringMode || room.scoring_mode || 'points';
+    const missionDistribution = params.missionDistribution || room.mission_distribution || 'fair';
+    const maxSkips = params.maxSkipsPerPlayer !== undefined ? params.maxSkipsPerPlayer : (room.max_skips_per_player ?? 1);
+    const skipRule = params.skipDifficultyRule || room.skip_difficulty_rule || 'same';
+
     const gameId = 'game_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const durationMs = room.duration_minutes > 0 ? room.duration_minutes * 60 * 1000 : null;
     const endsAt = durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
@@ -410,6 +458,11 @@ class GameServerStore {
         enable_gender_missions: room.enable_gender_missions ?? false,
         include_jeffrey_pack: room.mode === 'jeffrey_island' || Boolean(room.include_jeffrey_pack),
         hide_tasks: hideTasks,
+        progression_mode: progressionMode,
+        scoring_mode: scoringMode,
+        mission_distribution: missionDistribution,
+        max_skips_per_player: maxSkips,
+        skip_difficulty_rule: skipRule,
       },
     };
 
@@ -426,6 +479,11 @@ class GameServerStore {
       missionsPerPlayer: targetMissions,
       enableGenderMissions: room.enable_gender_missions ?? false,
       includeJeffreyPack: room.mode === 'jeffrey_island' || Boolean(room.include_jeffrey_pack),
+      progressionMode: progressionMode,
+      scoringMode: scoringMode,
+      missionDistribution: missionDistribution,
+      maxSkipsPerPlayer: maxSkips,
+      skipDifficultyRule: skipRule,
     });
 
     // Inizializza tabella punteggi
@@ -439,6 +497,7 @@ class GameServerStore {
       completed_count: 0,
       failed_count: 0,
       bonus_points: 0,
+      skips_used: 0,
       awarded_titles: [],
       updated_at: new Date().toISOString(),
     }));
@@ -452,6 +511,116 @@ class GameServerStore {
     this.saveToDisk();
 
     return { game, missionsAssignedCount: assignedMissions.length };
+  }
+
+  public skipMission(params: {
+    gameId: string;
+    playerMissionId: string;
+    playerId: string;
+  }): { playerMission: PlayerMission; skipsRemaining: number } {
+    this.loadFromDisk();
+    const game = this.games.get(params.gameId);
+    if (!game) throw new Error('Partita non trovata.');
+    if (game.status !== 'active') throw new Error('La partita non è più attiva.');
+
+    const maxSkips = game.config.max_skips_per_player !== undefined ? game.config.max_skips_per_player : 1;
+    if (maxSkips <= 0) {
+      throw new Error('I cambi di missione sono disabilitati per questa partita.');
+    }
+
+    const scoresList = this.scores.get(params.gameId) || [];
+    const playerScore = scoresList.find((s) => s.player_id === params.playerId);
+    const skipsUsed = playerScore?.skips_used || 0;
+    if (skipsUsed >= maxSkips) {
+      throw new Error(`Hai esaurito i tuoi cambi missione disponibili (${maxSkips}/${maxSkips} usati).`);
+    }
+
+    const missionsList = this.playerMissions.get(params.gameId) || [];
+    const targetMissionIdx = missionsList.findIndex(
+      (pm) => pm.id === params.playerMissionId && pm.player_id === params.playerId
+    );
+    if (targetMissionIdx === -1) {
+      throw new Error('Missione non trovata per questo giocatore.');
+    }
+
+    const oldPlayerMission = missionsList[targetMissionIdx];
+    if (oldPlayerMission.status !== 'active') {
+      throw new Error('Puoi cambiare solo una missione attiva non ancora completata.');
+    }
+
+    const oldDifficulty = oldPlayerMission.mission?.difficulty || 'media';
+    const rule = game.config.skip_difficulty_rule || 'same';
+
+    // Determina la difficoltà target
+    let targetDifficulty: MissionDifficulty = oldDifficulty;
+    if (rule === 'harder') {
+      if (oldDifficulty === 'facile') targetDifficulty = 'media';
+      else if (oldDifficulty === 'media') targetDifficulty = 'difficile';
+      else if (oldDifficulty === 'difficile') targetDifficulty = 'leggendaria';
+      else targetDifficulty = 'leggendaria';
+    }
+
+    // Identifica tutte le missioni già assegnate a questo giocatore in questa partita
+    const assignedIdsForPlayer = new Set(
+      missionsList.filter((pm) => pm.player_id === params.playerId).map((pm) => pm.mission_id)
+    );
+
+    const isJeffreyMode = game.config.mode === 'jeffrey_island';
+    const includeJeffrey = isJeffreyMode || Boolean(game.config.include_jeffrey_pack);
+
+    // Cerca una nuova missione valida
+    const candidateMissions = MISSIONS_DATABASE.filter((m) => {
+      if (assignedIdsForPlayer.has(m.id)) return false;
+      if (m.category === 'collaborazione') return false; // i cambi non creano coop improvvisi
+
+      if (isJeffreyMode) {
+        if (m.category !== 'jeffrey_island' && !m.compatible_modes.includes('jeffrey_island')) return false;
+      } else {
+        const matchesMode = m.compatible_modes.includes(game.config.mode);
+        const matchesJeffrey = includeJeffrey && (m.category === 'jeffrey_island' || m.compatible_modes.includes('jeffrey_island'));
+        if (!matchesMode && !matchesJeffrey) return false;
+      }
+
+      if (rule === 'same' || rule === 'harder') {
+        return m.difficulty === targetDifficulty;
+      }
+      return true;
+    });
+
+    let selectedMission: Mission;
+    if (candidateMissions.length > 0) {
+      selectedMission = candidateMissions[Math.floor(Math.random() * candidateMissions.length)];
+    } else {
+      const fallbackList = MISSIONS_DATABASE.filter(
+        (m) => !assignedIdsForPlayer.has(m.id) && m.category !== 'collaborazione'
+      );
+      if (fallbackList.length === 0) {
+        throw new Error('Nessuna missione alternativa disponibile nel catalogo.');
+      }
+      selectedMission = fallbackList[Math.floor(Math.random() * fallbackList.length)];
+    }
+
+    // Aggiorna player mission
+    const updatedPlayerMission: PlayerMission = {
+      ...oldPlayerMission,
+      mission_id: selectedMission.id,
+      mission: selectedMission,
+      assigned_at: new Date().toISOString(),
+    };
+    missionsList[targetMissionIdx] = updatedPlayerMission;
+
+    // Aggiorna skips usati
+    if (playerScore) {
+      playerScore.skips_used = skipsUsed + 1;
+      playerScore.updated_at = new Date().toISOString();
+    }
+
+    this.saveToDisk();
+
+    return {
+      playerMission: updatedPlayerMission,
+      skipsRemaining: maxSkips - (skipsUsed + 1),
+    };
   }
 
   public getGame(gameId: string): Game | undefined {
@@ -556,6 +725,10 @@ class GameServerStore {
     );
 
     const awards = this.awards.get(gameId) || [];
+    const maxSkips = game.config.max_skips_per_player !== undefined ? game.config.max_skips_per_player : 1;
+    const myScore = scores.find((s) => s.player_id === requestingPlayerId);
+    const skipsUsed = myScore?.skips_used || 0;
+    const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
 
     return {
       game,
@@ -571,6 +744,7 @@ class GameServerStore {
       myMissions,
       pendingVerifications: myVerifications,
       awards,
+      skipsRemaining,
     };
   }
 

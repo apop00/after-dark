@@ -49,6 +49,8 @@ export default function GameHUDPage({
   const [activeTab, setActiveTab] = useState<'missions' | 'leaderboard' | 'chaos'>('missions');
   const [myPlayerId, setMyPlayerId] = useState('');
   const [timeLeftStr, setTimeLeftStr] = useState<string>('--:--');
+  const [skipsRemaining, setSkipsRemaining] = useState<number>(0);
+  const [isSkippingMissionId, setIsSkippingMissionId] = useState<string | null>(null);
 
   // Modal states
   const [selectedMissionToComplete, setSelectedMissionToComplete] = useState<PlayerMission | null>(null);
@@ -97,6 +99,9 @@ export default function GameHUDPage({
       setScores(data.scores || []);
       setActiveEvents(data.activeEvents || []);
       setPendingVerifications(data.pendingVerifications || []);
+      if (typeof data.skipsRemaining === 'number') {
+        setSkipsRemaining(data.skipsRemaining);
+      }
 
       // Se la partita è terminata, reindirizza alla schermata Podio & Risultati!
       if (data.game?.status === 'completed') {
@@ -220,6 +225,42 @@ export default function GameHUDPage({
     }
   };
 
+  const handleSkipMission = async (pm: PlayerMission) => {
+    if (!confirm('Vuoi davvero cambiare questa missione? Questa azione consumerà 1 dei tuoi cambi disponibili.')) {
+      return;
+    }
+    triggerHaptic('medium');
+    setIsSkippingMissionId(pm.id);
+    try {
+      const res = await fetch('/api/missions/skip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameId,
+          playerMissionId: pm.id,
+          playerId: myPlayerId,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Impossibile cambiare la missione');
+      }
+
+      sounds.playSuccess();
+      triggerHaptic('success');
+      if (typeof data.skipsRemaining === 'number') {
+        setSkipsRemaining(data.skipsRemaining);
+      }
+      await fetchGameState();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Errore nel cambio missione';
+      alert(msg);
+    } finally {
+      setIsSkippingMissionId(null);
+    }
+  };
+
   // Risoluzione verifica testimonianza
   const handleResolveVerification = async (
     verificationId: string,
@@ -314,10 +355,15 @@ export default function GameHUDPage({
       {/* Top Game Bar */}
       <div className="bg-[#100c22] border-b border-white/10 px-4 py-2.5">
         <div className="max-w-md mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">
               {game?.config.mode}
             </span>
+            {game?.config?.progression_mode === 'sequential' && (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" title="Catena di sfide consecutive">
+                Catena 🔗
+              </span>
+            )}
             <div className="flex items-center gap-1 text-xs text-slate-400 font-medium">
               <Clock className="w-3.5 h-3.5 text-rose-400" />
               <span>{timeLeftStr}</span>
@@ -327,10 +373,12 @@ export default function GameHUDPage({
           <div className="flex items-center gap-3">
             <div className="text-right">
               <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold block">
-                I tuoi Punti
+                {game?.config?.scoring_mode === 'mission_count' ? 'Completate' : 'I tuoi Punti'}
               </span>
               <span className="text-sm font-black text-rose-400">
-                {myScore ? myScore.total_points : 0} PT
+                {game?.config?.scoring_mode === 'mission_count'
+                  ? `${myScore ? myScore.completed_count : 0} / ${myMissions.length}`
+                  : `${myScore ? myScore.total_points : 0} PT`}
               </span>
             </div>
 
@@ -389,9 +437,16 @@ export default function GameHUDPage({
                 {game?.config?.hide_tasks === false ? 'Le tue Missioni' : 'Le tue Missioni Segrete'} ({myMissions.filter((m) => m.status === 'completed').length}/
                 {myMissions.length})
               </span>
-              <span className="text-[11px] font-semibold text-rose-300">
-                {game?.config?.hide_tasks === false ? '👁️ Carte Scoperte' : '🛡️ Tieni lo schermo protetto'}
-              </span>
+              <div className="flex items-center gap-2">
+                {skipsRemaining > 0 && (
+                  <span className="text-[11px] font-semibold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                    🔄 {skipsRemaining} {skipsRemaining === 1 ? 'cambio rimasto' : 'cambi rimasti'}
+                  </span>
+                )}
+                <span className="text-[11px] font-semibold text-rose-300">
+                  {game?.config?.hide_tasks === false ? '👁️ Carte Scoperte' : '🛡️ Tieni protetto'}
+                </span>
+              </div>
             </div>
 
             {myMissions.length === 0 ? (
@@ -399,15 +454,31 @@ export default function GameHUDPage({
                 Nessuna missione attiva al momento.
               </div>
             ) : (
-              myMissions.map((pm) => (
-                <MissionCard
-                  key={pm.id}
-                  playerMission={pm}
-                  requireWitness={game?.config?.require_witness ?? false}
-                  hideTasks={game?.config?.hide_tasks ?? true}
-                  onCompleteRequest={handleInitiateComplete}
-                />
-              ))
+              (() => {
+                const isSequential = game?.config?.progression_mode === 'sequential';
+                const firstUncompletedIndex = myMissions.findIndex((m) => m.status !== 'completed');
+                const activeSequentialIndex = firstUncompletedIndex === -1 ? myMissions.length : firstUncompletedIndex;
+
+                return myMissions.map((pm, index) => {
+                  const isLocked = isSequential && index > activeSequentialIndex;
+                  return (
+                    <MissionCard
+                      key={pm.id}
+                      playerMission={pm}
+                      requireWitness={game?.config?.require_witness ?? false}
+                      hideTasks={game?.config?.hide_tasks ?? true}
+                      isLocked={isLocked}
+                      lockedStep={index + 1}
+                      totalSteps={myMissions.length}
+                      scoringMode={game?.config?.scoring_mode ?? 'points'}
+                      skipsRemaining={skipsRemaining}
+                      onCompleteRequest={handleInitiateComplete}
+                      onSkipRequest={handleSkipMission}
+                      isSkipping={isSkippingMissionId === pm.id}
+                    />
+                  );
+                });
+              })()
             )}
           </div>
         )}
@@ -415,14 +486,25 @@ export default function GameHUDPage({
         {activeTab === 'leaderboard' && (
           <div className="space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1 block">
-              Classifica in Tempo Reale
+              {game?.config?.scoring_mode === 'mission_count'
+                ? 'Classifica per Sfide Completate'
+                : 'Classifica in Tempo Reale'}
             </span>
 
             <div className="space-y-2">
               {[...scores]
-                .sort((a, b) => b.total_points - a.total_points)
+                .sort((a, b) => {
+                  if (game?.config?.scoring_mode === 'mission_count') {
+                    if (b.completed_count !== a.completed_count) {
+                      return b.completed_count - a.completed_count;
+                    }
+                    return (a.skips_used ?? 0) - (b.skips_used ?? 0);
+                  }
+                  return b.total_points - a.total_points;
+                })
                 .map((sc, rank) => {
                   const isMe = sc.player_id === myPlayerId;
+                  const isMissionCount = game?.config?.scoring_mode === 'mission_count';
                   return (
                     <div
                       key={sc.id}
@@ -457,13 +539,15 @@ export default function GameHUDPage({
                             )}
                           </p>
                           <span className="text-[11px] text-slate-400">
-                            {sc.completed_count} missioni completate
+                            {isMissionCount
+                              ? `${sc.completed_count} sfide completate${typeof sc.skips_used === 'number' && sc.skips_used > 0 ? ` (${sc.skips_used} cambi)` : ''}`
+                              : `${sc.completed_count} missioni completate`}
                           </span>
                         </div>
                       </div>
 
                       <span className="text-base font-black text-rose-400">
-                        {sc.total_points} PT
+                        {isMissionCount ? `${sc.completed_count} 🎯` : `${sc.total_points} PT`}
                       </span>
                     </div>
                   );

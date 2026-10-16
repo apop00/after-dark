@@ -219,6 +219,11 @@ export default function RoomLobbyPage({
           missionsPerPlayer,
           requireWitness: room.require_witness,
           hideTasks,
+          progressionMode: room.progression_mode,
+          scoringMode: room.scoring_mode,
+          missionDistribution: room.mission_distribution,
+          maxSkipsPerPlayer: room.max_skips_per_player,
+          skipDifficultyRule: room.skip_difficulty_rule,
         }),
       });
 
@@ -423,6 +428,19 @@ export default function RoomLobbyPage({
                     <Shield className="w-3.5 h-3.5 text-amber-400" />
                   )}
                   {!room.require_witness ? 'Auto-conferma' : 'Con Testimone'}
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                  {room.progression_mode === 'sequential' ? '🔗 Catena di Sfide' : '🎴 Missioni Libere'}
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-semibold">
+                  {room.scoring_mode === 'mission_count'
+                    ? (room.mission_distribution === 'fair' ? '⚖️ Fair Mode' : '🎰 Chaos Roulette')
+                    : '🏆 A Punti'}
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">
+                  {room.max_skips_per_player && room.max_skips_per_player > 0
+                    ? `🔄 ${room.max_skips_per_player} ${room.max_skips_per_player === 1 ? 'cambio' : 'cambi'} (${room.skip_difficulty_rule === 'harder' ? 'più difficile' : room.skip_difficulty_rule === 'random' ? 'casuale' : 'stesso liv'})`
+                    : '🚫 Nessun cambio'}
                 </span>
               </div>
             </div>
