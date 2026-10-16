@@ -39,13 +39,15 @@ const CATEGORY_ICONS: Record<string, string> = {
 export function MissionCard({
   playerMission,
   requireWitness = false,
+  hideTasks = true,
   onCompleteRequest,
 }: {
   playerMission: PlayerMission;
   requireWitness?: boolean;
+  hideTasks?: boolean;
   onCompleteRequest: (mission: PlayerMission) => void;
 }) {
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(!hideTasks);
   const mission = playerMission.mission;
 
   if (!mission) return null;
@@ -118,14 +120,23 @@ export function MissionCard({
         {/* Title */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <h3 className="text-lg font-bold text-white tracking-tight">
-            {mission.title}
+            {isRevealed || isCompleted || !hideTasks ? (
+              <span>{mission.title}</span>
+            ) : (
+              <span className="flex items-center gap-2 text-slate-400 font-mono tracking-widest text-sm">
+                <span>🔒 ••••••••••••••••</span>
+                <span className="text-[9px] text-rose-400 font-bold uppercase tracking-wider font-sans bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                  Coperta
+                </span>
+              </span>
+            )}
           </h3>
 
           {!isCompleted && !isPending && (
             <button
               onClick={toggleReveal}
               type="button"
-              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5 text-rose-400" />}
               <span>{isRevealed ? 'Nascondi' : 'Rivela'}</span>
@@ -134,7 +145,7 @@ export function MissionCard({
         </div>
 
         {/* Confidential Mission Content Shield */}
-        {isRevealed || isCompleted ? (
+        {isRevealed || isCompleted || !hideTasks ? (
           <div className="space-y-3">
             <p className="text-sm text-slate-200 leading-relaxed bg-black/40 p-3.5 rounded-2xl border border-white/5">
               {mission.description}
@@ -161,7 +172,7 @@ export function MissionCard({
               Missione Segreta Protetta
             </p>
             <p className="text-xs text-slate-400 mt-1">
-              Tocca per scoprire l&apos;obiettivo (non farti sbirciare!)
+              Tocca per scoprire titolo e obiettivo (non farti sbirciare!)
             </p>
           </div>
         )}

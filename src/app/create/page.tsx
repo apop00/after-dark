@@ -19,6 +19,8 @@ import {
   Globe,
   Lock,
   Timer,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { ModeGraphic } from '@/components/ModeGraphics';
@@ -91,6 +93,7 @@ export default function CreateRoomPage() {
   const [enableGenderMissions, setEnableGenderMissions] = useState<boolean>(false);
   const [includeJeffreyPack, setIncludeJeffreyPack] = useState<boolean>(false);
   const [isPublic, setIsPublic] = useState<boolean>(true);
+  const [hideTasks, setHideTasks] = useState<boolean>(true);
   const [difficulties, setDifficulties] = useState<MissionDifficulty[]>([
     'facile',
     'media',
@@ -148,6 +151,7 @@ export default function CreateRoomPage() {
           enableGenderMissions,
           includeJeffreyPack: selectedMode === 'jeffrey_island' || includeJeffreyPack,
           isPublic,
+          hideTasks,
           hostPlayerId: session.playerId,
           hostNickname: session.nickname,
           hostAvatar: session.avatarSeed,
@@ -474,6 +478,46 @@ export default function CreateRoomPage() {
                   Un compagno deve approvare sul suo schermo.
                 </p>
               </button>
+            </div>
+          </div>
+
+          {/* Nascondi Task (Modalità Privacy) Toggle */}
+          <div
+            onClick={() => {
+              triggerHaptic('light');
+              setHideTasks(!hideTasks);
+            }}
+            className="cursor-pointer p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between transition-colors hover:bg-white/[0.06]"
+          >
+            <div className="pr-3">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs text-white">Nascondi Task (Modalità Privacy)</span>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    hideTasks
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                      : 'bg-white/10 text-slate-400 border-white/10'
+                  }`}
+                >
+                  {hideTasks ? '🛡️ Coperte' : '👁️ Scoperte'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                {hideTasks
+                  ? 'Le task partono coperte per proteggersi da occhi indiscreti (tocca per rivelare).'
+                  : 'Le task sono subito visibili a schermo senza dover toccare "Rivela".'}
+              </p>
+            </div>
+            <div
+              className={`w-11 h-6 rounded-full transition-colors relative p-1 shrink-0 ${
+                hideTasks ? 'bg-rose-600' : 'bg-white/10'
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                  hideTasks ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
             </div>
           </div>
 

@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
       hostGender,
       missionsPerPlayer,
       isPublic,
+      hideTasks,
     } = body;
 
     if (!mode || !hostPlayerId) {
@@ -45,6 +46,7 @@ export async function POST(req: NextRequest) {
       enableGenderMissions: Boolean(enableGenderMissions),
       includeJeffreyPack: mode === 'jeffrey_island' || Boolean(includeJeffreyPack),
       isPublic: isPublic !== undefined ? Boolean(isPublic) : true,
+      hideTasks: hideTasks !== undefined ? Boolean(hideTasks) : true,
       hostPlayerId,
       hostNickname: hostNickname || 'Host',
       hostAvatar: hostAvatar || 'shadow',

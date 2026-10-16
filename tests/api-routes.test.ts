@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST as createRoom } from '../src/app/api/rooms/create/route';
 import { POST as joinRoom } from '../src/app/api/rooms/join/route';
-import { GET as getRoom } from '../src/app/api/rooms/[code]/route';
+import { GET as getRoom, PATCH as updateRoom } from '../src/app/api/rooms/[code]/route';
 import { POST as startGame } from '../src/app/api/games/start/route';
 import { GET as getGameState } from '../src/app/api/games/[id]/state/route';
 import { POST as completeMission } from '../src/app/api/missions/complete/route';
@@ -205,5 +205,74 @@ describe('AFTER DARK — API Route Endpoints End-to-End Tests', () => {
       expect(pm.mission.title).toBeTruthy();
       expect(pm.mission.category).toBe('jeffrey_island');
     });
+  });
+
+  it('Impostazioni di gioco: l\'Host seleziona e modifica la visibilità delle task (nascondi task) nella lobby prima della partita', async () => {
+    // 1. Crea stanza (di base hideTasks = true)
+    const createReq = new NextRequest('http://localhost:3000/api/rooms/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        groupName: 'Lobby Test Privacy',
+        mode: 'house_party',
+        minPlayers: 2,
+        maxPlayers: 6,
+        durationMinutes: 30,
+        missionsPerPlayer: 3,
+        allowedDifficulties: ['facile', 'media'],
+        allowCoop: false,
+        hostPlayerId: 'host_privacy_user',
+        hostNickname: 'Host Privacy',
+        hostAvatar: 'ghost',
+        hideTasks: true,
+      }),
+    });
+    const createRes = await createRoom(createReq);
+    expect(createRes.status).toBe(200);
+    const roomData = await createRes.json();
+    const roomCode = roomData.room.code;
+    expect(roomData.room.hide_tasks).toBe(true);
+
+    // 2. Nella lobby prima della partita, l'Host cambia impostazione in "Carte Scoperte" (hideTasks = false)
+    const updateReq = new NextRequest(`http://localhost:3000/api/rooms/${roomCode}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        hostPlayerId: 'host_privacy_user',
+        hideTasks: false,
+        missionsPerPlayer: 2,
+      }),
+    });
+    const updateRes = await updateRoom(updateReq, { params: Promise.resolve({ code: roomCode }) });
+    expect(updateRes.status).toBe(200);
+    const updatedData = await updateRes.json();
+    expect(updatedData.room.hide_tasks).toBe(false);
+    expect(updatedData.room.missions_per_player).toBe(2);
+
+    // 3. Un ospite si unisce
+    const joinReq = new NextRequest('http://localhost:3000/api/rooms/join', {
+      method: 'POST',
+      body: JSON.stringify({
+        code: roomCode,
+        playerId: 'guest_privacy_player',
+        nickname: 'Guest Player',
+        avatarSeed: 'viper',
+      }),
+    });
+    await joinRoom(joinReq);
+
+    // 4. L'host avvia la partita e la configurazione di gioco eredita hide_tasks = false
+    const startReq = new NextRequest('http://localhost:3000/api/games/start', {
+      method: 'POST',
+      body: JSON.stringify({
+        roomCode,
+        hostPlayerId: 'host_privacy_user',
+        missionsPerPlayer: 2,
+        hideTasks: false,
+      }),
+    });
+    const startRes = await startGame(startReq);
+    expect(startRes.status).toBe(200);
+    const startData = await startRes.json();
+    expect(startData.game.config.hide_tasks).toBe(false);
+    expect(startData.game.config.missions_per_player).toBe(2);
   });
 });

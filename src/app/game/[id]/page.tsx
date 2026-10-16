@@ -386,11 +386,11 @@ export default function GameHUDPage({
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Le tue Missioni Segrete ({myMissions.filter((m) => m.status === 'completed').length}/
+                {game?.config?.hide_tasks === false ? 'Le tue Missioni' : 'Le tue Missioni Segrete'} ({myMissions.filter((m) => m.status === 'completed').length}/
                 {myMissions.length})
               </span>
-              <span className="text-[11px] text-slate-500">
-                Non mostrare lo schermo!
+              <span className="text-[11px] font-semibold text-rose-300">
+                {game?.config?.hide_tasks === false ? '👁️ Carte Scoperte' : '🛡️ Tieni lo schermo protetto'}
               </span>
             </div>
 
@@ -404,6 +404,7 @@ export default function GameHUDPage({
                   key={pm.id}
                   playerMission={pm}
                   requireWitness={game?.config?.require_witness ?? false}
+                  hideTasks={game?.config?.hide_tasks ?? true}
                   onCompleteRequest={handleInitiateComplete}
                 />
               ))

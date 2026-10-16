@@ -38,6 +38,7 @@ interface RoomMeta {
   missionsPerPlayer?: number;
   requireWitness?: boolean;
   isPublic?: boolean;
+  hideTasks?: boolean;
 }
 
 const META_PREFIX = '⟦AD_CFG:';
@@ -125,6 +126,9 @@ class SupabaseStore {
     }
 
     const isJeffrey = params.mode === 'jeffrey_island' || Boolean(params.includeJeffreyPack);
+    const hideTasks = (params as { hideTasks?: boolean }).hideTasks !== undefined
+      ? Boolean((params as { hideTasks?: boolean }).hideTasks)
+      : true;
     const encodedGroupName = encodeRoomMeta(params.groupName.trim() || 'I Guerrieri della Notte', {
       mode: params.mode,
       includeJeffreyPack: isJeffrey,
@@ -132,6 +136,7 @@ class SupabaseStore {
       missionsPerPlayer: params.missionsPerPlayer || 3,
       requireWitness: Boolean(params.requireWitness),
       isPublic: params.isPublic !== undefined ? Boolean(params.isPublic) : true,
+      hideTasks,
     });
 
     // Se la modalità è jeffrey_island, salva 'house_party' su DB per non violare rooms_mode_check su Supabase
@@ -187,6 +192,7 @@ class SupabaseStore {
     createdRoom.enable_gender_missions = params.enableGenderMissions ?? false;
     createdRoom.include_jeffrey_pack = isJeffrey;
     createdRoom.is_public = params.isPublic ?? true;
+    createdRoom.hide_tasks = hideTasks;
 
     // Inserisci host come primo membro
     const memberPayload = {
@@ -251,6 +257,8 @@ class SupabaseStore {
     if (meta.missionsPerPlayer !== undefined) row.missions_per_player = meta.missionsPerPlayer;
     if (meta.requireWitness !== undefined) row.require_witness = meta.requireWitness;
     if (meta.isPublic !== undefined) row.is_public = meta.isPublic;
+    if (meta.hideTasks !== undefined) row.hide_tasks = meta.hideTasks;
+    else row.hide_tasks = true;
 
     const room: Room = row;
 
@@ -489,10 +497,46 @@ class SupabaseStore {
   // ==========================================
   // GAME LIFECYCLE
   // ==========================================
+  async updateRoomSettings(params: {
+    code: string;
+    hostPlayerId: string;
+    missionsPerPlayer?: number;
+    hideTasks?: boolean;
+  }): Promise<Room> {
+    const cleanCode = params.code.trim().toUpperCase();
+    const res = await fetch(
+      this.getUrl(`rooms?code=eq.${cleanCode}&limit=1`),
+      { headers: this.getHeaders(), cache: 'no-store' }
+    );
+    if (!res.ok) throw new Error('Stanza non trovata.');
+    const rows = await res.json();
+    if (!rows || rows.length === 0) throw new Error('Stanza non trovata.');
+    const row = rows[0];
+    const hostUuid = ensureUuid(params.hostPlayerId);
+    if (row.host_id !== hostUuid && row.host_id !== params.hostPlayerId) {
+      throw new Error("Solo l'Host può modificare le impostazioni della stanza.");
+    }
+
+    const { cleanName, meta } = decodeRoomMeta(row.group_name);
+    if (params.missionsPerPlayer !== undefined) meta.missionsPerPlayer = params.missionsPerPlayer;
+    if (params.hideTasks !== undefined) meta.hideTasks = params.hideTasks;
+
+    const newGroupName = encodeRoomMeta(cleanName, meta);
+    await fetch(this.getUrl(`rooms?id=eq.${row.id}`), {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ group_name: newGroupName }),
+    });
+
+    const { room } = await this.getRoomByCode(cleanCode);
+    return room!;
+  }
+
   async startGame(params: {
     roomCode: string;
     hostPlayerId: string;
     missionsPerPlayer?: number;
+    hideTasks?: boolean;
   }): Promise<{ game: Game; missionsAssignedCount: number }> {
     const cleanCode = params.roomCode.trim().toUpperCase();
     const { room, members } = await this.getRoomByCode(cleanCode);
@@ -517,6 +561,7 @@ class SupabaseStore {
 
     const missionsPerPlayer =
       Number(params.missionsPerPlayer) || room.missions_per_player || 3;
+    const hideTasks = params.hideTasks !== undefined ? params.hideTasks : (room.hide_tasks ?? true);
 
     // Crea record Game
     const gamePayload = {
@@ -533,6 +578,7 @@ class SupabaseStore {
         missions_per_player: missionsPerPlayer,
         enable_gender_missions: room.enable_gender_missions ?? false,
         include_jeffrey_pack: room.include_jeffrey_pack ?? false,
+        hide_tasks: hideTasks,
       },
     };
 
@@ -604,6 +650,7 @@ class SupabaseStore {
         ...(game.config || {}),
         mode: room.mode,
         include_jeffrey_pack: isJeffrey,
+        hide_tasks: hideTasks,
         real_mission_ids: realMissionIds,
       };
       await fetch(this.getUrl(`games?id=eq.${game.id}`), {

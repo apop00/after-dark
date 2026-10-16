@@ -57,6 +57,7 @@ export interface Room {
   enable_gender_missions?: boolean;
   include_jeffrey_pack?: boolean;
   is_public?: boolean; // Se true, compare nell'elenco delle lobby pubbliche aperte
+  hide_tasks?: boolean; // Se true (default), le task partono coperte con tocca per rivelare; se false, sono palesi / scoperte
   host_id: string; // player_id of creator
   status: RoomStatus;
   created_at: string;
@@ -93,6 +94,7 @@ export interface Game {
     missions_per_player: number;
     enable_gender_missions?: boolean;
     include_jeffrey_pack?: boolean;
+    hide_tasks?: boolean;
     real_mission_ids?: Record<string, string>;
   };
 }

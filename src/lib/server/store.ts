@@ -131,6 +131,7 @@ class GameServerStore {
     enableGenderMissions?: boolean;
     includeJeffreyPack?: boolean;
     isPublic?: boolean;
+    hideTasks?: boolean;
     hostPlayerId: string;
     hostNickname: string;
     hostAvatar: string;
@@ -159,6 +160,7 @@ class GameServerStore {
       enable_gender_missions: params.enableGenderMissions ?? false,
       include_jeffrey_pack: params.mode === 'jeffrey_island' || Boolean(params.includeJeffreyPack),
       is_public: params.isPublic ?? true,
+      hide_tasks: params.hideTasks !== undefined ? Boolean(params.hideTasks) : true,
       host_id: params.hostPlayerId,
       status: 'lobby',
       created_at: new Date().toISOString(),
@@ -345,6 +347,28 @@ class GameServerStore {
     return { room, member: newMember };
   }
 
+  public updateRoomSettings(params: {
+    code: string;
+    hostPlayerId: string;
+    missionsPerPlayer?: number;
+    hideTasks?: boolean;
+  }): Room {
+    this.loadFromDisk();
+    const room = this.rooms.get(params.code.toUpperCase());
+    if (!room) throw new Error('Stanza non trovata.');
+    if (room.host_id !== params.hostPlayerId) {
+      throw new Error('Solo l\'Host può modificare le impostazioni della stanza.');
+    }
+    if (params.missionsPerPlayer !== undefined) {
+      room.missions_per_player = params.missionsPerPlayer;
+    }
+    if (params.hideTasks !== undefined) {
+      room.hide_tasks = params.hideTasks;
+    }
+    this.saveToDisk();
+    return room;
+  }
+
   // ==========================================
   // GAME LIFECYCLE
   // ==========================================
@@ -352,6 +376,7 @@ class GameServerStore {
     roomCode: string;
     hostPlayerId: string;
     missionsPerPlayer?: number;
+    hideTasks?: boolean;
   }): { game: Game; missionsAssignedCount: number } {
     this.loadFromDisk();
     const { room, members } = this.getRoomByCode(params.roomCode);
@@ -364,6 +389,7 @@ class GameServerStore {
     }
 
     const targetMissions = params.missionsPerPlayer || room.missions_per_player || 3;
+    const hideTasks = params.hideTasks !== undefined ? params.hideTasks : (room.hide_tasks ?? true);
     const gameId = 'game_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const durationMs = room.duration_minutes > 0 ? room.duration_minutes * 60 * 1000 : null;
     const endsAt = durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
@@ -383,6 +409,7 @@ class GameServerStore {
         missions_per_player: targetMissions,
         enable_gender_missions: room.enable_gender_missions ?? false,
         include_jeffrey_pack: room.mode === 'jeffrey_island' || Boolean(room.include_jeffrey_pack),
+        hide_tasks: hideTasks,
       },
     };
 

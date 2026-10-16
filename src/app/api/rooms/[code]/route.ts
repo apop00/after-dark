@@ -36,3 +36,35 @@ export async function GET(
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ code: string }> }
+) {
+  try {
+    const { code } = await context.params;
+    const body = await req.json();
+    const { hostPlayerId, missionsPerPlayer, hideTasks } = body;
+
+    if (!hostPlayerId) {
+      return NextResponse.json({ error: 'hostPlayerId obbligatorio' }, { status: 400 });
+    }
+
+    const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
+    const params = {
+      code,
+      hostPlayerId,
+      missionsPerPlayer: missionsPerPlayer !== undefined ? Number(missionsPerPlayer) : undefined,
+      hideTasks: hideTasks !== undefined ? Boolean(hideTasks) : undefined,
+    };
+
+    const updatedRoom = isProdDb
+      ? await supabaseStore.updateRoomSettings(params)
+      : serverStore.updateRoomSettings(params);
+
+    return NextResponse.json({ success: true, room: updatedRoom });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Errore nell\'aggiornamento';
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+}

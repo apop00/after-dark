@@ -22,6 +22,8 @@ import {
   Timer,
   Globe,
   Plus,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { QrCodeModal } from '@/components/QrCodeModal';
@@ -62,6 +64,7 @@ export default function RoomLobbyPage({
   const [joinGender, setJoinGender] = useState<PlayerGender>('neutro');
   const [isJoiningDirect, setIsJoiningDirect] = useState(false);
   const [missionsPerPlayer, setMissionsPerPlayer] = useState<number>(3);
+  const [hideTasks, setHideTasks] = useState<boolean>(true);
   const [isExpired, setIsExpired] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState<number>(300);
 
@@ -83,6 +86,9 @@ export default function RoomLobbyPage({
       setMembers(data.members || []);
       if (data.room?.missions_per_player) {
         setMissionsPerPlayer((prev) => (prev !== 3 ? prev : data.room.missions_per_player));
+      }
+      if (data.room?.hide_tasks !== undefined) {
+        setHideTasks(data.room.hide_tasks);
       }
 
       if (data.room?.status === 'lobby' && data.room.created_at) {
@@ -174,6 +180,29 @@ export default function RoomLobbyPage({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleUpdateSettings = async (newHideTasks?: boolean, newTasksCount?: number) => {
+    const updatedHide = newHideTasks !== undefined ? newHideTasks : hideTasks;
+    const updatedTasks = newTasksCount !== undefined ? newTasksCount : missionsPerPlayer;
+    if (newHideTasks !== undefined) setHideTasks(newHideTasks);
+    if (newTasksCount !== undefined) setMissionsPerPlayer(newTasksCount);
+    triggerHaptic('light');
+    sounds.playClick();
+
+    try {
+      await fetch(`/api/rooms/${roomCode}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          hostPlayerId: myPlayerId,
+          hideTasks: updatedHide,
+          missionsPerPlayer: updatedTasks,
+        }),
+      });
+    } catch {
+      // Non-critical, local state already updated and will be passed on start
+    }
+  };
+
   const handleStartGame = async () => {
     if (!room || isStarting) return;
     setErrorMsg('');
@@ -189,6 +218,7 @@ export default function RoomLobbyPage({
           hostPlayerId: myPlayerId,
           missionsPerPlayer,
           requireWitness: room.require_witness,
+          hideTasks,
         }),
       });
 
@@ -368,6 +398,20 @@ export default function RoomLobbyPage({
                 </span>
                 <span
                   className={`text-xs flex items-center gap-1 font-semibold px-2 py-0.5 rounded-full border ${
+                    hideTasks
+                      ? 'text-rose-300 bg-rose-500/10 border-rose-500/20'
+                      : 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20'
+                  }`}
+                >
+                  {hideTasks ? (
+                    <EyeOff className="w-3.5 h-3.5 text-rose-400" />
+                  ) : (
+                    <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                  )}
+                  {hideTasks ? 'Task Coperte 🛡️' : 'Carte Scoperte 👁️'}
+                </span>
+                <span
+                  className={`text-xs flex items-center gap-1 font-semibold px-2 py-0.5 rounded-full border ${
                     !room.require_witness
                       ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20'
                       : 'text-amber-300 bg-amber-500/10 border-amber-500/20'
@@ -524,10 +568,7 @@ export default function RoomLobbyPage({
                   <button
                     key={item.val}
                     type="button"
-                    onClick={() => {
-                      triggerHaptic('light');
-                      setMissionsPerPlayer(item.val);
-                    }}
+                    onClick={() => handleUpdateSettings(undefined, item.val)}
                     className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-rose-500/30 border-rose-500 text-white shadow-lg shadow-rose-950/40 ring-2 ring-rose-400/50 scale-[1.03]'
@@ -542,6 +583,59 @@ export default function RoomLobbyPage({
                 );
               })}
             </div>
+
+            {/* Hide Tasks / Privacy Selector for Host */}
+            <div className="pt-3 border-t border-white/10 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                    {hideTasks ? <EyeOff className="w-4 h-4 text-indigo-400" /> : <Eye className="w-4 h-4 text-cyan-400" />}
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-white block">Visibilità delle Task</span>
+                    <span className="text-[10px] text-slate-400">Come compaiono le missioni sui telefoni</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleUpdateSettings(true, undefined)}
+                  className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                    hideTasks
+                      ? 'bg-rose-500/25 border-rose-500 text-white shadow-md ring-2 ring-rose-400/50 scale-[1.01]'
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 font-black text-xs text-white">
+                    <EyeOff className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                    <span>Nascondi Task 🛡️</span>
+                  </div>
+                  <p className="text-[9px] text-slate-300 mt-1 leading-snug">
+                    Consigliato: coperte con &ldquo;tocca per rivelare&rdquo; (anti-sbirciata).
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleUpdateSettings(false, undefined)}
+                  className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                    !hideTasks
+                      ? 'bg-cyan-500/25 border-cyan-500 text-white shadow-md ring-2 ring-cyan-400/50 scale-[1.01]'
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 font-black text-xs text-white">
+                    <Eye className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <span>Carte Scoperte 👁️</span>
+                  </div>
+                  <p className="text-[9px] text-slate-300 mt-1 leading-snug">
+                    Visibili subito a schermo senza dover toccare &ldquo;Rivela&rdquo;.
+                  </p>
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -549,11 +643,20 @@ export default function RoomLobbyPage({
           <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between text-xs">
             <span className="text-slate-400 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-rose-400" />
-              <span>Missioni a testa previste:</span>
+              <span>Regole impostate dall&apos;Host:</span>
             </span>
-            <span className="font-bold text-white bg-rose-500/15 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-500/20">
-              {missionsPerPlayer} {missionsPerPlayer === 1 ? 'missione' : 'missioni'}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-white bg-rose-500/15 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-500/20">
+                {missionsPerPlayer} {missionsPerPlayer === 1 ? 'task' : 'task'}
+              </span>
+              <span className={`font-bold px-2 py-0.5 rounded-full border text-[11px] ${
+                hideTasks
+                  ? 'bg-rose-500/15 text-rose-300 border-rose-500/20'
+                  : 'bg-cyan-500/15 text-cyan-300 border-cyan-500/20'
+              }`}>
+                {hideTasks ? '🛡️ Coperte' : '👁️ Scoperte'}
+              </span>
+            </div>
           </div>
         )}
 
