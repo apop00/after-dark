@@ -29,6 +29,10 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
         'jeffrey_island',
       ]).toContain(m.category);
     });
+
+    const allIds = MISSIONS_DATABASE.map((m) => m.id);
+    const uniqueIds = new Set(allIds);
+    expect(uniqueIds.size).toBe(allIds.length);
   });
 
   it('2. Creazione stanza e ingresso partecipanti con codice', () => {
@@ -432,6 +436,14 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
     expect(coopMission).toBeDefined();
     expect(coopMission?.coop_partner_nickname).toBeTruthy();
     expect(coopMission?.coop_partner_id).toBeTruthy();
+    // Verifica che NESSUN giocatore della partita abbia la stessa missione duplicata
+    ['p1', 'p2', 'p3', 'p4', 'p5'].forEach((pid) => {
+      const state = serverStore.getGameState(game.id, pid);
+      expect(state.myMissions.length).toBe(3);
+      const missionIds = state.myMissions.map((m) => m.mission_id);
+      const uniqueMissionIds = new Set(missionIds);
+      expect(uniqueMissionIds.size).toBe(missionIds.length);
+    });
   });
 
   it('12. Modalità auto-conferma (require_witness: false) permette completamento immediato', () => {
@@ -599,6 +611,47 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
     const p2State = serverStore.getGameState(game2.id, 'p_mate1');
     expect(p1State.myMissions.length).toBe(4);
     expect(p2State.myMissions.length).toBe(4);
+  });
+
+  it('15. RIGOROSA DEDUPLICAZIONE: nessun giocatore riceve mai la stessa missione due volte (test massivo multi-config)', () => {
+    const modes: Array<'bar' | 'house_party' | 'discoteca' | 'outdoor' | 'jeffrey_island'> = [
+      'bar',
+      'house_party',
+      'discoteca',
+      'outdoor',
+      'jeffrey_island',
+    ];
+
+    // Esegui test ripetuti su diverse modalità, dimensioni di gruppo e impostazioni coop
+    for (const mode of modes) {
+      for (const playerCount of [2, 3, 4, 6]) {
+        for (const allowCoop of [true, false]) {
+          const players = Array.from({ length: playerCount }, (_, idx) => ({
+            playerId: `dedup_p_${mode}_${playerCount}_${allowCoop}_${idx}`,
+            nickname: `Giocatore ${idx}`,
+            gender: (idx % 2 === 0 ? 'uomo' : 'donna') as 'uomo' | 'donna',
+          }));
+
+          const missions = assignMissionsToPlayers(`game_${mode}_${playerCount}_${allowCoop}`, players, {
+            mode,
+            allowedDifficulties: ['facile', 'media', 'difficile', 'leggendaria'],
+            allowCoop,
+            missionsPerPlayer: 4,
+            enableGenderMissions: true,
+            includeJeffreyPack: mode === 'jeffrey_island',
+          });
+
+          // Per ogni singolo giocatore, verifica che NON ci siano duplicati di mission_id
+          for (const player of players) {
+            const playerMissions = missions.filter((m) => m.player_id === player.playerId);
+            const missionIds = playerMissions.map((m) => m.mission_id);
+            const uniqueSet = new Set(missionIds);
+
+            expect(uniqueSet.size).toBe(missionIds.length);
+          }
+        }
+      }
+    }
   });
 });
 

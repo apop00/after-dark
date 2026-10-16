@@ -84,7 +84,16 @@ export default function GameHUDPage({
       }
 
       setGame(data.game);
-      setMyMissions(data.myMissions || []);
+      // Deduplicazione difensiva sul frontend: nessuna missione duplicata per lo stesso giocatore
+      const rawMissions: PlayerMission[] = data.myMissions || [];
+      const seenMissionIds = new Set<string>();
+      const uniqueMissions = rawMissions.filter((pm) => {
+        if (!pm.mission_id) return true;
+        if (seenMissionIds.has(pm.mission_id)) return false;
+        seenMissionIds.add(pm.mission_id);
+        return true;
+      });
+      setMyMissions(uniqueMissions);
       setScores(data.scores || []);
       setActiveEvents(data.activeEvents || []);
       setPendingVerifications(data.pendingVerifications || []);

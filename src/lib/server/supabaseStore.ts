@@ -617,7 +617,7 @@ class SupabaseStore {
       catalogList.map((m) => [m.id, m])
     );
 
-    // 5. Fetch Player Missions: SOLO quelle assegnate al richiedente o dove è coop_partner!
+    // 5. Fetch Player Missions: SOLO quelle assegnate al richiedente o dove è coop_partner (con rigorosa deduplicazione per mission_id)
     const pmRes = await fetch(
       this.getUrl(
         `player_missions?game_id=eq.${gameId}&or=(player_id.eq.${playerUuid},coop_partner_id.eq.${playerUuid})`
@@ -625,18 +625,40 @@ class SupabaseStore {
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const rawMissions: PlayerMission[] = pmRes.ok ? await pmRes.json() : [];
-    const myMissions = rawMissions.map((pm) => {
-      let coopPartnerNickname: string | null = null;
-      if (pm.coop_partner_id) {
-        const partner = scores.find((s) => s.player_id === pm.coop_partner_id);
-        coopPartnerNickname = partner?.nickname || 'Compagno di Squadra';
+    const seenMissionIds = new Set<string>();
+    const myMissions: PlayerMission[] = [];
+
+    // Priorità ai record diretti del giocatore
+    const directMissions = rawMissions.filter((pm) => pm.player_id === playerUuid);
+    for (const pm of directMissions) {
+      if (!seenMissionIds.has(pm.mission_id)) {
+        seenMissionIds.add(pm.mission_id);
+        let coopPartnerNickname: string | null = null;
+        if (pm.coop_partner_id) {
+          const partner = scores.find((s) => s.player_id === pm.coop_partner_id);
+          coopPartnerNickname = partner?.nickname || 'Compagno di Squadra';
+        }
+        myMissions.push({
+          ...pm,
+          coop_partner_nickname: coopPartnerNickname,
+          mission: catalogMap.get(pm.mission_id) || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id),
+        });
       }
-      return {
-        ...pm,
-        coop_partner_nickname: coopPartnerNickname,
-        mission: catalogMap.get(pm.mission_id) || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id),
-      };
-    });
+    }
+
+    // Fallback per record in cui è solo coop_partner e la missione non è ancora presente
+    const partnerMissions = rawMissions.filter((pm) => pm.coop_partner_id === playerUuid);
+    for (const pm of partnerMissions) {
+      if (!seenMissionIds.has(pm.mission_id)) {
+        seenMissionIds.add(pm.mission_id);
+        const partner = scores.find((s) => s.player_id === pm.player_id);
+        myMissions.push({
+          ...pm,
+          coop_partner_nickname: partner?.nickname || 'Compagno di Squadra',
+          mission: catalogMap.get(pm.mission_id) || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id),
+        });
+      }
+    }
 
     // 6. Fetch Pending Verifications in cui il giocatore è coinvolto
     const verRes = await fetch(

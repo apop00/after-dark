@@ -364,7 +364,7 @@ class GameServerStore {
     }
 
     const targetMissions = params.missionsPerPlayer || room.missions_per_player || 3;
-    const gameId = 'game_' + Date.now();
+    const gameId = 'game_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const durationMs = room.duration_minutes > 0 ? room.duration_minutes * 60 * 1000 : null;
     const endsAt = durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
 
@@ -488,19 +488,37 @@ class GameServerStore {
       }
     }
 
-    // PRIVACY POLICY: Filtra per dare SOLO le missioni del giocatore chiamante o dove è coop_partner!
-    const myMissions = allMissions
-      .filter((pm) => pm.player_id === requestingPlayerId || pm.coop_partner_id === requestingPlayerId)
-      .map((pm) => {
-        if (!pm.coop_partner_nickname && pm.coop_partner_id) {
-          const partnerScore = scores.find((s) => s.player_id === pm.coop_partner_id);
-          return {
-            ...pm,
-            coop_partner_nickname: partnerScore?.nickname || 'Compagno di Squadra',
-          };
+    // PRIVACY POLICY & DEDUPLICAZIONE: Filtra per dare SOLO le missioni del giocatore chiamante
+    // Nessuna missione può essere ripetuta più volte per lo stesso giocatore nella stessa partita
+    const seenMissionIds = new Set<string>();
+    const myMissions: PlayerMission[] = [];
+
+    // 1. Priorità assoluta alle missioni assegnate direttamente al giocatore
+    const directMissions = allMissions.filter((pm) => pm.player_id === requestingPlayerId);
+    for (const pm of directMissions) {
+      if (!seenMissionIds.has(pm.mission_id)) {
+        seenMissionIds.add(pm.mission_id);
+        const enriched = { ...pm };
+        if (!enriched.coop_partner_nickname && enriched.coop_partner_id) {
+          const partnerScore = scores.find((s) => s.player_id === enriched.coop_partner_id);
+          enriched.coop_partner_nickname = partnerScore?.nickname || 'Compagno di Squadra';
         }
-        return pm;
-      });
+        myMissions.push(enriched);
+      }
+    }
+
+    // 2. Fallback per eventuali record di squadra dove è registrato solo come coop_partner (se non già presente)
+    const partnerMissions = allMissions.filter((pm) => pm.coop_partner_id === requestingPlayerId);
+    for (const pm of partnerMissions) {
+      if (!seenMissionIds.has(pm.mission_id)) {
+        seenMissionIds.add(pm.mission_id);
+        const partnerScore = scores.find((s) => s.player_id === pm.player_id);
+        myMissions.push({
+          ...pm,
+          coop_partner_nickname: partnerScore?.nickname || 'Compagno di Squadra',
+        });
+      }
+    }
 
     // Richieste di verifica in cui il giocatore è coinvolto (come richiedente o testimone)
     const allVerifications = this.verifications.get(gameId) || [];

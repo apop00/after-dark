@@ -119,14 +119,16 @@ export function assignMissionsToPlayers(
 
   const assignedPlayerMissions: PlayerMission[] = [];
   const usedMissionIds = new Set<string>();
+  const assignedMissionIdsByPlayer = new Map<string, Set<string>>();
 
   const coopMissions = eligibleMissions.filter((m) => m.category === 'collaborazione');
   const individualMissions = eligibleMissions.filter((m) => m.category !== 'collaborazione');
 
-  // Mappa conteggio missioni assegnate per giocatore
+  // Mappa conteggio missioni assegnate e set ID per giocatore
   const playerAssignedCounts: Record<string, number> = {};
   players.forEach((p) => {
     playerAssignedCounts[p.playerId] = 0;
+    assignedMissionIdsByPlayer.set(p.playerId, new Set<string>());
   });
 
   // Se coop è abilitata e ci sono almeno 2 giocatori e missioni coop disponibili:
@@ -144,8 +146,9 @@ export function assignMissionsToPlayers(
         const partnerNicknames = partners.map((p) => p.nickname).join(' & ');
         const primaryPartnerId = partners[0]?.playerId || null;
 
+        const randomSuffix = Math.random().toString(36).substring(2, 7);
         assignedPlayerMissions.push({
-          id: `pm_${Date.now()}_${member.playerId.slice(0, 4)}_${playerAssignedCounts[member.playerId]}`,
+          id: `pm_${Date.now()}_${member.playerId.slice(0, 4)}_${playerAssignedCounts[member.playerId]}_${randomSuffix}`,
           game_id: gameId,
           player_id: member.playerId,
           mission_id: teamMission.id,
@@ -158,6 +161,7 @@ export function assignMissionsToPlayers(
           mission: teamMission,
         });
 
+        assignedMissionIdsByPlayer.get(member.playerId)?.add(teamMission.id);
         playerAssignedCounts[member.playerId]++;
       });
     });
@@ -185,6 +189,8 @@ export function assignMissionsToPlayers(
     .sort(() => Math.random() - 0.5);
 
   players.forEach((player, playerIdx) => {
+    const playerAssignedSet = assignedMissionIdsByPlayer.get(player.playerId) || new Set<string>();
+
     // Filtra la pool personalizzata per il genere del giocatore se opportuno
     const playerSpecificPool = basePool.filter((m) =>
       isMissionCompatibleWithPlayer(m, player.gender)
@@ -194,22 +200,28 @@ export function assignMissionsToPlayers(
         ? playerSpecificPool
         : basePool.filter((m) => !m.gender_target || m.gender_target === 'neutro');
 
+    // Mescola e ordina preferendo missioni non ancora usate nella stanza per massimizzare la varietà
+    const shuffledPool = [...poolToUse].sort(() => Math.random() - 0.5);
+    const sortedPool = [...shuffledPool].sort((a, b) => {
+      const aUsed = usedMissionIds.has(a.id) ? 1 : 0;
+      const bUsed = usedMissionIds.has(b.id) ? 1 : 0;
+      return aUsed - bUsed;
+    });
+
     let poolIdx = 0;
     while (
       playerAssignedCounts[player.playerId] < missionsPerPlayer &&
-      poolIdx < poolToUse.length * 3
+      poolIdx < sortedPool.length
     ) {
-      const mission = poolToUse[poolIdx % poolToUse.length];
+      const mission = sortedPool[poolIdx];
       poolIdx++;
 
-      // Non duplicare missioni per lo stesso giocatore
-      const alreadyHas = assignedPlayerMissions.some(
-        (pm) => pm.player_id === player.playerId && pm.mission_id === mission.id
-      );
-      if (alreadyHas) continue;
+      // REGOLA FERREA: MAI duplicare la stessa missione per lo stesso giocatore
+      if (playerAssignedSet.has(mission.id)) continue;
 
+      const randomSuffix = Math.random().toString(36).substring(2, 7);
       assignedPlayerMissions.push({
-        id: `pm_${Date.now()}_${playerIdx}_${playerAssignedCounts[player.playerId]}`,
+        id: `pm_${Date.now()}_${playerIdx}_${playerAssignedCounts[player.playerId]}_${randomSuffix}`,
         game_id: gameId,
         player_id: player.playerId,
         mission_id: mission.id,
@@ -220,6 +232,8 @@ export function assignMissionsToPlayers(
         mission: mission,
       });
 
+      playerAssignedSet.add(mission.id);
+      usedMissionIds.add(mission.id);
       playerAssignedCounts[player.playerId]++;
     }
   });
