@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Smartphone, Monitor, Wifi, BatteryCharging, Sparkles } from 'lucide-react';
+import { BottomNav } from '@/components/BottomNav';
 
 export function SmartphoneFrame({ children }: { children: React.ReactNode }) {
   const [currentTime, setCurrentTime] = useState('23:45');
@@ -62,10 +63,10 @@ export function SmartphoneFrame({ children }: { children: React.ReactNode }) {
 
       {/* Main Container: Smartphone Chassis on Desktop, Full Screen on Mobile */}
       <div
-        className={`w-full transition-all duration-300 relative ${
+        className={`w-full max-w-md min-h-screen bg-[#07050f] flex flex-col relative transition-all duration-300 ${
           isFrameEnabled
-            ? 'md:max-w-[410px] md:h-[840px] md:rounded-[52px] md:border-[10px] md:border-[#1e1533] md:shadow-[0_25px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(244,63,94,0.25)] md:overflow-hidden md:flex md:flex-col md:bg-[#07050f]'
-            : 'max-w-md w-full min-h-screen bg-[#07050f]'
+            ? 'md:max-w-[410px] md:h-[840px] md:min-h-0 md:rounded-[52px] md:border-[10px] md:border-[#1e1533] md:shadow-[0_25px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(244,63,94,0.25)] md:overflow-hidden'
+            : ''
         }`}
       >
         {/* Smartphone Hardware Elements (Only visible in frame mode on desktop) */}
@@ -94,6 +95,9 @@ export function SmartphoneFrame({ children }: { children: React.ReactNode }) {
         <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col relative">
           {children}
         </div>
+
+        {/* Persistent Bottom Navigation Bar */}
+        <BottomNav isFrameMode={isFrameEnabled} />
 
         {/* Smartphone Home Indicator Bar (Desktop Chassis) */}
         {isFrameEnabled && (

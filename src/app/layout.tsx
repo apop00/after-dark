@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SmartphoneFrame } from "@/components/SmartphoneFrame";
-import { BottomNav } from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   title: "AFTER DARK — Party Game Sociale",
@@ -32,7 +31,6 @@ export default function RootLayout({
       <body className="min-h-full font-sans bg-[#040208] text-slate-100 overflow-x-hidden">
         <SmartphoneFrame>
           {children}
-          <BottomNav />
         </SmartphoneFrame>
       </body>
     </html>

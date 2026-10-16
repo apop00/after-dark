@@ -131,52 +131,49 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#05020a] text-slate-100 selection:bg-rose-500 selection:text-white">
+    <div className="flex-1 flex flex-col bg-[#05020a] text-slate-100 selection:bg-rose-500 selection:text-white pb-20 md:pb-6">
       {/* Navbar with isHome={true} to avoid title repetitions */}
       <Navbar isHome={true} />
 
-      <main className="flex-1 max-w-md w-full mx-auto px-4 py-4 flex flex-col justify-between space-y-4">
+      <main className="flex-1 max-w-md w-full mx-auto px-4 py-2.5 flex flex-col space-y-3">
         
         {/* HERO SECTION: PULITO, COMPATTO E SENZA TITOLI RIPETUTI */}
-        <div className="text-center pt-1 pb-0.5 space-y-2">
-          {/* Glowing Brand Title */}
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white neon-title uppercase">
-              AFTER DARK
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xs mx-auto mt-1 font-medium leading-snug">
-              Il party game sociale dal vivo con missioni segrete, bluff e caos tra amici.
-            </p>
-          </div>
+        <div className="text-center pt-0.5 pb-0.5 space-y-1">
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white neon-title uppercase">
+            AFTER DARK
+          </h1>
+          <p className="text-[11px] sm:text-xs text-slate-300 max-w-xs mx-auto font-medium leading-tight">
+            Il party game sociale con missioni segrete, bluff e caos tra amici.
+          </p>
         </div>
 
         {/* PROFILO UTENTE RIDEFINITO: DIMENSIONI BILANCIATE, PIÙ IMPOSTAZIONI */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <div
             onClick={() => {
               triggerHaptic('light');
               setIsProfileOpen(true);
             }}
-            className="card-party rounded-2xl p-3 relative overflow-hidden cursor-pointer hover:border-rose-500/50 transition-all active:scale-[0.99] group shadow-xl"
+            className="card-party rounded-2xl p-2.5 relative overflow-hidden cursor-pointer hover:border-rose-500/50 transition-all active:scale-[0.99] group shadow-lg"
           >
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-2.5">
               {/* Left: Avatar + Identity Info */}
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-2.5 min-w-0">
                 <div className="relative shrink-0">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-white/10 to-white/5 border border-rose-500/50 flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-white/10 to-white/5 border border-rose-500/40 flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition-transform">
                     {getAvatarEmoji(avatarSeed)}
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-black animate-pulse" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-black animate-pulse" />
                 </div>
 
                 <div className="min-w-0">
-                  <div className="text-[10px] uppercase tracking-wider text-rose-400 font-extrabold flex items-center gap-1.5 leading-none mb-1">
+                  <div className="text-[9px] uppercase tracking-wider text-rose-400 font-extrabold flex items-center gap-1.5 leading-none mb-0.5">
                     <span>Il Tuo Profilo</span>
                     <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-white/10 text-slate-300 border border-white/10">
                       {getGenderEmoji(gender)} {getGenderLabel(gender)}
                     </span>
                   </div>
-                  <div className="font-black text-white text-base tracking-wide truncate">
+                  <div className="font-black text-white text-sm sm:text-base tracking-wide truncate">
                     {nickname}
                   </div>
                 </div>
@@ -190,7 +187,7 @@ export default function HomePage() {
                   triggerHaptic('light');
                   setIsProfileOpen(true);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-xs text-rose-300 font-extrabold flex items-center gap-1.5 transition-all active:scale-95 shrink-0 cursor-pointer shadow-sm"
+                className="px-2.5 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-[11px] text-rose-300 font-extrabold flex items-center gap-1.5 transition-all active:scale-95 shrink-0 cursor-pointer shadow-sm"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5" />
                 <span className="hidden xs:inline">Opzioni</span>
@@ -199,7 +196,7 @@ export default function HomePage() {
 
             {/* Toast feedback when saved */}
             {showSavedToast && (
-              <div className="mt-2.5 p-2 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 animate-in fade-in">
+              <div className="mt-2 p-1.5 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 animate-in fade-in">
                 <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                 <span>Profilo e impostazioni salvate!</span>
               </div>
@@ -208,27 +205,27 @@ export default function HomePage() {
         </div>
 
         {/* PRIMARY ACTION BUTTONS: ERGONOMIC & HIGH-IMPACT */}
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           <Link
             href="/create"
             onClick={() => {
               triggerHaptic('medium');
               sounds.playClick();
             }}
-            className="w-full py-3.5 sm:py-4 px-6 rounded-2xl btn-game-rose text-white font-black text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-2.5 cursor-pointer shadow-xl active:scale-98 transition-all"
+            className="w-full py-3 sm:py-3.5 px-5 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer shadow-xl active:scale-98 transition-all"
           >
             <PlusCircle className="w-5 h-5 filter drop-shadow" />
             <span>Crea Partita</span>
           </Link>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2">
             <Link
               href="/join"
               onClick={() => {
                 triggerHaptic('light');
                 sounds.playClick();
               }}
-              className="py-3 px-3 rounded-2xl btn-game-dark text-slate-100 font-black text-xs tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all border border-white/10 hover:border-rose-500/30"
+              className="py-2.5 px-3 rounded-2xl btn-game-dark text-slate-100 font-black text-xs tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all border border-white/10 hover:border-rose-500/30"
             >
               <Users className="w-4 h-4 text-rose-400" />
               <span>Lobby & Codice</span>
@@ -241,7 +238,7 @@ export default function HomePage() {
                 setIsScannerOpen(true);
               }}
               type="button"
-              className="py-3 px-3 rounded-2xl btn-game-dark text-slate-100 font-black text-xs tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all border border-white/10 hover:border-rose-500/30"
+              className="py-2.5 px-3 rounded-2xl btn-game-dark text-slate-100 font-black text-xs tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95 transition-all border border-white/10 hover:border-rose-500/30"
             >
               <Camera className="w-4 h-4 text-emerald-400" />
               <span>Scanner QR</span>
@@ -250,12 +247,12 @@ export default function HomePage() {
         </div>
 
         {/* GAME MODES SHOWCASE: 6 TILES CON ANTEPRIMA DETTAGLIATA */}
-        <div className="space-y-2 pt-1">
+        <div className="space-y-1.5 pt-0.5">
           <div className="flex items-center justify-between px-1 text-xs">
-            <span className="font-black uppercase tracking-wider text-slate-400 text-[11px]">
+            <span className="font-black uppercase tracking-wider text-slate-400 text-[10px]">
               6 Modalità di Gioco
             </span>
-            <span className="text-[11px] text-fuchsia-400 font-bold flex items-center gap-1">
+            <span className="text-[10px] text-fuchsia-400 font-bold flex items-center gap-1">
               <span>160+ Missioni</span>
               <span>🔥</span>
             </span>
@@ -271,15 +268,15 @@ export default function HomePage() {
                   sounds.playClick();
                   setSelectedModeDetail(m);
                 }}
-                className={`card-party p-2.5 rounded-2xl flex flex-col items-center justify-center text-center transition-all hover:scale-105 active:scale-95 cursor-pointer border ${m.borderClass}`}
+                className={`card-party p-2 rounded-2xl flex flex-col items-center justify-center text-center transition-all hover:scale-105 active:scale-95 cursor-pointer border ${m.borderClass}`}
               >
-                <div className="w-9 h-9 flex items-center justify-center mb-1">
-                  <ModeGraphic mode={m.mode} className="w-8 h-8" />
+                <div className="w-8 h-8 flex items-center justify-center mb-0.5">
+                  <ModeGraphic mode={m.mode} className="w-7 h-7" />
                 </div>
-                <span className="text-[10px] font-black text-slate-200 tracking-wide uppercase truncate w-full">
+                <span className="text-[9px] font-black text-slate-200 tracking-wide uppercase truncate w-full">
                   {m.name}
                 </span>
-                <span className="text-[8px] font-bold text-slate-400 truncate w-full mt-0.5">
+                <span className="text-[8px] font-bold text-slate-400 truncate w-full">
                   {m.vibe}
                 </span>
               </button>
@@ -288,13 +285,13 @@ export default function HomePage() {
         </div>
 
         {/* FOOTER: REGOLE E GUIDA ETICA */}
-        <div className="text-center pt-2 pb-1 border-t border-white/10">
+        <div className="text-center pt-1 pb-1 border-t border-white/10">
           <Link
             href="/rules"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition-colors py-1 px-3 rounded-full hover:bg-white/5"
+            className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-400 hover:text-white transition-colors py-1 px-3 rounded-full hover:bg-white/5"
           >
             <BookOpen className="w-3.5 h-3.5 text-rose-400" />
-            <span>Regole, Codice Etico & Guida di Gioco</span>
+            <span>Regole, Codice Etico & Guida</span>
           </Link>
         </div>
 

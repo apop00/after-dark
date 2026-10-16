@@ -7,7 +7,7 @@ import { Navbar } from '@/components/Navbar';
 
 export default function RulesPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-12">
+    <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-24">
       <Navbar showRules={false} />
 
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-6 space-y-6">

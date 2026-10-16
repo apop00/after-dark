@@ -550,7 +550,7 @@ function JoinContent() {
 
 export default function JoinPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-10">
+    <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-24">
       <Navbar />
       <Suspense fallback={<div className="p-8 text-center text-xs text-slate-400">Caricamento...</div>}>
         <JoinContent />

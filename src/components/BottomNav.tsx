@@ -7,7 +7,11 @@ import { Home, PlusCircle, LogIn, BookOpen } from 'lucide-react';
 import { triggerHaptic } from '@/lib/haptics/vibration';
 import { sounds } from '@/lib/audio/sound';
 
-export function BottomNav() {
+interface BottomNavProps {
+  isFrameMode?: boolean;
+}
+
+export function BottomNav({ isFrameMode = false }: BottomNavProps) {
   const pathname = usePathname();
 
   // Non mostrare la bottom nav durante il gioco attivo (ha già la sua HUD dock)
@@ -22,8 +26,12 @@ export function BottomNav() {
     { href: '/rules', label: 'Regole', icon: <BookOpen className="w-5 h-5" /> },
   ];
 
+  const containerClasses = isFrameMode
+    ? 'fixed md:relative bottom-0 inset-x-0 md:bottom-auto md:inset-auto z-40 w-full max-w-md mx-auto bg-[#090514]/95 backdrop-blur-xl border-t border-white/10 px-3 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-1.5 shadow-[0_-10px_25px_rgba(0,0,0,0.7)] shrink-0'
+    : 'fixed bottom-0 inset-x-0 z-40 w-full max-w-md mx-auto bg-[#090514]/95 backdrop-blur-xl border-t border-white/10 px-3 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-10px_25px_rgba(0,0,0,0.7)] shrink-0';
+
   return (
-    <nav className="sticky bottom-0 inset-x-0 z-40 bg-[#0c0818]/90 backdrop-blur-xl border-t border-white/10 px-3 py-2 mt-auto">
+    <nav className={containerClasses}>
       <div className="grid grid-cols-4 gap-1 max-w-sm mx-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href;

@@ -361,7 +361,7 @@ export default function RoomLobbyPage({
   const canStart = members.length >= room.min_players;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-12">
+    <div className="min-h-screen flex flex-col bg-[#07050f] text-slate-100 pb-24">
       <Navbar />
 
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-4 space-y-5">
