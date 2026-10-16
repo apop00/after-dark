@@ -19,10 +19,21 @@ const AVATAR_SEEDS = [
   'phoenix',
 ];
 
+function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 export function getOrCreatePlayerSession(initialNickname?: string): PlayerSession {
   if (typeof window === 'undefined') {
     return {
-      playerId: 'server_dummy_id',
+      playerId: '00000000-0000-0000-0000-000000000000',
       nickname: initialNickname || 'Ospite',
       avatarSeed: 'shadow',
     };
@@ -32,8 +43,21 @@ export function getOrCreatePlayerSession(initialNickname?: string): PlayerSessio
   if (existing) {
     try {
       const parsed: PlayerSession = JSON.parse(existing);
+      let changed = false;
+
+      // Migrate legacy non-UUID IDs (e.g. usr_...)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!parsed.playerId || !uuidRegex.test(parsed.playerId)) {
+        parsed.playerId = generateUUID();
+        changed = true;
+      }
+
       if (initialNickname && initialNickname !== parsed.nickname) {
         parsed.nickname = initialNickname;
+        changed = true;
+      }
+
+      if (changed) {
         localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(parsed));
       }
       return parsed;
@@ -42,8 +66,8 @@ export function getOrCreatePlayerSession(initialNickname?: string): PlayerSessio
     }
   }
 
-  // Generate new anonymous identity
-  const newPlayerId = 'usr_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+  // Generate new anonymous UUID identity
+  const newPlayerId = generateUUID();
   const randomAvatar = AVATAR_SEEDS[Math.floor(Math.random() * AVATAR_SEEDS.length)];
   const session: PlayerSession = {
     playerId: newPlayerId,

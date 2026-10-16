@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { serverStore } from '@/lib/server/store';
+import { isServerSupabaseConfigured } from '@/lib/supabase/server';
+import { supabaseStore } from '@/lib/server/supabaseStore';
 
 export async function GET(
   req: NextRequest,
@@ -7,13 +9,19 @@ export async function GET(
 ) {
   try {
     const { code } = await context.params;
-    const { room, members } = serverStore.getRoomByCode(code);
+    const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
+
+    const { room, members } = isProdDb
+      ? await supabaseStore.getRoomByCode(code)
+      : serverStore.getRoomByCode(code);
 
     if (!room) {
       return NextResponse.json({ error: 'Stanza non trovata' }, { status: 404 });
     }
 
-    const game = serverStore.getGameByRoomId(room.id);
+    const game = isProdDb
+      ? await supabaseStore.getGameByRoomId(room.id)
+      : serverStore.getGameByRoomId(room.id);
 
     return NextResponse.json({
       success: true,

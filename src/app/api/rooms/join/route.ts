@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { serverStore } from '@/lib/server/store';
+import { isServerSupabaseConfigured } from '@/lib/supabase/server';
+import { supabaseStore } from '@/lib/server/supabaseStore';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,12 +15,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { room, member } = serverStore.joinRoom({
+    const payload = {
       code,
       playerId,
       nickname,
       avatarSeed: avatarSeed || 'ghost',
-    });
+    };
+
+    const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
+    const { room, member } = isProdDb
+      ? await supabaseStore.joinRoom(payload)
+      : serverStore.joinRoom(payload);
 
     return NextResponse.json({ success: true, room, member });
   } catch (error: unknown) {

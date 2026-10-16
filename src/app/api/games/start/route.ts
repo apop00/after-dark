@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { serverStore } from '@/lib/server/store';
+import { isServerSupabaseConfigured } from '@/lib/supabase/server';
+import { supabaseStore } from '@/lib/server/supabaseStore';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,10 +15,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { game, missionsAssignedCount } = serverStore.startGame({
-      roomCode,
-      hostPlayerId,
-    });
+    const payload = { roomCode, hostPlayerId };
+    const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
+    const { game, missionsAssignedCount } = isProdDb
+      ? await supabaseStore.startGame(payload)
+      : serverStore.startGame(payload);
 
     return NextResponse.json({
       success: true,
