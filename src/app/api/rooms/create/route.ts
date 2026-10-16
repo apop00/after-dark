@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       allowCoop: Boolean(allowCoop),
       requireWitness: Boolean(requireWitness),
       enableGenderMissions: Boolean(enableGenderMissions),
-      includeJeffreyPack: Boolean(includeJeffreyPack),
+      includeJeffreyPack: mode === 'jeffrey_island' || Boolean(includeJeffreyPack),
       isPublic: isPublic !== undefined ? Boolean(isPublic) : true,
       hostPlayerId,
       hostNickname: hostNickname || 'Host',

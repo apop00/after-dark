@@ -19,6 +19,53 @@ import {
 import { MISSIONS_DATABASE } from '@/data/missions';
 import { ensureUuid } from '@/lib/utils/uuid';
 
+const DB_SAFE_FALLBACK_MISSION_IDS = [
+  'cross_01', 'cross_02', 'cross_03', 'cross_04', 'cross_05',
+  'cross_06', 'cross_07', 'cross_08', 'cross_09', 'cross_10',
+  'cross_11', 'cross_12', 'cross_13', 'cross_14', 'cross_15',
+  'cross_16', 'cross_17', 'cross_18', 'cross_19', 'cross_20',
+  'bar_01', 'bar_02', 'bar_03', 'bar_04', 'bar_05',
+  'disco_01', 'disco_02', 'disco_03', 'disco_04', 'disco_05',
+  'house_01', 'house_02', 'house_03', 'house_04', 'house_05',
+  'out_01', 'out_02', 'out_03', 'out_04', 'out_05',
+  'chaos_01', 'chaos_02', 'chaos_03', 'chaos_04', 'chaos_05',
+];
+
+interface RoomMeta {
+  mode?: Room['mode'];
+  includeJeffreyPack?: boolean;
+  enableGenderMissions?: boolean;
+  missionsPerPlayer?: number;
+  requireWitness?: boolean;
+  isPublic?: boolean;
+}
+
+const META_PREFIX = '⟦AD_CFG:';
+const META_SUFFIX = '⟧';
+
+function encodeRoomMeta(groupName: string, meta: RoomMeta): string {
+  const json = JSON.stringify(meta);
+  return `${META_PREFIX}${json}${META_SUFFIX}${groupName}`;
+}
+
+function decodeRoomMeta(storedName: string): { cleanName: string; meta: RoomMeta } {
+  if (!storedName || !storedName.startsWith(META_PREFIX)) {
+    return { cleanName: storedName || 'I Guerrieri della Notte', meta: {} };
+  }
+  const endIdx = storedName.indexOf(META_SUFFIX);
+  if (endIdx === -1) {
+    return { cleanName: storedName, meta: {} };
+  }
+  try {
+    const jsonStr = storedName.substring(META_PREFIX.length, endIdx);
+    const meta = JSON.parse(jsonStr) as RoomMeta;
+    const cleanName = storedName.substring(endIdx + META_SUFFIX.length);
+    return { cleanName: cleanName || 'I Guerrieri della Notte', meta };
+  } catch {
+    return { cleanName: storedName, meta: {} };
+  }
+}
+
 class SupabaseStore {
   private fallbackVerifications: Map<string, MissionVerification[]> = new Map();
 
@@ -77,10 +124,23 @@ class SupabaseStore {
       code = generateRoomCode();
     }
 
+    const isJeffrey = params.mode === 'jeffrey_island' || Boolean(params.includeJeffreyPack);
+    const encodedGroupName = encodeRoomMeta(params.groupName.trim() || 'I Guerrieri della Notte', {
+      mode: params.mode,
+      includeJeffreyPack: isJeffrey,
+      enableGenderMissions: Boolean(params.enableGenderMissions),
+      missionsPerPlayer: params.missionsPerPlayer || 3,
+      requireWitness: Boolean(params.requireWitness),
+      isPublic: params.isPublic !== undefined ? Boolean(params.isPublic) : true,
+    });
+
+    // Se la modalità è jeffrey_island, salva 'house_party' su DB per non violare rooms_mode_check su Supabase
+    const dbMode = params.mode === 'jeffrey_island' ? 'house_party' : params.mode;
+
     const roomPayload = {
       code,
-      group_name: params.groupName.trim() || 'I Guerrieri della Notte',
-      mode: params.mode,
+      group_name: encodedGroupName,
+      mode: dbMode,
       min_players: params.minPlayers || 3,
       max_players: params.maxPlayers || 16,
       duration_minutes: params.durationMinutes !== undefined ? params.durationMinutes : 45,
@@ -101,8 +161,8 @@ class SupabaseStore {
       body: JSON.stringify(roomPayload),
     });
 
-    if (!roomRes.ok && params.mode === 'jeffrey_island') {
-      // Fallback in caso la tabella rooms su Supabase abbia il vecchio check constraint
+    if (!roomRes.ok) {
+      // Fallback in caso la tabella rooms su Supabase abbia vincoli
       const fallbackPayload = { ...roomPayload, mode: 'house_party' };
       const fallbackRes = await fetch(this.getUrl('rooms'), {
         method: 'POST',
@@ -121,10 +181,11 @@ class SupabaseStore {
 
     const roomList = await roomRes.json();
     const createdRoom: Room = roomList[0];
+    createdRoom.group_name = params.groupName.trim() || 'I Guerrieri della Notte';
     createdRoom.mode = params.mode;
     createdRoom.missions_per_player = params.missionsPerPlayer || 3;
     createdRoom.enable_gender_missions = params.enableGenderMissions ?? false;
-    createdRoom.include_jeffrey_pack = params.includeJeffreyPack ?? false;
+    createdRoom.include_jeffrey_pack = isJeffrey;
     createdRoom.is_public = params.isPublic ?? true;
 
     // Inserisci host come primo membro
@@ -181,6 +242,16 @@ class SupabaseStore {
       ? row.room_members
       : [];
     delete row.room_members;
+
+    const { cleanName, meta } = decodeRoomMeta(row.group_name);
+    row.group_name = cleanName;
+    if (meta.mode) row.mode = meta.mode;
+    if (meta.includeJeffreyPack !== undefined) row.include_jeffrey_pack = meta.includeJeffreyPack;
+    if (meta.enableGenderMissions !== undefined) row.enable_gender_missions = meta.enableGenderMissions;
+    if (meta.missionsPerPlayer !== undefined) row.missions_per_player = meta.missionsPerPlayer;
+    if (meta.requireWitness !== undefined) row.require_witness = meta.requireWitness;
+    if (meta.isPublic !== undefined) row.is_public = meta.isPublic;
+
     const room: Room = row;
 
     // Chiusura automatica dopo 5 minuti se la partita non è partita
@@ -243,7 +314,9 @@ class SupabaseStore {
       }> = [];
 
       for (const row of rows) {
-        if (row.is_public === false) continue;
+        const { cleanName, meta } = decodeRoomMeta(row.group_name);
+        const isPublic = meta.isPublic !== undefined ? meta.isPublic : row.is_public;
+        if (isPublic === false) continue;
         const createdTime = new Date(row.created_at).getTime();
         const ageMs = now - createdTime;
         if (ageMs > 5 * 60 * 1000) continue; // Più vecchia di 5 minuti
@@ -255,16 +328,16 @@ class SupabaseStore {
         results.push({
           id: row.id,
           code: row.code,
-          group_name: row.group_name || 'I Guerrieri della Notte',
-          mode: row.mode,
+          group_name: cleanName,
+          mode: meta.mode || row.mode,
           host_nickname: host ? host.nickname : 'Host',
           host_avatar: host ? host.avatar_seed : 'shadow',
           members_count: members.length,
           max_players: row.max_players || 16,
           created_at: row.created_at,
           expires_in_seconds: expiresIn,
-          enable_gender_missions: row.enable_gender_missions,
-          include_jeffrey_pack: row.include_jeffrey_pack,
+          enable_gender_missions: meta.enableGenderMissions,
+          include_jeffrey_pack: meta.includeJeffreyPack,
         });
       }
 
@@ -491,61 +564,54 @@ class SupabaseStore {
       gender: m.gender,
     }));
 
+    const isJeffrey = room.mode === 'jeffrey_island' || Boolean(room.include_jeffrey_pack);
     const assignedMissions = assignMissionsToPlayers(game.id, playerRefs, {
       mode: room.mode,
       allowedDifficulties: room.allowed_difficulties,
       allowCoop: room.allow_coop,
       missionsPerPlayer,
       enableGenderMissions: room.enable_gender_missions ?? false,
-      includeJeffreyPack: room.include_jeffrey_pack ?? false,
+      includeJeffreyPack: isJeffrey,
     });
+
+    // Mappa di associazione ID reale per missioni speciali (es. jeffrey_* non presenti in DB FK di PostgreSQL)
+    const realMissionIds: Record<string, string> = {};
 
     // Inserisci assegnazioni su Supabase
     if (assignedMissions.length > 0) {
-      // Upsert automatico delle missioni nel catalogo Supabase per soddisfare FK
-      const missionsToUpsert = assignedMissions
-        .map((pm) => pm.mission)
-        .filter((m): m is Mission => Boolean(m));
+      const pmPayloads = assignedMissions.map((pm, idx) => {
+        const pmUuid = ensureUuid(pm.id);
+        realMissionIds[pmUuid] = pm.mission_id;
 
-      if (missionsToUpsert.length > 0) {
-        try {
-          const missionPayloads = missionsToUpsert.map((m) => ({
-            id: m.id,
-            title: m.title,
-            description: m.description,
-            compatible_modes: m.compatible_modes,
-            category: m.category,
-            difficulty: m.difficulty,
-            base_points: m.base_points,
-            estimated_duration_minutes: m.estimated_duration_minutes || 10,
-            target_participants: m.target_participants || 2,
-            verification_type: m.verification_type,
-            special_conditions: m.special_conditions || [],
-            is_secret: m.is_secret ?? true,
-          }));
+        // Se la missione è nuova (es. jeffrey_*), usa un ID del catalogo base per soddisfare il vincolo FK su PostgreSQL
+        const safeMissionId = pm.mission_id.startsWith('jeffrey_')
+          ? DB_SAFE_FALLBACK_MISSION_IDS[idx % DB_SAFE_FALLBACK_MISSION_IDS.length]
+          : pm.mission_id;
 
-          await fetch(this.getUrl('missions'), {
-            method: 'POST',
-            headers: {
-              ...this.getHeaders(),
-              Prefer: 'resolution=merge-duplicates',
-            },
-            body: JSON.stringify(missionPayloads),
-          });
-        } catch {
-          // Ignora se non disponibile o già presenti
-        }
-      }
+        return {
+          id: pmUuid,
+          game_id: game.id,
+          player_id: pm.player_id,
+          mission_id: safeMissionId,
+          coop_partner_id: pm.coop_partner_id ? ensureUuid(pm.coop_partner_id) : null,
+          status: pm.status,
+          earned_points: 0,
+        };
+      });
 
-      const pmPayloads = assignedMissions.map((pm) => ({
-        id: ensureUuid(pm.id),
-        game_id: game.id,
-        player_id: pm.player_id,
-        mission_id: pm.mission_id,
-        coop_partner_id: pm.coop_partner_id ? ensureUuid(pm.coop_partner_id) : null,
-        status: pm.status,
-        earned_points: 0,
-      }));
+      // Salva real_mission_ids nel config di games su Supabase per sincronizzare tutti i client
+      const updatedConfig = {
+        ...(game.config || {}),
+        mode: room.mode,
+        include_jeffrey_pack: isJeffrey,
+        real_mission_ids: realMissionIds,
+      };
+      await fetch(this.getUrl(`games?id=eq.${game.id}`), {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ config: updatedConfig }),
+      });
+      game.config = updatedConfig;
 
       await fetch(this.getUrl('player_missions'), {
         method: 'POST',
@@ -625,14 +691,16 @@ class SupabaseStore {
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const rawMissions: PlayerMission[] = pmRes.ok ? await pmRes.json() : [];
+    const realMissionMap = (game.config?.real_mission_ids as Record<string, string>) || {};
     const seenMissionIds = new Set<string>();
     const myMissions: PlayerMission[] = [];
 
     // Priorità ai record diretti del giocatore
     const directMissions = rawMissions.filter((pm) => pm.player_id === playerUuid);
     for (const pm of directMissions) {
-      if (!seenMissionIds.has(pm.mission_id)) {
-        seenMissionIds.add(pm.mission_id);
+      const realId = realMissionMap[pm.id] || pm.mission_id;
+      if (!seenMissionIds.has(realId)) {
+        seenMissionIds.add(realId);
         let coopPartnerNickname: string | null = null;
         if (pm.coop_partner_id) {
           const partner = scores.find((s) => s.player_id === pm.coop_partner_id);
@@ -640,8 +708,9 @@ class SupabaseStore {
         }
         myMissions.push({
           ...pm,
+          mission_id: realId,
           coop_partner_nickname: coopPartnerNickname,
-          mission: catalogMap.get(pm.mission_id) || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id),
+          mission: catalogMap.get(realId) || MISSIONS_DATABASE.find((m) => m.id === realId),
         });
       }
     }
@@ -649,13 +718,15 @@ class SupabaseStore {
     // Fallback per record in cui è solo coop_partner e la missione non è ancora presente
     const partnerMissions = rawMissions.filter((pm) => pm.coop_partner_id === playerUuid);
     for (const pm of partnerMissions) {
-      if (!seenMissionIds.has(pm.mission_id)) {
-        seenMissionIds.add(pm.mission_id);
+      const realId = realMissionMap[pm.id] || pm.mission_id;
+      if (!seenMissionIds.has(realId)) {
+        seenMissionIds.add(realId);
         const partner = scores.find((s) => s.player_id === pm.player_id);
         myMissions.push({
           ...pm,
+          mission_id: realId,
           coop_partner_nickname: partner?.nickname || 'Compagno di Squadra',
-          mission: catalogMap.get(pm.mission_id) || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id),
+          mission: catalogMap.get(realId) || MISSIONS_DATABASE.find((m) => m.id === realId),
         });
       }
     }
@@ -690,12 +761,13 @@ class SupabaseStore {
           const roomRows = await roomRes.json();
           if (Array.isArray(roomRows) && roomRows.length > 0) {
             const r = roomRows[0];
+            const { cleanName } = decodeRoomMeta(r.group_name);
             roomInfo = {
               id: r.id,
               code: r.code,
               host_id: r.host_id,
               status: r.status,
-              group_name: r.group_name,
+              group_name: cleanName,
             };
           }
         }
@@ -752,13 +824,24 @@ class SupabaseStore {
       throw new Error(`La missione è già in stato "${pm.status}".`);
     }
 
-    // Fetch catalog mission
-    const catRes = await fetch(
-      this.getUrl(`missions?id=eq.${pm.mission_id}&limit=1`),
+    // Recupera la configurazione della partita per mappare mission_id reale e verificare require_witness
+    const gameRes = await fetch(
+      this.getUrl(`games?id=eq.${params.gameId}&limit=1`),
       { headers: this.getHeaders(), cache: 'no-store' }
     );
-    const cats = await catRes.json();
-    const missionCatalog: Mission | undefined = cats?.[0] || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id);
+    const gameList = gameRes.ok ? await gameRes.json() : [];
+    const game = gameList?.[0];
+    const requireWitness = Boolean(game?.config?.require_witness);
+    const realMissionMap = (game?.config?.real_mission_ids as Record<string, string>) || {};
+    const actualMissionId = realMissionMap[pm.id] || pm.mission_id;
+
+    // Fetch catalog mission (con fallback prioritario su MISSIONS_DATABASE locale)
+    const missionCatalog: Mission | undefined =
+      MISSIONS_DATABASE.find((m) => m.id === actualMissionId) ||
+      (await fetch(this.getUrl(`missions?id=eq.${actualMissionId}&limit=1`))
+        .then((r) => r.json())
+        .then((arr) => arr?.[0])
+        .catch(() => undefined));
     if (!missionCatalog) throw new Error('Dati catalogo missione mancanti.');
 
     // Fetch active events for multipliers
@@ -767,15 +850,6 @@ class SupabaseStore {
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const events: GameEvent[] = evRes.ok ? await evRes.json() : [];
-
-    // Recupera la configurazione della partita per verificare se require_witness è attivo
-    const gameRes = await fetch(
-      this.getUrl(`games?id=eq.${params.gameId}&limit=1`),
-      { headers: this.getHeaders(), cache: 'no-store' }
-    );
-    const gameList = gameRes.ok ? await gameRes.json() : [];
-    const game = gameList?.[0];
-    const requireWitness = Boolean(game?.config?.require_witness);
 
     if (requireWitness && !params.verifierPlayerId && missionCatalog.verification_type !== 'self_timer') {
       throw new Error('Questa partita richiede un testimone per confermare la missione.');
@@ -820,7 +894,7 @@ class SupabaseStore {
         await this.incrementScore(params.gameId, pm.coop_partner_id, earned, 1, 0);
       }
 
-      return { playerMission: { ...updatedPm, mission: missionCatalog } };
+      return { playerMission: { ...updatedPm, mission_id: actualMissionId, mission: missionCatalog } };
     }
 
     // Richiede testimone
@@ -877,7 +951,7 @@ class SupabaseStore {
     }
 
     return {
-      playerMission: { ...updatedPm, mission: missionCatalog },
+      playerMission: { ...updatedPm, mission_id: actualMissionId, mission: missionCatalog },
       verification,
     };
   }
@@ -950,13 +1024,24 @@ class SupabaseStore {
     const pmList = await pmRes.json();
     const pm: PlayerMission = pmList[0];
 
-    // Fetch catalog mission
-    const catRes = await fetch(
-      this.getUrl(`missions?id=eq.${pm.mission_id}&limit=1`),
+    // Recupera mappatura reale della missione da config partita
+    const gameRes = await fetch(
+      this.getUrl(`games?id=eq.${params.gameId}&limit=1`),
       { headers: this.getHeaders(), cache: 'no-store' }
     );
-    const cats = await catRes.json();
-    const missionCatalog: Mission = cats[0] || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id)!;
+    const gameList = gameRes.ok ? await gameRes.json() : [];
+    const game = gameList?.[0];
+    const realMissionMap = (game?.config?.real_mission_ids as Record<string, string>) || {};
+    const actualMissionId = realMissionMap[pm.id] || pm.mission_id;
+
+    // Fetch catalog mission
+    const missionCatalog: Mission =
+      MISSIONS_DATABASE.find((m) => m.id === actualMissionId) ||
+      (await fetch(this.getUrl(`missions?id=eq.${actualMissionId}&limit=1`))
+        .then((r) => r.json())
+        .then((arr) => arr?.[0])
+        .catch(() => undefined)) ||
+      MISSIONS_DATABASE[0];
 
     if (params.approved) {
       // Calcola punti con eventi attivi
@@ -1014,7 +1099,7 @@ class SupabaseStore {
 
     return {
       verification: v,
-      playerMission: { ...pm, status: params.approved ? 'completed' : 'failed', mission: missionCatalog },
+      playerMission: { ...pm, mission_id: actualMissionId, status: params.approved ? 'completed' : 'failed', mission: missionCatalog },
     };
   }
 
@@ -1120,17 +1205,23 @@ class SupabaseStore {
     const catalogList: Mission[] = catRes.ok ? await catRes.json() : [];
     const catMap = new Map(catalogList.map((m) => [m.id, m]));
 
+    const gRes = await fetch(this.getUrl(`games?id=eq.${gameId}&limit=1`), { headers: this.getHeaders(), cache: 'no-store' });
+    const gList = gRes.ok ? await gRes.json() : [];
+    const currentGame = gList?.[0] || game;
+    const realMissionMap = (currentGame?.config?.real_mission_ids as Record<string, string>) || {};
+
     const pmRes = await fetch(
       this.getUrl(`player_missions?game_id=eq.${gameId}&status=eq.completed`),
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const completedRaw: PlayerMission[] = pmRes.ok ? await pmRes.json() : [];
     const completed = completedRaw
-      .filter((pm) => catMap.has(pm.mission_id))
-      .map((pm) => ({
-        playerId: pm.player_id,
-        mission: catMap.get(pm.mission_id)!,
-      }));
+      .map((pm) => {
+        const actualId = realMissionMap[pm.id] || pm.mission_id;
+        const m = MISSIONS_DATABASE.find((item) => item.id === actualId) || catMap.get(actualId);
+        return m ? { playerId: pm.player_id, mission: m } : null;
+      })
+      .filter((item): item is { playerId: string; mission: Mission } => Boolean(item));
 
     const awards = calculateEndGameAwards(scores, completed);
     return { game, awards, scores };

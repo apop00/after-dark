@@ -157,7 +157,7 @@ class GameServerStore {
       allow_coop: params.allowCoop ?? true,
       require_witness: params.requireWitness ?? false,
       enable_gender_missions: params.enableGenderMissions ?? false,
-      include_jeffrey_pack: params.includeJeffreyPack ?? false,
+      include_jeffrey_pack: params.mode === 'jeffrey_island' || Boolean(params.includeJeffreyPack),
       is_public: params.isPublic ?? true,
       host_id: params.hostPlayerId,
       status: 'lobby',
@@ -382,7 +382,7 @@ class GameServerStore {
         require_witness: room.require_witness ?? false,
         missions_per_player: targetMissions,
         enable_gender_missions: room.enable_gender_missions ?? false,
-        include_jeffrey_pack: room.include_jeffrey_pack ?? false,
+        include_jeffrey_pack: room.mode === 'jeffrey_island' || Boolean(room.include_jeffrey_pack),
       },
     };
 
@@ -398,7 +398,7 @@ class GameServerStore {
       allowCoop: room.allow_coop,
       missionsPerPlayer: targetMissions,
       enableGenderMissions: room.enable_gender_missions ?? false,
-      includeJeffreyPack: room.include_jeffrey_pack ?? false,
+      includeJeffreyPack: room.mode === 'jeffrey_island' || Boolean(room.include_jeffrey_pack),
     });
 
     // Inizializza tabella punteggi

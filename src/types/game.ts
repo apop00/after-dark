@@ -93,6 +93,7 @@ export interface Game {
     missions_per_player: number;
     enable_gender_missions?: boolean;
     include_jeffrey_pack?: boolean;
+    real_mission_ids?: Record<string, string>;
   };
 }
 
