@@ -7,7 +7,9 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "export:missions": "node scripts/export_missions.js && node scripts/generate_markdown_catalog.js",
+    "sync:sheets": "node scripts/sync_to_google_sheets.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
