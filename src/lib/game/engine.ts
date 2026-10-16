@@ -6,6 +6,7 @@ import {
   PlayerScore,
   GameAward,
   GameEvent,
+  PlayerGender,
 } from '@/types/game';
 import { MISSIONS_DATABASE } from '@/data/missions';
 
@@ -26,6 +27,8 @@ export interface MissionAssignmentConfig {
   allowedDifficulties?: MissionDifficulty[];
   allowCoop?: boolean;
   missionsPerPlayer?: number; // di default 3
+  enableGenderMissions?: boolean;
+  includeJeffreyPack?: boolean;
 }
 
 /**
@@ -77,7 +80,7 @@ export function partitionPlayersIntoCoopTeams<T extends { playerId: string; nick
  */
 export function assignMissionsToPlayers(
   gameId: string,
-  players: { playerId: string; nickname: string }[],
+  players: { playerId: string; nickname: string; gender?: PlayerGender }[],
   config: MissionAssignmentConfig
 ): PlayerMission[] {
   const missionsPerPlayer = config.missionsPerPlayer || 3;
@@ -88,12 +91,27 @@ export function assignMissionsToPlayers(
     'leggendaria',
   ];
 
+  const isJeffreyMode = config.mode === 'jeffrey_island';
+  const includeJeffrey = isJeffreyMode || Boolean(config.includeJeffreyPack);
+
   // Filtra il catalogo per la modalità selezionata e difficoltà consentite
-  const eligibleMissions = MISSIONS_DATABASE.filter(
-    (m) =>
-      m.compatible_modes.includes(config.mode) &&
-      allowedDifficulties.includes(m.difficulty)
-  );
+  const eligibleMissions = MISSIONS_DATABASE.filter((m) => {
+    // Difficoltà consentite
+    if (!allowedDifficulties.includes(m.difficulty)) return false;
+
+    // Se è la modalità specifica Jeffrey Island
+    if (isJeffreyMode) {
+      return m.category === 'jeffrey_island' || m.compatible_modes.includes('jeffrey_island');
+    }
+
+    // Modalità standard (es. bar, house_party, discoteca, chaos, outdoor)
+    const matchesMode = m.compatible_modes.includes(config.mode);
+    const matchesJeffrey =
+      includeJeffrey &&
+      (m.category === 'jeffrey_island' || m.compatible_modes.includes('jeffrey_island'));
+
+    return matchesMode || matchesJeffrey;
+  });
 
   if (eligibleMissions.length === 0) {
     throw new Error(`Nessuna missione trovata per la modalità ${config.mode}`);
@@ -145,17 +163,43 @@ export function assignMissionsToPlayers(
     });
   }
 
-  // Completa il resto delle missioni per ciascun giocatore con missioni individuali
-  const individualPool = (individualMissions.length > 0 ? individualMissions : eligibleMissions)
+  // Helper per verificare compatibilità di genere per un giocatore
+  const isMissionCompatibleWithPlayer = (mission: Mission, playerGender?: PlayerGender) => {
+    // Se le missioni per genere sono disabilitate, usa solo missioni neutre
+    if (!config.enableGenderMissions) {
+      return !mission.gender_target || mission.gender_target === 'neutro';
+    }
+
+    if (mission.gender_target === 'uomo') {
+      return playerGender === 'uomo';
+    }
+    if (mission.gender_target === 'donna') {
+      return playerGender === 'donna';
+    }
+    // Missione neutra o senza target: assegnabile a chiunque (uomo, donna o neutro)
+    return true;
+  };
+
+  // Completa il resto delle missioni per ciascun giocatore
+  const basePool = (individualMissions.length > 0 ? individualMissions : eligibleMissions)
     .sort(() => Math.random() - 0.5);
 
   players.forEach((player, playerIdx) => {
+    // Filtra la pool personalizzata per il genere del giocatore se opportuno
+    const playerSpecificPool = basePool.filter((m) =>
+      isMissionCompatibleWithPlayer(m, player.gender)
+    );
+    const poolToUse =
+      playerSpecificPool.length > 0
+        ? playerSpecificPool
+        : basePool.filter((m) => !m.gender_target || m.gender_target === 'neutro');
+
     let poolIdx = 0;
     while (
       playerAssignedCounts[player.playerId] < missionsPerPlayer &&
-      poolIdx < individualPool.length * 3
+      poolIdx < poolToUse.length * 3
     ) {
-      const mission = individualPool[poolIdx % individualPool.length];
+      const mission = poolToUse[poolIdx % poolToUse.length];
       poolIdx++;
 
       // Non duplicare missioni per lo stesso giocatore

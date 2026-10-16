@@ -22,11 +22,14 @@ import {
 import { Navbar } from '@/components/Navbar';
 import { QrCodeModal } from '@/components/QrCodeModal';
 import { AvatarPicker, getAvatarEmoji } from '@/components/AvatarPicker';
-import { Room, RoomMember } from '@/types/game';
+import { Room, RoomMember, PlayerGender } from '@/types/game';
 import {
   getOrCreatePlayerSession,
   updatePlayerNickname,
   updatePlayerAvatar,
+  updatePlayerGender,
+  getGenderEmoji,
+  getGenderLabel,
 } from '@/lib/session/player';
 import { triggerHaptic } from '@/lib/haptics/vibration';
 import { sounds } from '@/lib/audio/sound';
@@ -52,6 +55,7 @@ export default function RoomLobbyPage({
   const [myPlayerId, setMyPlayerId] = useState('');
   const [joinNickname, setJoinNickname] = useState('');
   const [joinAvatar, setJoinAvatar] = useState('ghost');
+  const [joinGender, setJoinGender] = useState<PlayerGender>('neutro');
   const [isJoiningDirect, setIsJoiningDirect] = useState(false);
   const [missionsPerPlayer, setMissionsPerPlayer] = useState<number>(3);
 
@@ -87,6 +91,7 @@ export default function RoomLobbyPage({
     setMyPlayerId(session.playerId);
     setJoinNickname(session.nickname);
     setJoinAvatar(session.avatarSeed);
+    setJoinGender(session.gender || 'neutro');
 
     if (typeof window !== 'undefined') {
       const sp = new URLSearchParams(window.location.search);
@@ -180,6 +185,7 @@ export default function RoomLobbyPage({
     try {
       const session = updatePlayerNickname(joinNickname.trim());
       updatePlayerAvatar(joinAvatar);
+      updatePlayerGender(joinGender);
 
       const res = await fetch('/api/rooms/join', {
         method: 'POST',
@@ -189,6 +195,7 @@ export default function RoomLobbyPage({
           playerId: session.playerId,
           nickname: joinNickname.trim(),
           avatarSeed: joinAvatar,
+          gender: joinGender,
         }),
       });
 
@@ -262,10 +269,21 @@ export default function RoomLobbyPage({
                 Lobby di Attesa
               </span>
               <h2 className="text-2xl font-black text-white tracking-tight">{room.group_name}</h2>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10 text-slate-300 font-semibold uppercase">
-                  {room.mode}
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <span
+                  className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold uppercase ${
+                    room.mode === 'jeffrey_island'
+                      ? 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/40'
+                      : 'bg-white/10 border-white/10 text-slate-300'
+                  }`}
+                >
+                  {room.mode === 'jeffrey_island' ? 'JEFFREY ISLAND 🔥' : room.mode}
                 </span>
+                {room.enable_gender_missions && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                    🚻 Genere Attivo
+                  </span>
+                )}
                 <span className="text-xs text-slate-400 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
                   {room.duration_minutes > 0 ? `${room.duration_minutes} min` : '∞ Senza tempo'}
@@ -365,7 +383,12 @@ export default function RoomLobbyPage({
                     </div>
                     <span className="text-[10px] text-emerald-400 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      {isMe ? 'Tu' : 'Pronto'}
+                      <span>{isMe ? 'Tu' : 'Pronto'}</span>
+                      {member.gender && member.gender !== 'neutro' && (
+                        <span className="ml-1 text-[11px] text-slate-300">
+                          {getGenderEmoji(member.gender)}
+                        </span>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -524,6 +547,42 @@ export default function RoomLobbyPage({
                   Segno Distintivo
                 </label>
                 <AvatarPicker selected={joinAvatar} onSelect={setJoinAvatar} />
+              </div>
+
+              {/* Gender Selector */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Genere per le Missioni
+                  </label>
+                  <span className="text-[10px] text-slate-400">(Neutro di base)</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { val: 'neutro', label: 'Neutro 👤' },
+                    { val: 'uomo', label: 'Uomo ♂️' },
+                    { val: 'donna', label: 'Donna ♀️' },
+                  ] as { val: PlayerGender; label: string }[]).map((g) => {
+                    const isSelected = joinGender === g.val;
+                    return (
+                      <button
+                        key={g.val}
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setJoinGender(g.val);
+                        }}
+                        className={`py-2 px-1.5 rounded-xl border text-center transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-rose-500/25 border-rose-500 text-white shadow ring-1 ring-rose-400'
+                            : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="text-xs font-black">{g.label}</div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <button

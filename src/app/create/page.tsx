@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Sparkles,
   Target,
+  Flame,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { ModeGraphic } from '@/components/ModeGraphics';
@@ -30,6 +31,13 @@ const GAME_MODES: {
   icon: React.ReactNode;
   accent: string;
 }[] = [
+  {
+    id: 'jeffrey_island',
+    name: 'JEFFREY ISLAND PARTY 🔥',
+    tagline: 'Party frizzante, alcolico e piccante: flirt, penitenze, verità e sfide senza filtri',
+    icon: <Flame className="w-5 h-5" />,
+    accent: 'border-fuchsia-500/50 hover:bg-fuchsia-500/10 text-fuchsia-400',
+  },
   {
     id: 'bar',
     name: 'BAR & LOUNGE',
@@ -77,6 +85,8 @@ export default function CreateRoomPage() {
   const [maxPlayers, setMaxPlayers] = useState<number>(10);
   const [allowCoop, setAllowCoop] = useState<boolean>(true);
   const [requireWitness, setRequireWitness] = useState<boolean>(false);
+  const [enableGenderMissions, setEnableGenderMissions] = useState<boolean>(false);
+  const [includeJeffreyPack, setIncludeJeffreyPack] = useState<boolean>(false);
   const [difficulties, setDifficulties] = useState<MissionDifficulty[]>([
     'facile',
     'media',
@@ -118,9 +128,12 @@ export default function CreateRoomPage() {
           allowedDifficulties: difficulties,
           allowCoop,
           requireWitness,
+          enableGenderMissions,
+          includeJeffreyPack: selectedMode === 'jeffrey_island' || includeJeffreyPack,
           hostPlayerId: session.playerId,
           hostNickname: session.nickname,
           hostAvatar: session.avatarSeed,
+          hostGender: session.gender || 'neutro',
         }),
       });
 
@@ -452,7 +465,7 @@ export default function CreateRoomPage() {
               triggerHaptic('light');
               setAllowCoop(!allowCoop);
             }}
-            className="cursor-pointer p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between"
+            className="cursor-pointer p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between transition-colors hover:bg-white/[0.06]"
           >
             <div>
               <span className="font-bold text-xs text-white block">Missioni Collaborative</span>
@@ -461,7 +474,7 @@ export default function CreateRoomPage() {
               </p>
             </div>
             <div
-              className={`w-11 h-6 rounded-full transition-colors relative p-1 ${
+              className={`w-11 h-6 rounded-full transition-colors relative p-1 shrink-0 ${
                 allowCoop ? 'bg-rose-600' : 'bg-white/10'
               }`}
             >
@@ -472,6 +485,78 @@ export default function CreateRoomPage() {
               />
             </div>
           </div>
+
+          {/* Gender Specific Missions Toggle */}
+          <div
+            onClick={() => {
+              triggerHaptic('light');
+              setEnableGenderMissions(!enableGenderMissions);
+            }}
+            className="cursor-pointer p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between transition-colors hover:bg-white/[0.06]"
+          >
+            <div className="pr-3">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs text-white">Missioni Specifiche Uomo / Donna</span>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    enableGenderMissions
+                      ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
+                      : 'bg-white/10 text-slate-400 border-white/10'
+                  }`}
+                >
+                  {enableGenderMissions ? 'Attivo' : 'Di base Neutro'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Di base le missioni sono neutre per chiunque. Attivando questa opzione, chi imposta Uomo o Donna riceverà compiti mirati ed esclusivi!
+              </p>
+            </div>
+            <div
+              className={`w-11 h-6 rounded-full transition-colors relative p-1 shrink-0 ${
+                enableGenderMissions ? 'bg-indigo-600' : 'bg-white/10'
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                  enableGenderMissions ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </div>
+          </div>
+
+          {/* Include Jeffrey Island Pack Toggle (when not already in jeffrey_island mode) */}
+          {selectedMode !== 'jeffrey_island' && (
+            <div
+              onClick={() => {
+                triggerHaptic('light');
+                setIncludeJeffreyPack(!includeJeffreyPack);
+              }}
+              className="cursor-pointer p-3.5 rounded-2xl bg-gradient-to-r from-fuchsia-950/25 to-rose-950/25 border border-fuchsia-500/30 flex items-center justify-between transition-colors hover:bg-fuchsia-950/40"
+            >
+              <div className="pr-3">
+                <div className="flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-fuchsia-400" />
+                  <span className="font-bold text-xs text-fuchsia-200">
+                    Includi Pack Jeffrey Island (18+ / Alcol & Frizzante)
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Aggiunge al mazzo le 36 task più piccanti, alcoliche e senza freni inibitori!
+                </p>
+              </div>
+              <div
+                className={`w-11 h-6 rounded-full transition-colors relative p-1 shrink-0 ${
+                  includeJeffreyPack ? 'bg-fuchsia-600' : 'bg-white/10'
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                    includeJeffreyPack ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Submit */}
           <button

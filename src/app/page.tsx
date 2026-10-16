@@ -24,11 +24,14 @@ import { AvatarPicker, getAvatarEmoji } from '@/components/AvatarPicker';
 import { SupabaseNotice } from '@/components/SupabaseNotice';
 import { ModeGraphic } from '@/components/ModeGraphics';
 import { QrScannerModal } from '@/components/QrScannerModal';
-import { GameMode } from '@/types/game';
+import { GameMode, PlayerGender } from '@/types/game';
 import {
   getOrCreatePlayerSession,
   updatePlayerNickname,
   updatePlayerAvatar,
+  updatePlayerGender,
+  getGenderEmoji,
+  getGenderLabel,
 } from '@/lib/session/player';
 import { triggerHaptic } from '@/lib/haptics/vibration';
 import { sounds } from '@/lib/audio/sound';
@@ -59,8 +62,10 @@ export default function HomePage() {
   const router = useRouter();
   const [nickname, setNickname] = useState('');
   const [avatarSeed, setAvatarSeed] = useState('shadow');
+  const [gender, setGender] = useState<PlayerGender>('neutro');
   const [editNickname, setEditNickname] = useState('');
   const [editAvatarSeed, setEditAvatarSeed] = useState('shadow');
+  const [editGender, setEditGender] = useState<PlayerGender>('neutro');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [showSavedToast, setShowSavedToast] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -69,14 +74,17 @@ export default function HomePage() {
     const session = getOrCreatePlayerSession();
     setNickname(session.nickname);
     setAvatarSeed(session.avatarSeed);
+    setGender(session.gender || 'neutro');
     setEditNickname(session.nickname);
     setEditAvatarSeed(session.avatarSeed);
+    setEditGender(session.gender || 'neutro');
   }, []);
 
   const handleOpenEdit = () => {
     triggerHaptic('light');
     setEditNickname(nickname);
     setEditAvatarSeed(avatarSeed);
+    setEditGender(gender);
     setIsEditingProfile(true);
   };
 
@@ -95,8 +103,10 @@ export default function HomePage() {
     const cleanName = editNickname.trim();
     updatePlayerNickname(cleanName);
     updatePlayerAvatar(editAvatarSeed);
+    updatePlayerGender(editGender);
     setNickname(cleanName);
     setAvatarSeed(editAvatarSeed);
+    setGender(editGender);
     setIsEditingProfile(false);
     setShowSavedToast(true);
     setTimeout(() => setShowSavedToast(false), 3000);
@@ -151,9 +161,14 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="min-w-0">
-                <span className="text-[10px] uppercase tracking-wider text-rose-400 font-extrabold block">
-                  Il Tuo Nome nella Partita
-                </span>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[10px] uppercase tracking-wider text-rose-400 font-extrabold block">
+                    Il Tuo Nome nella Partita
+                  </span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-white/10 text-slate-300 border border-white/10">
+                    {getGenderEmoji(gender)} {getGenderLabel(gender)}
+                  </span>
+                </div>
                 <p className="font-black text-white text-lg tracking-wide flex items-center gap-1.5 truncate">
                   <span className="truncate">{nickname}</span>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
@@ -228,17 +243,18 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 5 GAME MODES SHOWCASE TILES */}
+        {/* 6 GAME MODES SHOWCASE TILES */}
         <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between px-1 text-xs">
             <span className="font-extrabold uppercase tracking-wider text-slate-400">
-              5 Modalità di Gioco
+              6 Modalità di Gioco
             </span>
-            <span className="text-[11px] text-slate-500">125+ Missioni</span>
+            <span className="text-[11px] text-fuchsia-400 font-bold">160+ Missioni 🔥</span>
           </div>
 
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
             {([
+              { mode: 'jeffrey_island', label: 'Jeffrey 🔥', border: 'hover:border-fuchsia-500/50' },
               { mode: 'bar', label: 'Bar', border: 'hover:border-amber-500/50' },
               { mode: 'discoteca', label: 'Club', border: 'hover:border-purple-500/50' },
               { mode: 'house_party', label: 'House', border: 'hover:border-emerald-500/50' },
@@ -252,7 +268,7 @@ export default function HomePage() {
                 <div className="w-10 h-10 flex items-center justify-center mb-1">
                   <ModeGraphic mode={m.mode} className="w-9 h-9" />
                 </div>
-                <span className="text-[11px] font-black text-slate-200 tracking-wide uppercase">
+                <span className="text-[11px] font-black text-slate-200 tracking-wide uppercase truncate w-full">
                   {m.label}
                 </span>
               </div>
@@ -345,6 +361,45 @@ export default function HomePage() {
                   Segno Distintivo (Avatar)
                 </label>
                 <AvatarPicker selected={editAvatarSeed} onSelect={setEditAvatarSeed} />
+              </div>
+
+              {/* Gender Selector for Missions */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-300">
+                    Genere per le Missioni
+                  </label>
+                  <span className="text-[10px] text-slate-400">
+                    (Di base Neutro: adatto a tutti)
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { val: 'neutro', label: 'Neutro 👤', desc: 'Per chiunque' },
+                    { val: 'uomo', label: 'Uomo ♂️', desc: 'Task dedicate' },
+                    { val: 'donna', label: 'Donna ♀️', desc: 'Task dedicate' },
+                  ] as { val: PlayerGender; label: string; desc: string }[]).map((g) => {
+                    const isSelected = editGender === g.val;
+                    return (
+                      <button
+                        key={g.val}
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setEditGender(g.val);
+                        }}
+                        className={`py-2 px-2 rounded-2xl border text-center transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-rose-500/25 border-rose-500 text-white shadow-lg shadow-rose-950/40 ring-2 ring-rose-400/50 scale-[1.02]'
+                            : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="text-xs font-black">{g.label}</div>
+                        <div className="text-[9px] text-slate-400 mt-0.5 truncate">{g.desc}</div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Action Buttons */}

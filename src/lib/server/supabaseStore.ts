@@ -8,6 +8,7 @@ import {
   PlayerScore,
   GameAward,
   Mission,
+  PlayerGender,
 } from '@/types/game';
 import {
   generateRoomCode,
@@ -15,6 +16,7 @@ import {
   calculateMissionPoints,
   calculateEndGameAwards,
 } from '@/lib/game/engine';
+import { MISSIONS_DATABASE } from '@/data/missions';
 import { ensureUuid } from '@/lib/utils/uuid';
 
 class SupabaseStore {
@@ -52,9 +54,13 @@ class SupabaseStore {
     missionsPerPlayer?: number;
     allowedDifficulties: Room['allowed_difficulties'];
     allowCoop: boolean;
+    requireWitness?: boolean;
+    enableGenderMissions?: boolean;
+    includeJeffreyPack?: boolean;
     hostPlayerId: string;
     hostNickname: string;
     hostAvatar: string;
+    hostGender?: PlayerGender;
   }): Promise<{ room: Room; member: RoomMember }> {
     const hostUuid = ensureUuid(params.hostPlayerId);
 
@@ -88,11 +94,24 @@ class SupabaseStore {
       status: 'lobby',
     };
 
-    const roomRes = await fetch(this.getUrl('rooms'), {
+    let roomRes = await fetch(this.getUrl('rooms'), {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify(roomPayload),
     });
+
+    if (!roomRes.ok && params.mode === 'jeffrey_island') {
+      // Fallback in caso la tabella rooms su Supabase abbia il vecchio check constraint
+      const fallbackPayload = { ...roomPayload, mode: 'house_party' };
+      const fallbackRes = await fetch(this.getUrl('rooms'), {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(fallbackPayload),
+      });
+      if (fallbackRes.ok) {
+        roomRes = fallbackRes;
+      }
+    }
 
     if (!roomRes.ok) {
       const err = await roomRes.text();
@@ -101,7 +120,10 @@ class SupabaseStore {
 
     const roomList = await roomRes.json();
     const createdRoom: Room = roomList[0];
+    createdRoom.mode = params.mode;
     createdRoom.missions_per_player = params.missionsPerPlayer || 3;
+    createdRoom.enable_gender_missions = params.enableGenderMissions ?? false;
+    createdRoom.include_jeffrey_pack = params.includeJeffreyPack ?? false;
 
     // Inserisci host come primo membro
     const memberPayload = {
@@ -126,6 +148,7 @@ class SupabaseStore {
 
     const memberList = await memberRes.json();
     const createdMember: RoomMember = memberList[0];
+    createdMember.gender = params.hostGender || 'neutro';
 
     return { room: createdRoom, member: createdMember };
   }
@@ -166,6 +189,7 @@ class SupabaseStore {
     playerId: string;
     nickname: string;
     avatarSeed: string;
+    gender?: PlayerGender;
   }): Promise<{ room: Room; member: RoomMember }> {
     const cleanCode = params.code.trim().toUpperCase();
     const { room, members } = await this.getRoomByCode(cleanCode);
@@ -183,6 +207,7 @@ class SupabaseStore {
 
     if (existing) {
       // Aggiorna presenza se già registrato
+      if (params.gender) existing.gender = params.gender;
       const updateRes = await fetch(
         this.getUrl(`room_members?id=eq.${existing.id}`),
         {
@@ -198,7 +223,9 @@ class SupabaseStore {
       );
       if (updateRes.ok) {
         const updatedList = await updateRes.json();
-        return { room, member: updatedList[0] || existing };
+        const mem = updatedList[0] || existing;
+        mem.gender = params.gender || existing.gender || 'neutro';
+        return { room, member: mem };
       }
       return { room, member: existing };
     }
@@ -228,7 +255,9 @@ class SupabaseStore {
     }
 
     const memberList = await insertRes.json();
-    return { room, member: memberList[0] };
+    const createdMember: RoomMember = memberList[0];
+    createdMember.gender = params.gender || 'neutro';
+    return { room, member: createdMember };
   }
 
   async getGameByRoomId(roomId: string): Promise<Game | undefined> {
@@ -289,6 +318,8 @@ class SupabaseStore {
         allow_coop: room.allow_coop,
         require_witness: Boolean((params as { requireWitness?: boolean }).requireWitness ?? room.require_witness ?? false),
         missions_per_player: missionsPerPlayer,
+        enable_gender_missions: room.enable_gender_missions ?? false,
+        include_jeffrey_pack: room.include_jeffrey_pack ?? false,
       },
     };
 
@@ -317,6 +348,7 @@ class SupabaseStore {
     const playerRefs = members.map((m) => ({
       playerId: m.player_id,
       nickname: m.nickname,
+      gender: m.gender,
     }));
 
     const assignedMissions = assignMissionsToPlayers(game.id, playerRefs, {
@@ -324,10 +356,47 @@ class SupabaseStore {
       allowedDifficulties: room.allowed_difficulties,
       allowCoop: room.allow_coop,
       missionsPerPlayer,
+      enableGenderMissions: room.enable_gender_missions ?? false,
+      includeJeffreyPack: room.include_jeffrey_pack ?? false,
     });
 
     // Inserisci assegnazioni su Supabase
     if (assignedMissions.length > 0) {
+      // Upsert automatico delle missioni nel catalogo Supabase per soddisfare FK
+      const missionsToUpsert = assignedMissions
+        .map((pm) => pm.mission)
+        .filter((m): m is Mission => Boolean(m));
+
+      if (missionsToUpsert.length > 0) {
+        try {
+          const missionPayloads = missionsToUpsert.map((m) => ({
+            id: m.id,
+            title: m.title,
+            description: m.description,
+            compatible_modes: m.compatible_modes,
+            category: m.category,
+            difficulty: m.difficulty,
+            base_points: m.base_points,
+            estimated_duration_minutes: m.estimated_duration_minutes || 10,
+            target_participants: m.target_participants || 2,
+            verification_type: m.verification_type,
+            special_conditions: m.special_conditions || [],
+            is_secret: m.is_secret ?? true,
+          }));
+
+          await fetch(this.getUrl('missions'), {
+            method: 'POST',
+            headers: {
+              ...this.getHeaders(),
+              Prefer: 'resolution=merge-duplicates',
+            },
+            body: JSON.stringify(missionPayloads),
+          });
+        } catch {
+          // Ignora se non disponibile o già presenti
+        }
+      }
+
       const pmPayloads = assignedMissions.map((pm) => ({
         id: ensureUuid(pm.id),
         game_id: game.id,
@@ -425,7 +494,7 @@ class SupabaseStore {
       return {
         ...pm,
         coop_partner_nickname: coopPartnerNickname,
-        mission: catalogMap.get(pm.mission_id),
+        mission: catalogMap.get(pm.mission_id) || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id),
       };
     });
 
@@ -500,7 +569,7 @@ class SupabaseStore {
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const cats = await catRes.json();
-    const missionCatalog: Mission | undefined = cats?.[0];
+    const missionCatalog: Mission | undefined = cats?.[0] || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id);
     if (!missionCatalog) throw new Error('Dati catalogo missione mancanti.');
 
     // Fetch active events for multipliers
@@ -698,7 +767,7 @@ class SupabaseStore {
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const cats = await catRes.json();
-    const missionCatalog: Mission = cats[0];
+    const missionCatalog: Mission = cats[0] || MISSIONS_DATABASE.find((m) => m.id === pm.mission_id)!;
 
     if (params.approved) {
       // Calcola punti con eventi attivi

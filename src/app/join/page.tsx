@@ -6,10 +6,12 @@ import { ArrowLeft, LogIn, Sparkles, Hash, User, Camera, QrCode } from 'lucide-r
 import { Navbar } from '@/components/Navbar';
 import { AvatarPicker } from '@/components/AvatarPicker';
 import { QrScannerModal } from '@/components/QrScannerModal';
+import { PlayerGender } from '@/types/game';
 import {
   getOrCreatePlayerSession,
   updatePlayerNickname,
   updatePlayerAvatar,
+  updatePlayerGender,
 } from '@/lib/session/player';
 import { triggerHaptic } from '@/lib/haptics/vibration';
 import { sounds } from '@/lib/audio/sound';
@@ -21,6 +23,7 @@ function JoinContent() {
   const [code, setCode] = useState('');
   const [nickname, setNickname] = useState('');
   const [avatarSeed, setAvatarSeed] = useState('ghost');
+  const [gender, setGender] = useState<PlayerGender>('neutro');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -30,6 +33,7 @@ function JoinContent() {
     const session = getOrCreatePlayerSession();
     setNickname(session.nickname);
     setAvatarSeed(session.avatarSeed);
+    setGender(session.gender || 'neutro');
 
     const queryCode = searchParams.get('code');
     if (queryCode) {
@@ -61,6 +65,7 @@ function JoinContent() {
     try {
       const session = updatePlayerNickname(nickname);
       updatePlayerAvatar(avatarSeed);
+      updatePlayerGender(gender);
 
       const res = await fetch('/api/rooms/join', {
         method: 'POST',
@@ -70,6 +75,7 @@ function JoinContent() {
           playerId: session.playerId,
           nickname: nickname.trim(),
           avatarSeed,
+          gender,
         }),
       });
 
@@ -193,6 +199,45 @@ function JoinContent() {
             Scegli il tuo Segno Distintivo
           </label>
           <AvatarPicker selected={avatarSeed} onSelect={setAvatarSeed} />
+        </div>
+
+        {/* Gender Selector */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="block text-xs font-semibold text-slate-300">
+              Genere per le Missioni
+            </label>
+            <span className="text-[10px] text-slate-400">
+              (Di base Neutro: adatto a tutti)
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {([
+              { val: 'neutro', label: 'Neutro 👤', desc: 'Per tutti' },
+              { val: 'uomo', label: 'Uomo ♂️', desc: 'Task uomo' },
+              { val: 'donna', label: 'Donna ♀️', desc: 'Task donna' },
+            ] as { val: PlayerGender; label: string; desc: string }[]).map((g) => {
+              const isSelected = gender === g.val;
+              return (
+                <button
+                  key={g.val}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setGender(g.val);
+                  }}
+                  className={`py-2 px-2 rounded-2xl border text-center transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-rose-500/25 border-rose-500 text-white shadow-lg shadow-rose-950/40 ring-2 ring-rose-400/50 scale-[1.02]'
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <div className="text-xs font-black">{g.label}</div>
+                  <div className="text-[9px] text-slate-400 mt-0.5 truncate">{g.desc}</div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Submit */}

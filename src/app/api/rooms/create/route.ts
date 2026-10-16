@@ -15,9 +15,12 @@ export async function POST(req: NextRequest) {
       allowedDifficulties,
       allowCoop,
       requireWitness,
+      enableGenderMissions,
+      includeJeffreyPack,
       hostPlayerId,
       hostNickname,
       hostAvatar,
+      hostGender,
       missionsPerPlayer,
     } = body;
 
@@ -38,9 +41,12 @@ export async function POST(req: NextRequest) {
       allowedDifficulties,
       allowCoop: Boolean(allowCoop),
       requireWitness: Boolean(requireWitness),
+      enableGenderMissions: Boolean(enableGenderMissions),
+      includeJeffreyPack: Boolean(includeJeffreyPack),
       hostPlayerId,
       hostNickname: hostNickname || 'Host',
       hostAvatar: hostAvatar || 'shadow',
+      hostGender: hostGender || 'neutro',
     };
 
     const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';

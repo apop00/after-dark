@@ -33,6 +33,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   collaborazione: '👥',
   bluff: '🃏',
   chaos: '⚡',
+  jeffrey_island: '🌴',
 };
 
 export function MissionCard({
@@ -78,8 +79,13 @@ export function MissionCard({
             {CATEGORY_ICONS[mission.category] || '🎯'}
           </span>
           <span className="text-xs uppercase tracking-wider text-rose-300 font-extrabold">
-            {mission.category}
+            {mission.category === 'jeffrey_island' ? 'Jeffrey Island 🔥' : mission.category}
           </span>
+          {mission.gender_target && mission.gender_target !== 'neutro' && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              {mission.gender_target === 'uomo' ? '♂️ Solo Uomo' : '♀️ Solo Donna'}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">

@@ -1,6 +1,6 @@
 'use client';
 
-import { PlayerSession } from '@/types/game';
+import { PlayerSession, PlayerGender } from '@/types/game';
 
 const SESSION_STORAGE_KEY = 'after_dark_player_session';
 
@@ -19,6 +19,18 @@ const AVATAR_SEEDS = [
   'phoenix',
 ];
 
+export function getGenderEmoji(gender?: PlayerGender): string {
+  if (gender === 'uomo') return '♂️';
+  if (gender === 'donna') return '♀️';
+  return '👤';
+}
+
+export function getGenderLabel(gender?: PlayerGender): string {
+  if (gender === 'uomo') return 'Uomo';
+  if (gender === 'donna') return 'Donna';
+  return 'Neutro';
+}
+
 function generateUUID(): string {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID();
@@ -36,6 +48,7 @@ export function getOrCreatePlayerSession(initialNickname?: string): PlayerSessio
       playerId: '00000000-0000-0000-0000-000000000000',
       nickname: initialNickname || 'Ospite',
       avatarSeed: 'shadow',
+      gender: 'neutro',
     };
   }
 
@@ -49,6 +62,11 @@ export function getOrCreatePlayerSession(initialNickname?: string): PlayerSessio
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (!parsed.playerId || !uuidRegex.test(parsed.playerId)) {
         parsed.playerId = generateUUID();
+        changed = true;
+      }
+
+      if (!parsed.gender) {
+        parsed.gender = 'neutro';
         changed = true;
       }
 
@@ -73,6 +91,7 @@ export function getOrCreatePlayerSession(initialNickname?: string): PlayerSessio
     playerId: newPlayerId,
     nickname: initialNickname || 'Giocatore_' + Math.floor(100 + Math.random() * 900),
     avatarSeed: randomAvatar,
+    gender: 'neutro',
   };
 
   localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
@@ -91,6 +110,15 @@ export function updatePlayerNickname(nickname: string): PlayerSession {
 export function updatePlayerAvatar(avatarSeed: string): PlayerSession {
   const session = getOrCreatePlayerSession();
   session.avatarSeed = avatarSeed;
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+  }
+  return session;
+}
+
+export function updatePlayerGender(gender: PlayerGender): PlayerSession {
+  const session = getOrCreatePlayerSession();
+  session.gender = gender;
   if (typeof window !== 'undefined') {
     localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
   }

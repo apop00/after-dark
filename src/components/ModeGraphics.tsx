@@ -132,6 +132,42 @@ export function ModeGraphic({
         </svg>
       );
 
+    case 'jeffrey_island':
+      return (
+        <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="jeffreyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#f43f5e" />
+              <stop offset="50%" stopColor="#d946ef" />
+              <stop offset="100%" stopColor="#fbbf24" />
+            </linearGradient>
+            <radialGradient id="jeffreyGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#d946ef" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#d946ef" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="44" fill="url(#jeffreyGlow)" />
+          {/* Neon tropical sun */}
+          <circle cx="50" cy="46" r="24" stroke="url(#jeffreyGrad)" strokeWidth="2" strokeDasharray="4 3" opacity="0.6" />
+          {/* Neon Island base & waves */}
+          <path d="M22 74c10-3 18-3 28 0s18 3 28 0" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+          <path d="M28 80c8-2 14-2 22 0s14 2 22 0" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
+          {/* Neon Palm Tree */}
+          <path d="M50 72c-2-12 1-22 8-28" stroke="#34d399" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M58 44c-8-6-18-2-22 4" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+          <path d="M58 44c4-10 14-10 20-4" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+          <path d="M58 44c-2-12 8-16 14-12" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" />
+          {/* Cocktail Martini with olive on right */}
+          <path d="M36 42l14 16v12h-8v4h16v-4h-8V58l14-16H36z" stroke="url(#jeffreyGrad)" strokeWidth="2.5" strokeLinejoin="round" />
+          <line x1="38" y1="46" x2="62" y2="46" stroke="#fbbf24" strokeWidth="2" />
+          <circle cx="50" cy="45" r="2.5" fill="#f43f5e" />
+          {/* Sparkles */}
+          <circle cx="26" cy="34" r="1.5" fill="#fef08a" />
+          <circle cx="76" cy="32" r="2" fill="#e879f9" />
+          <circle cx="70" cy="62" r="1.5" fill="#fbbf24" />
+        </svg>
+      );
+
     default:
       return null;
   }

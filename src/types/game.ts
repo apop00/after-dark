@@ -1,4 +1,4 @@
-export type GameMode = 'bar' | 'discoteca' | 'house_party' | 'outdoor' | 'chaos';
+export type GameMode = 'bar' | 'discoteca' | 'house_party' | 'outdoor' | 'chaos' | 'jeffrey_island';
 
 export type MissionCategory =
   | 'socializzazione'
@@ -8,9 +8,12 @@ export type MissionCategory =
   | 'creativita'
   | 'collaborazione'
   | 'bluff'
-  | 'chaos';
+  | 'chaos'
+  | 'jeffrey_island';
 
 export type MissionDifficulty = 'facile' | 'media' | 'difficile' | 'leggendaria';
+
+export type PlayerGender = 'neutro' | 'uomo' | 'donna';
 
 export type VerificationType =
   | 'peer_witness'    // Un altro giocatore fa da testimone ("ha visto che l'ho fatto")
@@ -34,6 +37,7 @@ export interface Mission {
   is_secret: boolean;
   repeat_cooldown_games?: number; // Quante partite prima di poter ricomparire
   tags?: string[];
+  gender_target?: PlayerGender; // 'neutro' (default, per tutti) | 'uomo' | 'donna'
 }
 
 export type RoomStatus = 'lobby' | 'playing' | 'finished' | 'abandoned';
@@ -50,6 +54,8 @@ export interface Room {
   allow_coop: boolean;
   require_witness?: boolean;
   missions_per_player?: number;
+  enable_gender_missions?: boolean;
+  include_jeffrey_pack?: boolean;
   host_id: string; // player_id of creator
   status: RoomStatus;
   created_at: string;
@@ -62,6 +68,7 @@ export interface RoomMember {
   player_id: string;
   nickname: string;
   avatar_seed: string;
+  gender?: PlayerGender;
   is_host: boolean;
   is_connected: boolean;
   joined_at: string;
@@ -83,6 +90,8 @@ export interface Game {
     allow_coop: boolean;
     require_witness?: boolean;
     missions_per_player: number;
+    enable_gender_missions?: boolean;
+    include_jeffrey_pack?: boolean;
   };
 }
 
@@ -172,6 +181,7 @@ export interface PlayerSession {
   playerId: string;
   nickname: string;
   avatarSeed: string;
+  gender?: PlayerGender;
   currentRoomCode?: string;
   currentGameId?: string;
 }

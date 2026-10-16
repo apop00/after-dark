@@ -9,6 +9,7 @@ import {
   GameEvent,
   PlayerScore,
   GameAward,
+  PlayerGender,
 } from '@/types/game';
 import {
   generateRoomCode,
@@ -121,9 +122,12 @@ class GameServerStore {
     allowedDifficulties: Room['allowed_difficulties'];
     allowCoop: boolean;
     requireWitness?: boolean;
+    enableGenderMissions?: boolean;
+    includeJeffreyPack?: boolean;
     hostPlayerId: string;
     hostNickname: string;
     hostAvatar: string;
+    hostGender?: PlayerGender;
   }): { room: Room; member: RoomMember } {
     this.loadFromDisk();
 
@@ -145,6 +149,8 @@ class GameServerStore {
       allowed_difficulties: params.allowedDifficulties || ['facile', 'media', 'difficile', 'leggendaria'],
       allow_coop: params.allowCoop ?? true,
       require_witness: params.requireWitness ?? false,
+      enable_gender_missions: params.enableGenderMissions ?? false,
+      include_jeffrey_pack: params.includeJeffreyPack ?? false,
       host_id: params.hostPlayerId,
       status: 'lobby',
       created_at: new Date().toISOString(),
@@ -157,6 +163,7 @@ class GameServerStore {
       player_id: params.hostPlayerId,
       nickname: params.hostNickname.trim() || 'Host',
       avatar_seed: params.hostAvatar || 'shadow',
+      gender: params.hostGender || 'neutro',
       is_host: true,
       is_connected: true,
       joined_at: new Date().toISOString(),
@@ -186,6 +193,7 @@ class GameServerStore {
     playerId: string;
     nickname: string;
     avatarSeed: string;
+    gender?: PlayerGender;
   }): { room: Room; member: RoomMember } {
     this.loadFromDisk();
     const formattedCode = params.code.trim().toUpperCase();
@@ -209,6 +217,7 @@ class GameServerStore {
       existing.is_connected = true;
       existing.nickname = params.nickname.trim() || existing.nickname;
       existing.avatar_seed = params.avatarSeed || existing.avatar_seed;
+      if (params.gender) existing.gender = params.gender;
       existing.last_heartbeat_at = new Date().toISOString();
       this.saveToDisk();
       return { room, member: existing };
@@ -220,6 +229,7 @@ class GameServerStore {
       player_id: params.playerId,
       nickname: params.nickname.trim() || 'Ospite',
       avatar_seed: params.avatarSeed || 'ghost',
+      gender: params.gender || 'neutro',
       is_host: room.host_id === params.playerId,
       is_connected: true,
       joined_at: new Date().toISOString(),
@@ -269,16 +279,24 @@ class GameServerStore {
         allow_coop: room.allow_coop,
         require_witness: room.require_witness ?? false,
         missions_per_player: targetMissions,
+        enable_gender_missions: room.enable_gender_missions ?? false,
+        include_jeffrey_pack: room.include_jeffrey_pack ?? false,
       },
     };
 
     // Assegna le missioni bilanciate
-    const playerRefs = members.map((m) => ({ playerId: m.player_id, nickname: m.nickname }));
+    const playerRefs = members.map((m) => ({
+      playerId: m.player_id,
+      nickname: m.nickname,
+      gender: m.gender,
+    }));
     const assignedMissions = assignMissionsToPlayers(gameId, playerRefs, {
       mode: room.mode,
       allowedDifficulties: room.allowed_difficulties,
       allowCoop: room.allow_coop,
       missionsPerPlayer: targetMissions,
+      enableGenderMissions: room.enable_gender_missions ?? false,
+      includeJeffreyPack: room.include_jeffrey_pack ?? false,
     });
 
     // Inizializza tabella punteggi

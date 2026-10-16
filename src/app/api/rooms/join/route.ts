@@ -6,7 +6,7 @@ import { supabaseStore } from '@/lib/server/supabaseStore';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { code, playerId, nickname, avatarSeed } = body;
+    const { code, playerId, nickname, avatarSeed, gender } = body;
 
     if (!code || !playerId || !nickname) {
       return NextResponse.json(
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       playerId,
       nickname,
       avatarSeed: avatarSeed || 'ghost',
+      gender: gender || 'neutro',
     };
 
     const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
