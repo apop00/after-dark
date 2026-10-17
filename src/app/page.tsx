@@ -205,7 +205,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* PRIMARY ACTION BUTTONS: REDESIGNED WITH SLEEK TACTILE STYLING */}
+        {/* PRIMARY ACTION BUTTONS: CLEAN, MODERN & FLAT */}
         <div className="space-y-2.5">
           <Link
             href="/create"
@@ -213,13 +213,12 @@ export default function HomePage() {
               triggerHaptic('medium');
               sounds.playClick();
             }}
-            className="w-full py-3.5 sm:py-4 px-5 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2.5 cursor-pointer shadow-xl active:scale-[0.98] transition-all group"
+            className="w-full py-3.5 px-5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-black/40 active:scale-[0.98] transition-all border border-rose-500/20"
           >
-            <PlusCircle className="w-5 h-5 filter drop-shadow group-hover:rotate-90 transition-transform duration-200" />
+            <PlusCircle className="w-4 h-4" />
             <span>Crea Partita</span>
           </Link>
 
-          {/* TASTI PARTECIPA & SCANNER QR RIDISEGNATI */}
           <div className="grid grid-cols-2 gap-2.5">
             <Link
               href="/join"
@@ -227,9 +226,9 @@ export default function HomePage() {
                 triggerHaptic('light');
                 sounds.playClick();
               }}
-              className="py-3 px-3.5 rounded-2xl bg-gradient-to-b from-[#1c1236] to-[#0f0920] hover:from-[#26194a] hover:to-[#150d2c] border border-rose-500/30 hover:border-rose-500/60 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-950/20 active:scale-95 group cursor-pointer"
+              className="py-3 px-3.5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-sm"
             >
-              <Users className="w-4 h-4 text-rose-400 group-hover:scale-110 transition-transform shrink-0" />
+              <Users className="w-4 h-4 text-rose-400 shrink-0" />
               <span>Partecipa</span>
             </Link>
 
@@ -240,9 +239,9 @@ export default function HomePage() {
                 setIsScannerOpen(true);
               }}
               type="button"
-              className="py-3 px-3.5 rounded-2xl bg-gradient-to-b from-[#0f1f24] to-[#081216] hover:from-[#152a32] hover:to-[#0c1a20] border border-emerald-500/30 hover:border-emerald-500/60 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-950/20 active:scale-95 group cursor-pointer"
+              className="py-3 px-3.5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-sm"
             >
-              <QrCode className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
+              <QrCode className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Scanner QR</span>
             </button>
           </div>
