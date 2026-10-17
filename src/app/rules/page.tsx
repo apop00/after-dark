@@ -171,6 +171,12 @@ export default function RulesPage() {
               <li>
                 <strong>Garanzia Anti-Duplicato</strong>: Il motore di gioco garantisce che non ti verrà mai riproposta una missione già vista o tentata nella stessa partita.
               </li>
+              <li>
+                <strong>Missioni di Coppia Non Cambiabili</strong>: Le missioni cooperative (a due o tre compagni) non possono essere skippate, poiché coinvolgono un partner di squadra in contemporanea.
+              </li>
+              <li>
+                <strong>Completamento Condiviso & Stesso Ordine</strong>: Nelle missioni coop, i partner ricevono la sfida nello stesso identico slot/tappa: basta che uno dei due la completi per segnarla automaticamente come superata anche per il compagno!
+              </li>
             </ul>
           </div>
         </div>

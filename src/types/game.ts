@@ -131,6 +131,7 @@ export interface Game {
     penalty_probability?: number;
     penalties?: Record<string, PlayerPenalty>; // key: player_id
     real_mission_ids?: Record<string, string>;
+    player_skips?: Record<string, number>; // key: player_id, val: skips used count
   };
 }
 

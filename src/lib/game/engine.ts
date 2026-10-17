@@ -284,23 +284,50 @@ export function assignMissionsToPlayers(
     }
   });
 
-  // Se è attiva la modalità sequenziale "Catena di Sfide", ordiniamo le missioni di ciascun giocatore per difficoltà crescente (crescendo)
-  if (config.progressionMode === 'sequential') {
-    const diffRank: Record<MissionDifficulty, number> = {
-      facile: 1,
-      media: 2,
-      difficile: 3,
-      leggendaria: 4,
-    };
-    assignedPlayerMissions.sort((a, b) => {
-      if (a.player_id !== b.player_id) return 0;
-      const rankA = a.mission ? diffRank[a.mission.difficulty] || 2 : 2;
-      const rankB = b.mission ? diffRank[b.mission.difficulty] || 2 : 2;
-      return rankA - rankB;
-    });
-  }
+  // Organizziamo le missioni di ciascun giocatore in modo coerente e sincronizzato
+  // In particolare: le missioni coop DEVONO uscire nello stesso ordine/slot per entrambi i compagni
+  const diffRank: Record<MissionDifficulty, number> = {
+    facile: 1,
+    media: 2,
+    difficile: 3,
+    leggendaria: 4,
+  };
 
-  return assignedPlayerMissions;
+  // Posizione fissa e identica per tutti i compagni di squadra della missione coop
+  // (es. con 3 task, la coop è esattamente allo slot 1 / Task 2 per entrambi i compagni)
+  const coopSlotIndex = Math.min(1, Math.max(0, missionsPerPlayer - 1));
+
+  const finalAssignedPlayerMissions: PlayerMission[] = [];
+
+  players.forEach((player) => {
+    const playerMissions = assignedPlayerMissions.filter((pm) => pm.player_id === player.playerId);
+    const coop = playerMissions.filter(
+      (pm) => pm.coop_partner_id !== null || pm.mission?.category === 'collaborazione'
+    );
+    const individual = playerMissions.filter(
+      (pm) => pm.coop_partner_id === null && pm.mission?.category !== 'collaborazione'
+    );
+
+    // Se è attiva la modalità sequenziale "Catena di Sfide", ordiniamo le missioni individuali per difficoltà crescente
+    if (config.progressionMode === 'sequential') {
+      individual.sort((a, b) => {
+        const rankA = a.mission ? diffRank[a.mission.difficulty] || 2 : 2;
+        const rankB = b.mission ? diffRank[b.mission.difficulty] || 2 : 2;
+        return rankA - rankB;
+      });
+    }
+
+    // Inseriamo la missione coop esattamente allo stesso slot per tutti i membri della squadra
+    const ordered: PlayerMission[] = [...individual];
+    coop.forEach((c) => {
+      const insertAt = Math.min(coopSlotIndex, ordered.length);
+      ordered.splice(insertAt, 0, c);
+    });
+
+    finalAssignedPlayerMissions.push(...ordered);
+  });
+
+  return finalAssignedPlayerMissions;
 }
 
 /**

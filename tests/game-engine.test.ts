@@ -653,6 +653,224 @@ describe('AFTER DARK — Game Engine & Lifecycle Tests', () => {
       }
     }
   });
+
+  it('16. Le missioni Coop escono esattamente nello stesso ordine/slot per entrambi i compagni', () => {
+    const players = [
+      { playerId: 'usr_1', nickname: 'Alice' },
+      { playerId: 'usr_2', nickname: 'Bob' },
+      { playerId: 'usr_3', nickname: 'Charlie' },
+      { playerId: 'usr_4', nickname: 'Diana' },
+    ];
+
+    // Test sia in modalità sequenziale che libera
+    for (const progressionMode of ['sequential', 'free'] as const) {
+      const missions = assignMissionsToPlayers(`game_slot_test_${progressionMode}`, players, {
+        mode: 'house_party',
+        allowedDifficulties: ['facile', 'media', 'difficile', 'leggendaria'],
+        allowCoop: true,
+        missionsPerPlayer: 3,
+        progressionMode,
+      });
+
+      // Troviamo i compagni di squadra coop
+      const p1Missions = missions.filter((m) => m.player_id === 'usr_1');
+      const p1Coop = p1Missions.find((m) => m.coop_partner_id !== null);
+      expect(p1Coop).toBeDefined();
+
+      const p1CoopIndex = p1Missions.findIndex((m) => m.id === p1Coop!.id);
+      const partnerId = p1Coop!.coop_partner_id!;
+
+      const partnerMissions = missions.filter((m) => m.player_id === partnerId);
+      const partnerCoopIndex = partnerMissions.findIndex(
+        (m) => m.mission_id === p1Coop!.mission_id
+      );
+
+      // Devono trovarsi esattamente allo stesso indice/slot!
+      expect(partnerCoopIndex).toBe(p1CoopIndex);
+      expect(p1CoopIndex).toBe(1); // Slot 1 (Task 2)
+    }
+  });
+
+  it('17. Se un giocatore completa una missione Coop, viene completata in automatico anche per il compagno', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Coop Auto Complete Room',
+      mode: 'house_party',
+      minPlayers: 2,
+      maxPlayers: 4,
+      durationMinutes: 30,
+      allowedDifficulties: ['facile', 'media', 'difficile'],
+      missionsPerPlayer: 3,
+      allowCoop: true,
+      requireWitness: false,
+      hostPlayerId: 'p_alpha',
+      hostNickname: 'Alpha',
+      hostAvatar: 'shadow',
+    });
+
+    serverStore.joinRoom({
+      code: room.code,
+      playerId: 'p_beta',
+      nickname: 'Beta',
+      avatarSeed: 'ghost',
+    });
+
+    const { game } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p_alpha',
+      missionsPerPlayer: 3,
+    });
+
+    const alphaState = serverStore.getGameState(game.id, 'p_alpha');
+    const betaState = serverStore.getGameState(game.id, 'p_beta');
+
+    const alphaCoop = alphaState.myMissions.find((m) => m.coop_partner_id !== null);
+    const betaCoop = betaState.myMissions.find((m) => m.coop_partner_id !== null);
+
+    expect(alphaCoop).toBeDefined();
+    expect(betaCoop).toBeDefined();
+    expect(alphaCoop?.status).toBe('active');
+    expect(betaCoop?.status).toBe('active');
+
+    // Alpha completa la missione coop
+    const res = serverStore.submitMissionCompletion({
+      gameId: game.id,
+      playerMissionId: alphaCoop!.id,
+      requesterPlayerId: 'p_alpha',
+    });
+
+    expect(res.playerMission.status).toBe('completed');
+
+    // Verifica stato aggiornato di Alpha E di Beta: entrambi devono risultare completati!
+    const updatedAlpha = serverStore.getGameState(game.id, 'p_alpha');
+    const updatedBeta = serverStore.getGameState(game.id, 'p_beta');
+
+    const updatedAlphaCoop = updatedAlpha.myMissions.find((m) => m.id === alphaCoop!.id);
+    const updatedBetaCoop = updatedBeta.myMissions.find((m) => m.id === betaCoop!.id);
+
+    expect(updatedAlphaCoop?.status).toBe('completed');
+    expect(updatedBetaCoop?.status).toBe('completed');
+    expect(updatedBetaCoop?.completed_at).toBeDefined();
+    expect(updatedBetaCoop?.earned_points).toBeGreaterThan(0);
+
+    // Entrambi hanno punteggio aggiornato
+    const alphaScore = updatedAlpha.scores.find((s) => s.player_id === 'p_alpha');
+    const betaScore = updatedBeta.scores.find((s) => s.player_id === 'p_beta');
+    expect(alphaScore?.completed_count).toBe(1);
+    expect(betaScore?.completed_count).toBe(1);
+  });
+
+  it('18. Le missioni Coop non possono essere skippate', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'No Coop Skip Room',
+      mode: 'bar',
+      minPlayers: 2,
+      maxPlayers: 4,
+      durationMinutes: 30,
+      allowedDifficulties: ['facile', 'media', 'difficile'],
+      missionsPerPlayer: 3,
+      allowCoop: true,
+      maxSkipsPerPlayer: 2,
+      hostPlayerId: 'p_skip_1',
+      hostNickname: 'Skip1',
+      hostAvatar: 'spark',
+    });
+
+    serverStore.joinRoom({
+      code: room.code,
+      playerId: 'p_skip_2',
+      nickname: 'Skip2',
+      avatarSeed: 'wolf',
+    });
+
+    const { game } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p_skip_1',
+      missionsPerPlayer: 3,
+    });
+
+    const state = serverStore.getGameState(game.id, 'p_skip_1');
+    const coopMission = state.myMissions.find((m) => m.coop_partner_id !== null);
+    expect(coopMission).toBeDefined();
+
+    // Tentativo di skip sulla coop: deve fallire
+    expect(() =>
+      serverStore.skipMission({
+        gameId: game.id,
+        playerMissionId: coopMission!.id,
+        playerId: 'p_skip_1',
+      })
+    ).toThrow('Le missioni di coppia/collaborative non possono essere cambiate.');
+  });
+
+  it('19. Il numero di cambi (skip) è un totale fisso per partita e non infinito', () => {
+    const { room } = serverStore.createRoom({
+      groupName: 'Strict Skips Room',
+      mode: 'house_party',
+      minPlayers: 2,
+      maxPlayers: 4,
+      durationMinutes: 30,
+      allowedDifficulties: ['facile', 'media', 'difficile'],
+      missionsPerPlayer: 3,
+      allowCoop: false, // solo missioni singole
+      maxSkipsPerPlayer: 2, // 2 cambi totali
+      hostPlayerId: 'p_skipper',
+      hostNickname: 'Skipper',
+      hostAvatar: 'ghost',
+    });
+
+    serverStore.joinRoom({
+      code: room.code,
+      playerId: 'p_partner',
+      nickname: 'Partner',
+      avatarSeed: 'rebel',
+    });
+
+    const { game } = serverStore.startGame({
+      roomCode: room.code,
+      hostPlayerId: 'p_skipper',
+      missionsPerPlayer: 3,
+    });
+
+    const initialState = serverStore.getGameState(game.id, 'p_skipper');
+    expect(initialState.skipsRemaining).toBe(2);
+
+    const soloMission1 = initialState.myMissions[0];
+    const soloMission2 = initialState.myMissions[1];
+
+    // Primo skip: deve rimanere 1 skip
+    const firstSkip = serverStore.skipMission({
+      gameId: game.id,
+      playerMissionId: soloMission1.id,
+      playerId: 'p_skipper',
+    });
+    expect(firstSkip.skipsRemaining).toBe(1);
+
+    const midState = serverStore.getGameState(game.id, 'p_skipper');
+    expect(midState.skipsRemaining).toBe(1);
+
+    // Secondo skip: deve rimanere 0 skip
+    const secondSkip = serverStore.skipMission({
+      gameId: game.id,
+      playerMissionId: soloMission2.id,
+      playerId: 'p_skipper',
+    });
+    expect(secondSkip.skipsRemaining).toBe(0);
+
+    const zeroState = serverStore.getGameState(game.id, 'p_skipper');
+    expect(zeroState.skipsRemaining).toBe(0);
+
+    // Terzo skip: deve bloccare il giocatore con errore! Non sono infiniti!
+    expect(() =>
+      serverStore.skipMission({
+        gameId: game.id,
+        playerMissionId: secondSkip.playerMission.id,
+        playerId: 'p_skipper',
+      })
+    ).toThrow(/Hai esaurito i tuoi cambi missione disponibili/);
+
+    const finalState = serverStore.getGameState(game.id, 'p_skipper');
+    expect(finalState.skipsRemaining).toBe(0);
+  });
 });
 
 

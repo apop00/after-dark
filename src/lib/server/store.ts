@@ -547,9 +547,12 @@ class GameServerStore {
       throw new Error('I cambi di missione sono disabilitati per questa partita.');
     }
 
+    if (!game.config.player_skips) {
+      game.config.player_skips = {};
+    }
     const scoresList = this.scores.get(params.gameId) || [];
     const playerScore = scoresList.find((s) => s.player_id === params.playerId);
-    const skipsUsed = playerScore?.skips_used || 0;
+    const skipsUsed = game.config.player_skips[params.playerId] ?? playerScore?.skips_used ?? 0;
     if (skipsUsed >= maxSkips) {
       throw new Error(`Hai esaurito i tuoi cambi missione disponibili (${maxSkips}/${maxSkips} usati).`);
     }
@@ -565,6 +568,11 @@ class GameServerStore {
     const oldPlayerMission = missionsList[targetMissionIdx];
     if (oldPlayerMission.status !== 'active') {
       throw new Error('Puoi cambiare solo una missione attiva non ancora completata.');
+    }
+
+    // Le missioni di coppia/collaborative NON sono skippabili!
+    if (oldPlayerMission.coop_partner_id || oldPlayerMission.mission?.category === 'collaborazione') {
+      throw new Error('Le missioni di coppia/collaborative non possono essere cambiate.');
     }
 
     const oldDifficulty = oldPlayerMission.mission?.difficulty || 'media';
@@ -628,7 +636,12 @@ class GameServerStore {
     };
     missionsList[targetMissionIdx] = updatedPlayerMission;
 
-    // Aggiorna skips usati
+    // Aggiorna skips usati nella config della partita e nello score del giocatore
+    if (!game.config.player_skips) {
+      game.config.player_skips = {};
+    }
+    game.config.player_skips[params.playerId] = skipsUsed + 1;
+
     if (playerScore) {
       playerScore.skips_used = skipsUsed + 1;
       playerScore.updated_at = new Date().toISOString();
@@ -638,7 +651,7 @@ class GameServerStore {
 
     return {
       playerMission: updatedPlayerMission,
-      skipsRemaining: maxSkips - (skipsUsed + 1),
+      skipsRemaining: Math.max(0, maxSkips - (skipsUsed + 1)),
     };
   }
 
@@ -746,7 +759,7 @@ class GameServerStore {
     const awards = this.awards.get(gameId) || [];
     const maxSkips = game.config.max_skips_per_player !== undefined ? game.config.max_skips_per_player : 1;
     const myScore = scores.find((s) => s.player_id === requestingPlayerId);
-    const skipsUsed = myScore?.skips_used || 0;
+    const skipsUsed = game.config.player_skips?.[requestingPlayerId] ?? myScore?.skips_used ?? 0;
     const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
 
     // Recupera la penitenza/malus assegnata a questo giocatore (se presente)
@@ -838,21 +851,20 @@ class GameServerStore {
 
       this.updateScore(params.gameId, params.requesterPlayerId, earned, 1, 0);
 
-      // Se collaborativa, completa e premia anche il/i compagno/i di squadra!
-      const partnerId = isOwner ? pm.coop_partner_id : pm.player_id;
-      if (partnerId) {
-        const partnerPm = missions.find(
+      // Se collaborativa, completa e premia automaticamente anche il/i compagno/i di squadra!
+      if (pm.coop_partner_id || missionCatalog.category === 'collaborazione') {
+        const teammatesMissions = missions.filter(
           (m) =>
+            m.player_id !== pm.player_id &&
             m.mission_id === pm.mission_id &&
-            m.player_id === partnerId &&
-            m.status === 'active'
+            m.status !== 'completed'
         );
-        if (partnerPm) {
-          partnerPm.status = 'completed';
-          partnerPm.completed_at = new Date().toISOString();
-          partnerPm.earned_points = earned;
-        }
-        this.updateScore(params.gameId, partnerId, earned, 1, 0);
+        teammatesMissions.forEach((tPm) => {
+          tPm.status = 'completed';
+          tPm.completed_at = new Date().toISOString();
+          tPm.earned_points = earned;
+          this.updateScore(params.gameId, tPm.player_id, earned, 1, 0);
+        });
       }
 
       this.saveToDisk();
@@ -917,9 +929,20 @@ class GameServerStore {
       pm.earned_points = points;
       this.updateScore(params.gameId, v.requester_player_id, points, 1, 0);
 
-      // Se era collaborativa, premia anche il partner
-      if (pm.coop_partner_id) {
-        this.updateScore(params.gameId, pm.coop_partner_id, Math.round(points * 0.7), 1, 0);
+      // Se collaborativa, completa e premia automaticamente anche il/i compagno/i di squadra!
+      if (pm.coop_partner_id || pm.mission?.category === 'collaborazione') {
+        const teammatesMissions = missions.filter(
+          (m) =>
+            m.player_id !== pm.player_id &&
+            m.mission_id === pm.mission_id &&
+            m.status !== 'completed'
+        );
+        teammatesMissions.forEach((tPm) => {
+          tPm.status = 'completed';
+          tPm.completed_at = new Date().toISOString();
+          tPm.earned_points = points;
+          this.updateScore(params.gameId, tPm.player_id, points, 1, 0);
+        });
       }
     } else {
       pm.status = 'failed';

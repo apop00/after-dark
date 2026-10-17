@@ -261,6 +261,14 @@ export default function GameHUDPage({
   };
 
   const handleSkipMission = async (pm: PlayerMission) => {
+    if (pm.coop_partner_id || pm.mission?.category === 'collaborazione') {
+      alert('Le missioni di coppia/collaborative non possono essere cambiate: coinvolgono il tuo partner di squadra!');
+      return;
+    }
+    if (skipsRemaining <= 0) {
+      alert('Hai esaurito tutti i cambi missione a tua disposizione per questa partita!');
+      return;
+    }
     if (!confirm(`Vuoi davvero cambiare questa missione? Consumerai 1 dei tuoi ${skipsRemaining} cambi totali per l'intera partita.`)) {
       return;
     }

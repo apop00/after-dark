@@ -908,8 +908,9 @@ class SupabaseStore {
     }
 
     const maxSkips = game.config?.max_skips_per_player !== undefined ? game.config.max_skips_per_player : 1;
+    const playerSkips = (game.config?.player_skips as Record<string, number>) || {};
     const myScore = scores.find((s) => s.player_id === playerUuid || s.player_id === requestingPlayerId);
-    const skipsUsed = myScore?.skips_used || 0;
+    const skipsUsed = playerSkips[playerUuid] ?? playerSkips[requestingPlayerId] ?? myScore?.skips_used ?? 0;
     const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
 
     const penalties = game.config?.penalties || {};
@@ -1065,13 +1066,17 @@ class SupabaseStore {
       // Aggiorna punteggio
       await this.incrementScore(params.gameId, requesterUuid, earned, 1, 0);
 
-      // Se collaborativa, completa e premia anche il partner
-      if (pm.coop_partner_id) {
-        await fetch(
+      // Se collaborativa, completa e premia automaticamente anche il/i compagno/i di squadra!
+      if (pm.coop_partner_id || missionCatalog.category === 'collaborazione') {
+        const partnerRes = await fetch(
           this.getUrl(
-            `player_missions?game_id=eq.${params.gameId}&player_id=eq.${pm.coop_partner_id}&mission_id=eq.${pm.mission_id}`
+            `player_missions?game_id=eq.${params.gameId}&player_id=neq.${requesterUuid}&mission_id=eq.${pm.mission_id}&status=neq.completed`
           ),
-          {
+          { headers: this.getHeaders(), cache: 'no-store' }
+        );
+        const partnerRows: PlayerMission[] = partnerRes.ok ? await partnerRes.json() : [];
+        for (const pRow of partnerRows) {
+          await fetch(this.getUrl(`player_missions?id=eq.${pRow.id}`), {
             method: 'PATCH',
             headers: this.getHeaders(),
             body: JSON.stringify({
@@ -1079,9 +1084,9 @@ class SupabaseStore {
               completed_at: new Date().toISOString(),
               earned_points: earned,
             }),
-          }
-        );
-        await this.incrementScore(params.gameId, pm.coop_partner_id, earned, 1, 0);
+          });
+          await this.incrementScore(params.gameId, pRow.player_id, earned, 1, 0);
+        }
       }
 
       return { playerMission: { ...updatedPm, mission_id: actualMissionId, mission: missionCatalog } };
@@ -1260,13 +1265,17 @@ class SupabaseStore {
         0
       );
 
-      // Se collaborativa, premia anche il partner
-      if (pm.coop_partner_id) {
-        await fetch(
+      // Se collaborativa, completa e premia automaticamente anche il/i compagno/i di squadra!
+      if (pm.coop_partner_id || missionCatalog.category === 'collaborazione') {
+        const partnerRes = await fetch(
           this.getUrl(
-            `player_missions?game_id=eq.${params.gameId}&player_id=eq.${pm.coop_partner_id}&mission_id=eq.${pm.mission_id}`
+            `player_missions?game_id=eq.${params.gameId}&player_id=neq.${v.requester_player_id}&mission_id=eq.${pm.mission_id}&status=neq.completed`
           ),
-          {
+          { headers: this.getHeaders(), cache: 'no-store' }
+        );
+        const partnerRows: PlayerMission[] = partnerRes.ok ? await partnerRes.json() : [];
+        for (const pRow of partnerRows) {
+          await fetch(this.getUrl(`player_missions?id=eq.${pRow.id}`), {
             method: 'PATCH',
             headers: this.getHeaders(),
             body: JSON.stringify({
@@ -1274,9 +1283,9 @@ class SupabaseStore {
               completed_at: new Date().toISOString(),
               earned_points: points,
             }),
-          }
-        );
-        await this.incrementScore(params.gameId, pm.coop_partner_id, points, 1, 0);
+          });
+          await this.incrementScore(params.gameId, pRow.player_id, points, 1, 0);
+        }
       }
     } else {
       await fetch(this.getUrl(`player_missions?id=eq.${pm.id}`), {
@@ -1441,14 +1450,15 @@ class SupabaseStore {
       throw new Error('I cambi di missione sono disabilitati per questa partita.');
     }
 
-    // 2. Fetch Scores to verify skips remaining
+    // 2. Fetch game.config.player_skips to verify skips remaining
+    const playerSkips = (game.config?.player_skips as Record<string, number>) || {};
     const scoresRes = await fetch(
       this.getUrl(`scores?game_id=eq.${params.gameId}&player_id=eq.${playerUuid}&limit=1`),
       { headers: this.getHeaders(), cache: 'no-store' }
     );
     const scoreRows = scoresRes.ok ? await scoresRes.json() : [];
     const myScore: PlayerScore | undefined = scoreRows?.[0];
-    const skipsUsed = myScore?.skips_used || 0;
+    const skipsUsed = playerSkips[playerUuid] ?? playerSkips[params.playerId] ?? myScore?.skips_used ?? 0;
     if (skipsUsed >= maxSkips) {
       throw new Error(`Hai esaurito i tuoi cambi missione disponibili (${maxSkips}/${maxSkips} usati).`);
     }
@@ -1471,6 +1481,11 @@ class SupabaseStore {
     const realMissionMap = (game.config?.real_mission_ids as Record<string, string>) || {};
     const oldActualId = realMissionMap[targetPm.id] || targetPm.mission_id;
     const oldMission = MISSIONS_DATABASE.find((m) => m.id === oldActualId);
+
+    // Le missioni di coppia/collaborative NON sono skippabili!
+    if (targetPm.coop_partner_id || oldMission?.category === 'collaborazione') {
+      throw new Error('Le missioni di coppia/collaborative non possono essere cambiate.');
+    }
     const oldDifficulty = oldMission?.difficulty || 'media';
     const rule = game.config?.skip_difficulty_rule || 'same';
 
@@ -1517,12 +1532,24 @@ class SupabaseStore {
       selectedMission = fallbackList[Math.floor(Math.random() * fallbackList.length)] || MISSIONS_DATABASE[0];
     }
 
-    // Aggiorna mappa real_mission_ids
+    // Aggiorna mappa real_mission_ids e player_skips nel config di games su Supabase
     realMissionMap[targetPm.id] = selectedMission.id;
+    const updatedSkips = {
+      ...playerSkips,
+      [playerUuid]: skipsUsed + 1,
+      [params.playerId]: skipsUsed + 1,
+    };
+
     await fetch(this.getUrl(`games?id=eq.${params.gameId}`), {
       method: 'PATCH',
       headers: this.getHeaders(),
-      body: JSON.stringify({ config: { ...game.config, real_mission_ids: realMissionMap } }),
+      body: JSON.stringify({
+        config: {
+          ...game.config,
+          real_mission_ids: realMissionMap,
+          player_skips: updatedSkips,
+        },
+      }),
     });
 
     // Aggiorna player_missions su Supabase
@@ -1539,13 +1566,17 @@ class SupabaseStore {
       }),
     });
 
-    // Incrementa skips_used in scores se presente
+    // Incrementa skips_used in scores se presente (opzionale)
     if (myScore) {
-      await fetch(this.getUrl(`scores?id=eq.${myScore.id}`), {
-        method: 'PATCH',
-        headers: this.getHeaders(),
-        body: JSON.stringify({ skips_used: skipsUsed + 1 }),
-      });
+      try {
+        await fetch(this.getUrl(`scores?id=eq.${myScore.id}`), {
+          method: 'PATCH',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ skips_used: skipsUsed + 1 }),
+        });
+      } catch {
+        // Ignora se la colonna non esiste su Supabase
+      }
     }
 
     const updatedPm: PlayerMission = {
@@ -1557,7 +1588,7 @@ class SupabaseStore {
 
     return {
       playerMission: updatedPm,
-      skipsRemaining: maxSkips - (skipsUsed + 1),
+      skipsRemaining: Math.max(0, maxSkips - (skipsUsed + 1)),
     };
   }
 }

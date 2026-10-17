@@ -97,6 +97,7 @@ export function MissionCard({
   const isCompleted = playerMission.status === 'completed';
   const isPending = playerMission.status === 'pending_verification';
   const isFailed = playerMission.status === 'failed';
+  const isCoop = Boolean(playerMission.coop_partner_id || mission.category === 'collaborazione');
 
   const toggleReveal = () => {
     const next = !isRevealed;
@@ -155,15 +156,23 @@ export function MissionCard({
       {/* Main Body */}
       <div className="p-5">
         {/* Coop Partner Badge */}
-        {playerMission.coop_partner_nickname && (
+        {(playerMission.coop_partner_nickname || isCoop) && (
           <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-gradient-to-r from-purple-950/60 to-pink-950/60 border border-purple-500/40 text-purple-200 text-xs font-semibold mb-3 shadow-lg shadow-purple-950/40">
             <Users className="w-4 h-4 text-purple-300 shrink-0" />
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] uppercase tracking-wider text-purple-400 font-bold block">
-                Missione di Squadra Condivisa
-              </span>
-              <p className="text-xs text-white truncate">
-                In coppia/trio con: <strong className="text-pink-300 font-extrabold">{playerMission.coop_partner_nickname}</strong>
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-[10px] uppercase tracking-wider text-purple-400 font-bold block">
+                  Missione di Squadra Condivisa
+                </span>
+                <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30 shrink-0">
+                  Non skippabile 🔒
+                </span>
+              </div>
+              <p className="text-xs text-white truncate mt-0.5">
+                In coppia con: <strong className="text-pink-300 font-extrabold">{playerMission.coop_partner_nickname || 'Compagno di Squadra'}</strong>
+              </p>
+              <p className="text-[10px] text-purple-300/80 mt-0.5">
+                ⚡ Basta che uno dei due la completi per finirla entrambi!
               </p>
             </div>
           </div>
@@ -276,7 +285,7 @@ export function MissionCard({
           </div>
         ) : (
           <div className="flex items-center gap-2 w-full">
-            {skipsRemaining > 0 && onSkipRequest && (
+            {skipsRemaining > 0 && onSkipRequest && !isCoop && (
               <button
                 type="button"
                 disabled={isSkipping}
