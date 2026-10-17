@@ -452,12 +452,12 @@ class GameServerStore {
     const durationMs = room.duration_minutes > 0 ? room.duration_minutes * 60 * 1000 : null;
     const endsAt = durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
 
-    // Assegna eventuali penitenze/malus casuali in base alla probabilità
+    // Assegna eventuali penitenze/malus casuali in base alla probabilità (tra dopo la 1ª e la penultima task)
     const playerPenaltyRefs = members.map((m) => ({
       playerId: m.player_id,
       nickname: m.nickname,
     }));
-    const assignedPenalties = assignPenaltiesToPlayers(playerPenaltyRefs, penaltyProb);
+    const assignedPenalties = assignPenaltiesToPlayers(playerPenaltyRefs, penaltyProb, targetMissions);
 
     const game: Game = {
       id: gameId,
@@ -750,7 +750,16 @@ class GameServerStore {
     const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
 
     // Recupera la penitenza/malus assegnata a questo giocatore (se presente)
-    const myPenalty = game.config.penalties?.[requestingPlayerId] || null;
+    // Esce a sorpresa a caso dopo la 1ª task fino a dopo la penultima task
+    const rawPenalty = game.config.penalties?.[requestingPlayerId] || null;
+    let myPenalty: PlayerPenalty | null = null;
+    if (rawPenalty) {
+      const completedCount = myMissions.filter((m) => m.status === 'completed').length;
+      const triggerAfter = rawPenalty.trigger_after_task ?? 1;
+      if (completedCount >= triggerAfter || rawPenalty.status === 'completed') {
+        myPenalty = rawPenalty;
+      }
+    }
 
     return {
       game,

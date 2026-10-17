@@ -634,13 +634,13 @@ class SupabaseStore {
       ? Number((params as { penaltyProbability?: number }).penaltyProbability)
       : (room.penalty_probability ?? 0);
 
-    // Assegna eventuali penitenze/malus casuali in base alla probabilità
+    // Assegna eventuali penitenze/malus casuali in base alla probabilità (tra dopo la 1ª e la penultima task)
     const playerRefs = members.map((m) => ({
       playerId: m.player_id,
       nickname: m.nickname,
       gender: m.gender,
     }));
-    const assignedPenalties = assignPenaltiesToPlayers(playerRefs, penaltyProb);
+    const assignedPenalties = assignPenaltiesToPlayers(playerRefs, penaltyProb, missionsPerPlayer);
 
     // Crea record Game
     const gamePayload = {
@@ -913,7 +913,15 @@ class SupabaseStore {
     const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
 
     const penalties = game.config?.penalties || {};
-    const myPenalty = penalties[playerUuid] || penalties[requestingPlayerId] || null;
+    const rawPenalty = penalties[playerUuid] || penalties[requestingPlayerId] || null;
+    let myPenalty: PlayerPenalty | null = null;
+    if (rawPenalty) {
+      const completedCount = myMissions.filter((m) => m.status === 'completed').length;
+      const triggerAfter = rawPenalty.trigger_after_task ?? 1;
+      if (completedCount >= triggerAfter || rawPenalty.status === 'completed') {
+        myPenalty = rawPenalty;
+      }
+    }
 
     return {
       game,

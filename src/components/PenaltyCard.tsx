@@ -182,9 +182,14 @@ export function PenaltyCard({
             <span className="text-[9px] uppercase font-black tracking-widest text-amber-400 block">
               Modificatore Malus
             </span>
-            <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5 flex-wrap">
               <span>Penitenza Segreta</span>
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+              {penalty.trigger_after_task && (
+                <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
+                  dopo task {penalty.trigger_after_task}
+                </span>
+              )}
             </h3>
           </div>
         </div>

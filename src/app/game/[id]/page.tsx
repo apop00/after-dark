@@ -74,6 +74,16 @@ export default function GameHUDPage({
     prevIncomingCountRef.current = incomingVerifications.length;
   }, [incomingVerifications.length]);
 
+  // Suono e vibrazione immediata quando scatta la penitenza a sorpresa a metà partita
+  const prevPenaltyActiveRef = useRef(false);
+  useEffect(() => {
+    if (myPenalty && myPenalty.status === 'active' && !prevPenaltyActiveRef.current) {
+      sounds.playChaosAlert();
+      triggerHaptic('warning');
+    }
+    prevPenaltyActiveRef.current = Boolean(myPenalty && myPenalty.status === 'active');
+  }, [myPenalty]);
+
   const fetchGameState = useCallback(async () => {
     try {
       const session = getOrCreatePlayerSession();

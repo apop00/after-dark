@@ -86,6 +86,7 @@ export interface PlayerPenalty {
   target_player_id?: string;
   category?: 'tempo' | 'comportamento' | 'sociale' | 'recitazione';
   icon?: string;
+  trigger_after_task?: number; // Es. 1 per uscire dopo la 1ª task, 2 per la 2ª (fino alla penultima)
   status: 'active' | 'completed';
   assigned_at: string;
   completed_at?: string | null;

@@ -426,11 +426,13 @@ export function calculateEndGameAwards(
 }
 
 /**
- * Assegna penalità/malus casuali ai giocatori in base alla probabilità configurata (0, 10, 25, 50, 100%)
+ * Assegna penalità/malus casuali ai giocatori in base alla probabilità configurata (0, 10, 25, 50, 100%).
+ * Le punizioni escono a caso dopo la prima task fino a dopo la penultima task (tra 1 e missionsPerPlayer - 1).
  */
 export function assignPenaltiesToPlayers<T extends { playerId: string; nickname: string }>(
   players: T[],
-  penaltyProbability: number = 0
+  penaltyProbability: number = 0,
+  missionsPerPlayer: number = 3
 ): Record<string, PlayerPenalty> {
   if (!penaltyProbability || penaltyProbability <= 0 || players.length === 0) {
     return {};
@@ -438,6 +440,10 @@ export function assignPenaltiesToPlayers<T extends { playerId: string; nickname:
 
   const assigned: Record<string, PlayerPenalty> = {};
   const probNormalized = Math.min(100, Math.max(0, penaltyProbability));
+
+  // Range di trigger: da dopo la prima task (1) fino a dopo la penultima task (missionsPerPlayer - 1)
+  const minTrigger = 1;
+  const maxTrigger = Math.max(1, missionsPerPlayer - 1);
 
   // Mescola le penalità per evitare ripetizioni se più giocatori ne ricevono una
   const shuffledPenalties = [...PENALTIES_DATABASE].sort(() => Math.random() - 0.5);
@@ -448,6 +454,9 @@ export function assignPenaltiesToPlayers<T extends { playerId: string; nickname:
     if (roll < probNormalized) {
       const def = shuffledPenalties[penaltyIdx % shuffledPenalties.length];
       penaltyIdx++;
+
+      // Calcola quando scatterà la penitenza a sorpresa per questo giocatore
+      const triggerAfterTask = minTrigger + Math.floor(Math.random() * (maxTrigger - minTrigger + 1));
 
       let targetPlayerNickname: string | undefined;
       let targetPlayerId: string | undefined;
@@ -476,6 +485,7 @@ export function assignPenaltiesToPlayers<T extends { playerId: string; nickname:
         target_player_id: targetPlayerId,
         category: def.category,
         icon: def.icon,
+        trigger_after_task: triggerAfterTask,
         status: 'active',
         assigned_at: new Date().toISOString(),
       };

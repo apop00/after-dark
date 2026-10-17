@@ -64,7 +64,29 @@ describe('Modificatore Punizione (Penalties System)', () => {
     expect(foundTargetReplacement).toBe(true);
   });
 
-  it('full store lifecycle: creates room with penalty probability, starts game, assigns penalty, and completes it', () => {
+  it('assigns trigger_after_task between 1 (dopo la prima) and missionsPerPlayer - 1 (dopo la penultima)', () => {
+    const players = [
+      { playerId: 'p1', nickname: 'Alice' },
+    ];
+
+    // Con 4 missioni a testa: trigger deve essere 1, 2 o 3 (fino alla penultima task)
+    for (let i = 0; i < 50; i++) {
+      const assigned = assignPenaltiesToPlayers(players, 100, 4);
+      const p1 = assigned['p1'];
+      expect(p1.trigger_after_task).toBeGreaterThanOrEqual(1);
+      expect(p1.trigger_after_task).toBeLessThanOrEqual(3);
+    }
+
+    // Con 3 missioni a testa: trigger deve essere 1 o 2
+    for (let i = 0; i < 50; i++) {
+      const assigned = assignPenaltiesToPlayers(players, 100, 3);
+      const p1 = assigned['p1'];
+      expect(p1.trigger_after_task).toBeGreaterThanOrEqual(1);
+      expect(p1.trigger_after_task).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('full store lifecycle: penalty triggers only after completing trigger_after_task tasks, not before', () => {
     serverStore.clearAll();
 
     const { room, member: host } = serverStore.createRoom({
@@ -73,6 +95,7 @@ describe('Modificatore Punizione (Penalties System)', () => {
       minPlayers: 2,
       maxPlayers: 5,
       durationMinutes: 30,
+      missionsPerPlayer: 3,
       allowedDifficulties: ['facile', 'media'],
       allowCoop: false,
       penaltyProbability: 100, // 100% per test
@@ -95,20 +118,40 @@ describe('Modificatore Punizione (Penalties System)', () => {
     const { game } = serverStore.startGame({
       roomCode: room.code,
       hostPlayerId: host.player_id,
+      missionsPerPlayer: 3,
     });
 
     expect(game.config.penalty_probability).toBe(100);
     expect(game.config.penalties).toBeDefined();
-    expect(game.config.penalties!['player_host']).toBeDefined();
-    expect(game.config.penalties!['player_2']).toBeDefined();
+    const hostRawPenalty = game.config.penalties!['player_host'];
+    expect(hostRawPenalty).toBeDefined();
+    expect(hostRawPenalty.trigger_after_task).toBeGreaterThanOrEqual(1);
+    expect(hostRawPenalty.trigger_after_task).toBeLessThanOrEqual(2);
 
-    // Check getGameState returns myPenalty
-    const hostState = serverStore.getGameState(game.id, 'player_host');
-    expect(hostState.myPenalty).toBeDefined();
-    expect(hostState.myPenalty?.id).toBe(game.config.penalties!['player_host'].id);
-    expect(hostState.myPenalty?.status).toBe('active');
+    // Prima di completare alcuna missione (0 task completate), la penitenza NON deve essere ancora uscita!
+    const initialState = serverStore.getGameState(game.id, 'player_host');
+    expect(initialState.myPenalty).toBeNull();
 
-    // Complete penalty
+    // Completa le missioni del giocatore fino a raggiungere trigger_after_task
+    const playerMissions = initialState.myMissions;
+    const triggerTarget = hostRawPenalty.trigger_after_task!;
+
+    for (let i = 0; i < triggerTarget; i++) {
+      const pm = playerMissions[i];
+      serverStore.submitMissionCompletion({
+        gameId: game.id,
+        playerMissionId: pm.id,
+        requesterPlayerId: 'player_host',
+      });
+    }
+
+    // Ora che ha completato trigger_after_task missioni, la penitenza DEVE essere uscita ed essere attiva!
+    const triggeredState = serverStore.getGameState(game.id, 'player_host');
+    expect(triggeredState.myPenalty).toBeDefined();
+    expect(triggeredState.myPenalty?.id).toBe(hostRawPenalty.id);
+    expect(triggeredState.myPenalty?.status).toBe('active');
+
+    // Completa la penitenza
     const completeRes = serverStore.completePenalty({
       gameId: game.id,
       playerId: 'player_host',

@@ -821,7 +821,7 @@ export default function CreateRoomPage() {
             </div>
 
             <p className="text-[11px] text-slate-400">
-              Probabilità che ciascun giocatore riceva una penitenza segreta obbligatoria da scontare (es. silenzio, mimo, chiamate, accenti teutonici, crampi).
+              Probabilità che ciascun giocatore riceva una penitenza segreta. Se estratta, scatterà a sorpresa a caso <strong>dopo la 1ª task fino a dopo la penultima task</strong>!
             </p>
 
             <div className="grid grid-cols-5 gap-1.5">
