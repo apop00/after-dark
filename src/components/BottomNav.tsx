@@ -22,17 +22,17 @@ export function BottomNav({ isFrameMode = false }: BottomNavProps) {
   const navItems = [
     { href: '/', label: 'Home', icon: <Home className="w-5 h-5" /> },
     { href: '/create', label: 'Crea', icon: <PlusCircle className="w-5 h-5" /> },
-    { href: '/join', label: 'Entra', icon: <LogIn className="w-5 h-5" /> },
+    { href: '/join', label: 'Partecipa', icon: <LogIn className="w-5 h-5" /> },
     { href: '/rules', label: 'Regole', icon: <BookOpen className="w-5 h-5" /> },
   ];
 
   const containerClasses = isFrameMode
-    ? 'fixed md:relative bottom-0 inset-x-0 md:bottom-auto md:inset-auto z-40 w-full max-w-md mx-auto bg-[#090514]/95 backdrop-blur-xl border-t border-white/10 px-3 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-1.5 shadow-[0_-10px_25px_rgba(0,0,0,0.7)] shrink-0'
-    : 'fixed bottom-0 inset-x-0 z-40 w-full max-w-md mx-auto bg-[#090514]/95 backdrop-blur-xl border-t border-white/10 px-3 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-10px_25px_rgba(0,0,0,0.7)] shrink-0';
+    ? 'fixed md:relative bottom-0 inset-x-0 md:bottom-auto md:inset-auto z-40 w-full max-w-md mx-auto bg-[#0a0618]/95 backdrop-blur-xl border-t border-white/10 px-3 py-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] md:pb-2 shadow-[0_-10px_30px_rgba(0,0,0,0.8)] shrink-0'
+    : 'fixed bottom-0 inset-x-0 z-40 w-full max-w-md mx-auto bg-[#0a0618]/95 backdrop-blur-xl border-t border-white/10 px-3 py-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_rgba(0,0,0,0.8)] shrink-0';
 
   return (
     <nav className={containerClasses}>
-      <div className="grid grid-cols-4 gap-1 max-w-sm mx-auto">
+      <div className="grid grid-cols-4 gap-1.5 max-w-sm mx-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -43,16 +43,19 @@ export function BottomNav({ isFrameMode = false }: BottomNavProps) {
                 triggerHaptic('light');
                 sounds.playClick();
               }}
-              className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all ${
+              className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all relative ${
                 isActive
-                  ? 'bg-rose-500/20 text-rose-400 font-extrabold shadow-sm'
+                  ? 'bg-rose-500/20 text-rose-300 font-extrabold shadow-inner border border-rose-500/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5 font-medium'
               }`}
             >
-              <div className={isActive ? 'scale-110 text-rose-400 transition-transform' : 'transition-transform'}>
+              <div className={isActive ? 'scale-110 text-rose-400 transition-transform filter drop-shadow' : 'transition-transform'}>
                 {item.icon}
               </div>
               <span className="text-[10px] mt-0.5 uppercase tracking-wider">{item.label}</span>
+              {isActive && (
+                <div className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-0.5 shadow-sm shadow-rose-400" />
+              )}
             </Link>
           );
         })}
