@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { MissionCard } from '@/components/MissionCard';
+import { PenaltyCard } from '@/components/PenaltyCard';
 import { WitnessSelectModal, IncomingVerificationDrawer } from '@/components/VerificationModal';
 import { getAvatarEmoji } from '@/components/AvatarPicker';
 import {
@@ -24,6 +25,7 @@ import {
   MissionVerification,
   PlayerScore,
   GameEvent,
+  PlayerPenalty,
 } from '@/types/game';
 import { getOrCreatePlayerSession } from '@/lib/session/player';
 import { triggerHaptic } from '@/lib/haptics/vibration';
@@ -42,6 +44,7 @@ export default function GameHUDPage({
 
   const [game, setGame] = useState<Game | null>(null);
   const [myMissions, setMyMissions] = useState<PlayerMission[]>([]);
+  const [myPenalty, setMyPenalty] = useState<PlayerPenalty | null>(null);
   const [scores, setScores] = useState<PlayerScore[]>([]);
   const [activeEvents, setActiveEvents] = useState<GameEvent[]>([]);
   const [pendingVerifications, setPendingVerifications] = useState<MissionVerification[]>([]);
@@ -96,6 +99,7 @@ export default function GameHUDPage({
         return true;
       });
       setMyMissions(uniqueMissions);
+      setMyPenalty(data.myPenalty || null);
       setScores(data.scores || []);
       setActiveEvents(data.activeEvents || []);
       setPendingVerifications(data.pendingVerifications || []);
@@ -114,6 +118,27 @@ export default function GameHUDPage({
       setIsLoading(false);
     }
   }, [gameId, router]);
+
+  const handleCompletePenalty = async () => {
+    try {
+      const session = getOrCreatePlayerSession();
+      const res = await fetch('/api/penalties/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameId,
+          playerId: session.playerId,
+        }),
+      });
+      if (res.ok) {
+        sounds.playSuccess();
+        triggerHaptic('success');
+        await fetchGameState();
+      }
+    } catch {
+      // Non-critical
+    }
+  };
 
   useEffect(() => {
     const session = getOrCreatePlayerSession();
@@ -432,6 +457,15 @@ export default function GameHUDPage({
         {/* Tab Content */}
         {activeTab === 'missions' && (
           <div className="space-y-4">
+            {/* Secret Malus / Penalty Card (if assigned) */}
+            {myPenalty && (
+              <PenaltyCard
+                penalty={myPenalty}
+                hideByDefault={game?.config?.hide_tasks !== false}
+                onComplete={handleCompletePenalty}
+              />
+            )}
+
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 {game?.config?.hide_tasks === false ? 'Le tue Missioni' : 'Le tue Missioni Segrete'} ({myMissions.filter((m) => m.status === 'completed').length}/

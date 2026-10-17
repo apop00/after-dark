@@ -53,6 +53,7 @@ export async function PATCH(
       missionDistribution,
       maxSkipsPerPlayer,
       skipDifficultyRule,
+      penaltyProbability,
     } = body;
 
     if (!hostPlayerId) {
@@ -70,6 +71,7 @@ export async function PATCH(
       missionDistribution,
       maxSkipsPerPlayer: maxSkipsPerPlayer !== undefined ? Number(maxSkipsPerPlayer) : undefined,
       skipDifficultyRule,
+      penaltyProbability: penaltyProbability !== undefined ? Number(penaltyProbability) : undefined,
     };
 
     const updatedRoom = isProdDb

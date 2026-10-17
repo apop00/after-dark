@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       missionDistribution,
       maxSkipsPerPlayer,
       skipDifficultyRule,
+      penaltyProbability,
     } = body;
 
     if (!roomCode || !hostPlayerId) {
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
       missionDistribution,
       maxSkipsPerPlayer: maxSkipsPerPlayer !== undefined ? Number(maxSkipsPerPlayer) : undefined,
       skipDifficultyRule,
+      penaltyProbability: penaltyProbability !== undefined ? Number(penaltyProbability) : undefined,
     };
     const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';
     const { game, missionsAssignedCount } = isProdDb

@@ -14,10 +14,12 @@ import {
   ScoringMode,
   MissionDistribution,
   SkipDifficultyRule,
+  PlayerPenalty,
 } from '@/types/game';
 import {
   generateRoomCode,
   assignMissionsToPlayers,
+  assignPenaltiesToPlayers,
   calculateMissionPoints,
   calculateEndGameAwards,
 } from '@/lib/game/engine';
@@ -49,6 +51,7 @@ interface RoomMeta {
   missionDistribution?: MissionDistribution;
   maxSkipsPerPlayer?: number;
   skipDifficultyRule?: SkipDifficultyRule;
+  penaltyProbability?: number;
 }
 
 const META_PREFIX = '⟦AD_CFG:';
@@ -146,6 +149,9 @@ class SupabaseStore {
       ? (params as { maxSkipsPerPlayer?: number }).maxSkipsPerPlayer
       : 1;
     const skipDifficultyRule = (params as { skipDifficultyRule?: SkipDifficultyRule }).skipDifficultyRule || 'same';
+    const penaltyProbability = (params as { penaltyProbability?: number }).penaltyProbability !== undefined
+      ? Number((params as { penaltyProbability?: number }).penaltyProbability)
+      : 0;
 
     const encodedGroupName = encodeRoomMeta(params.groupName.trim() || 'I Guerrieri della Notte', {
       mode: params.mode,
@@ -160,6 +166,7 @@ class SupabaseStore {
       missionDistribution,
       maxSkipsPerPlayer,
       skipDifficultyRule,
+      penaltyProbability,
     });
 
     // Se la modalità è jeffrey_island, salva 'house_party' su DB per non violare rooms_mode_check su Supabase
@@ -292,6 +299,7 @@ class SupabaseStore {
     row.mission_distribution = meta.missionDistribution || 'fair';
     row.max_skips_per_player = meta.maxSkipsPerPlayer !== undefined ? meta.maxSkipsPerPlayer : 1;
     row.skip_difficulty_rule = meta.skipDifficultyRule || 'same';
+    row.penalty_probability = meta.penaltyProbability !== undefined ? meta.penaltyProbability : 0;
 
     const room: Room = row;
 
@@ -563,6 +571,9 @@ class SupabaseStore {
     if (params.missionDistribution !== undefined) meta.missionDistribution = params.missionDistribution;
     if (params.maxSkipsPerPlayer !== undefined) meta.maxSkipsPerPlayer = params.maxSkipsPerPlayer;
     if (params.skipDifficultyRule !== undefined) meta.skipDifficultyRule = params.skipDifficultyRule;
+    if ((params as { penaltyProbability?: number }).penaltyProbability !== undefined) {
+      meta.penaltyProbability = (params as { penaltyProbability?: number }).penaltyProbability;
+    }
 
     const newGroupName = encodeRoomMeta(cleanName, meta);
     await fetch(this.getUrl(`rooms?id=eq.${row.id}`), {
@@ -580,6 +591,12 @@ class SupabaseStore {
     hostPlayerId: string;
     missionsPerPlayer?: number;
     hideTasks?: boolean;
+    progressionMode?: ProgressionMode;
+    scoringMode?: ScoringMode;
+    missionDistribution?: MissionDistribution;
+    maxSkipsPerPlayer?: number;
+    skipDifficultyRule?: SkipDifficultyRule;
+    penaltyProbability?: number;
   }): Promise<{ game: Game; missionsAssignedCount: number }> {
     const cleanCode = params.roomCode.trim().toUpperCase();
     const { room, members } = await this.getRoomByCode(cleanCode);
@@ -613,6 +630,17 @@ class SupabaseStore {
       ? (params as { maxSkipsPerPlayer?: number }).maxSkipsPerPlayer
       : (room.max_skips_per_player ?? 1);
     const skipRule = (params as { skipDifficultyRule?: SkipDifficultyRule }).skipDifficultyRule || room.skip_difficulty_rule || 'same';
+    const penaltyProb = (params as { penaltyProbability?: number }).penaltyProbability !== undefined
+      ? Number((params as { penaltyProbability?: number }).penaltyProbability)
+      : (room.penalty_probability ?? 0);
+
+    // Assegna eventuali penitenze/malus casuali in base alla probabilità
+    const playerRefs = members.map((m) => ({
+      playerId: m.player_id,
+      nickname: m.nickname,
+      gender: m.gender,
+    }));
+    const assignedPenalties = assignPenaltiesToPlayers(playerRefs, penaltyProb);
 
     // Crea record Game
     const gamePayload = {
@@ -635,6 +663,8 @@ class SupabaseStore {
         mission_distribution: missionDistribution,
         max_skips_per_player: maxSkips,
         skip_difficulty_rule: skipRule,
+        penalty_probability: penaltyProb,
+        penalties: assignedPenalties,
       },
     };
 
@@ -658,13 +688,6 @@ class SupabaseStore {
       headers: this.getHeaders(),
       body: JSON.stringify({ status: 'playing' }),
     });
-
-    // Assegna le missioni ai giocatori
-    const playerRefs = members.map((m) => ({
-      playerId: m.player_id,
-      nickname: m.nickname,
-      gender: m.gender,
-    }));
 
     const isJeffrey = room.mode === 'jeffrey_island' || Boolean(room.include_jeffrey_pack);
     const assignedMissions = assignMissionsToPlayers(game.id, playerRefs, {
@@ -889,16 +912,61 @@ class SupabaseStore {
     const skipsUsed = myScore?.skips_used || 0;
     const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
 
+    const penalties = game.config?.penalties || {};
+    const myPenalty = penalties[playerUuid] || penalties[requestingPlayerId] || null;
+
     return {
       game,
       room: roomInfo,
       scores,
       activeEvents,
       myMissions,
+      myPenalty,
       pendingVerifications,
       awards: [] as GameAward[],
       skipsRemaining,
     };
+  }
+
+  async completePenalty(params: {
+    gameId: string;
+    playerId: string;
+  }): Promise<{ penalty: PlayerPenalty }> {
+    const playerUuid = ensureUuid(params.playerId);
+    const res = await fetch(this.getUrl(`games?id=eq.${params.gameId}&limit=1`), {
+      headers: this.getHeaders(),
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('Partita non trovata.');
+    const games = await res.json();
+    if (!Array.isArray(games) || games.length === 0) throw new Error('Partita non trovata.');
+    const game: Game = games[0];
+
+    const penalties = game.config?.penalties || {};
+    const key = penalties[playerUuid] ? playerUuid : (penalties[params.playerId] ? params.playerId : null);
+    if (!key) {
+      throw new Error('Nessuna penitenza attiva trovata per questo giocatore.');
+    }
+
+    const penalty = penalties[key];
+    penalty.status = 'completed';
+    penalty.completed_at = new Date().toISOString();
+
+    const newConfig = {
+      ...game.config,
+      penalties: {
+        ...penalties,
+        [key]: penalty,
+      },
+    };
+
+    await fetch(this.getUrl(`games?id=eq.${params.gameId}`), {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ config: newConfig }),
+    });
+
+    return { penalty };
   }
 
   // ==========================================

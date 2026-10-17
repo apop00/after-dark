@@ -16,10 +16,12 @@ import {
   ScoringMode,
   MissionDistribution,
   SkipDifficultyRule,
+  PlayerPenalty,
 } from '@/types/game';
 import {
   generateRoomCode,
   assignMissionsToPlayers,
+  assignPenaltiesToPlayers,
   calculateMissionPoints,
   calculateEndGameAwards,
 } from '@/lib/game/engine';
@@ -144,6 +146,7 @@ class GameServerStore {
     missionDistribution?: MissionDistribution;
     maxSkipsPerPlayer?: number;
     skipDifficultyRule?: SkipDifficultyRule;
+    penaltyProbability?: number;
     hostPlayerId: string;
     hostNickname: string;
     hostAvatar: string;
@@ -178,6 +181,7 @@ class GameServerStore {
       mission_distribution: params.missionDistribution || 'fair',
       max_skips_per_player: params.maxSkipsPerPlayer !== undefined ? params.maxSkipsPerPlayer : 1,
       skip_difficulty_rule: params.skipDifficultyRule || 'same',
+      penalty_probability: params.penaltyProbability !== undefined ? params.penaltyProbability : 0,
       host_id: params.hostPlayerId,
       status: 'lobby',
       created_at: new Date().toISOString(),
@@ -374,6 +378,7 @@ class GameServerStore {
     missionDistribution?: MissionDistribution;
     maxSkipsPerPlayer?: number;
     skipDifficultyRule?: SkipDifficultyRule;
+    penaltyProbability?: number;
   }): Room {
     this.loadFromDisk();
     const room = this.rooms.get(params.code.toUpperCase());
@@ -402,6 +407,9 @@ class GameServerStore {
     if (params.skipDifficultyRule !== undefined) {
       room.skip_difficulty_rule = params.skipDifficultyRule;
     }
+    if (params.penaltyProbability !== undefined) {
+      room.penalty_probability = params.penaltyProbability;
+    }
     this.saveToDisk();
     return room;
   }
@@ -419,6 +427,7 @@ class GameServerStore {
     missionDistribution?: MissionDistribution;
     maxSkipsPerPlayer?: number;
     skipDifficultyRule?: SkipDifficultyRule;
+    penaltyProbability?: number;
   }): { game: Game; missionsAssignedCount: number } {
     this.loadFromDisk();
     const { room, members } = this.getRoomByCode(params.roomCode);
@@ -437,10 +446,18 @@ class GameServerStore {
     const missionDistribution = params.missionDistribution || room.mission_distribution || 'fair';
     const maxSkips = params.maxSkipsPerPlayer !== undefined ? params.maxSkipsPerPlayer : (room.max_skips_per_player ?? 1);
     const skipRule = params.skipDifficultyRule || room.skip_difficulty_rule || 'same';
+    const penaltyProb = params.penaltyProbability !== undefined ? params.penaltyProbability : (room.penalty_probability ?? 0);
 
     const gameId = 'game_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const durationMs = room.duration_minutes > 0 ? room.duration_minutes * 60 * 1000 : null;
     const endsAt = durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
+
+    // Assegna eventuali penitenze/malus casuali in base alla probabilità
+    const playerPenaltyRefs = members.map((m) => ({
+      playerId: m.player_id,
+      nickname: m.nickname,
+    }));
+    const assignedPenalties = assignPenaltiesToPlayers(playerPenaltyRefs, penaltyProb);
 
     const game: Game = {
       id: gameId,
@@ -463,6 +480,8 @@ class GameServerStore {
         mission_distribution: missionDistribution,
         max_skips_per_player: maxSkips,
         skip_difficulty_rule: skipRule,
+        penalty_probability: penaltyProb,
+        penalties: assignedPenalties,
       },
     };
 
@@ -730,6 +749,9 @@ class GameServerStore {
     const skipsUsed = myScore?.skips_used || 0;
     const skipsRemaining = Math.max(0, maxSkips - skipsUsed);
 
+    // Recupera la penitenza/malus assegnata a questo giocatore (se presente)
+    const myPenalty = game.config.penalties?.[requestingPlayerId] || null;
+
     return {
       game,
       room: room ? {
@@ -742,10 +764,28 @@ class GameServerStore {
       scores,
       activeEvents: events,
       myMissions,
+      myPenalty,
       pendingVerifications: myVerifications,
       awards,
       skipsRemaining,
     };
+  }
+
+  public completePenalty(params: {
+    gameId: string;
+    playerId: string;
+  }): { penalty: PlayerPenalty } {
+    this.loadFromDisk();
+    const game = this.games.get(params.gameId);
+    if (!game) throw new Error('Partita non trovata.');
+    if (!game.config.penalties || !game.config.penalties[params.playerId]) {
+      throw new Error('Nessuna penitenza attiva trovata per questo giocatore.');
+    }
+    const penalty = game.config.penalties[params.playerId];
+    penalty.status = 'completed';
+    penalty.completed_at = new Date().toISOString();
+    this.saveToDisk();
+    return { penalty };
   }
 
   // ==========================================

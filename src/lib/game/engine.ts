@@ -11,8 +11,10 @@ import {
   ScoringMode,
   MissionDistribution,
   SkipDifficultyRule,
+  PlayerPenalty,
 } from '@/types/game';
 import { MISSIONS_DATABASE } from '@/data/missions';
+import { PENALTIES_DATABASE } from '@/data/penalties';
 
 /**
  * Genera un codice stanza a 6 caratteri alfanumerici non ambigui
@@ -421,4 +423,66 @@ export function calculateEndGameAwards(
   }
 
   return awards;
+}
+
+/**
+ * Assegna penalità/malus casuali ai giocatori in base alla probabilità configurata (0, 10, 25, 50, 100%)
+ */
+export function assignPenaltiesToPlayers<T extends { playerId: string; nickname: string }>(
+  players: T[],
+  penaltyProbability: number = 0
+): Record<string, PlayerPenalty> {
+  if (!penaltyProbability || penaltyProbability <= 0 || players.length === 0) {
+    return {};
+  }
+
+  const assigned: Record<string, PlayerPenalty> = {};
+  const probNormalized = Math.min(100, Math.max(0, penaltyProbability));
+
+  // Mescola le penalità per evitare ripetizioni se più giocatori ne ricevono una
+  const shuffledPenalties = [...PENALTIES_DATABASE].sort(() => Math.random() - 0.5);
+  let penaltyIdx = 0;
+
+  players.forEach((player) => {
+    const roll = Math.random() * 100;
+    if (roll < probNormalized) {
+      const def = shuffledPenalties[penaltyIdx % shuffledPenalties.length];
+      penaltyIdx++;
+
+      let targetPlayerNickname: string | undefined;
+      let targetPlayerId: string | undefined;
+      let desc = def.description;
+
+      if (def.requires_target_player) {
+        const others = players.filter((p) => p.playerId !== player.playerId);
+        if (others.length > 0) {
+          const target = others[Math.floor(Math.random() * others.length)];
+          targetPlayerNickname = target.nickname;
+          targetPlayerId = target.playerId;
+          desc = desc.replace('{target_player}', target.nickname);
+        } else {
+          desc = desc.replace('{target_player}', 'un compagno a tua scelta');
+        }
+      }
+
+      const penalty: PlayerPenalty = {
+        id: 'pen_' + player.playerId + '_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        penalty_id: def.id,
+        title: def.title,
+        description: desc,
+        duration_minutes: def.duration_minutes,
+        requires_target_player: def.requires_target_player,
+        target_player_nickname: targetPlayerNickname,
+        target_player_id: targetPlayerId,
+        category: def.category,
+        icon: def.icon,
+        status: 'active',
+        assigned_at: new Date().toISOString(),
+      };
+
+      assigned[player.playerId] = penalty;
+    }
+  });
+
+  return assigned;
 }

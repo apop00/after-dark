@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
       missionDistribution,
       maxSkipsPerPlayer,
       skipDifficultyRule,
+      penaltyProbability,
     } = body;
 
     if (!mode || !hostPlayerId) {
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
       missionDistribution: missionDistribution || 'fair',
       maxSkipsPerPlayer: maxSkipsPerPlayer !== undefined ? Number(maxSkipsPerPlayer) : 1,
       skipDifficultyRule: skipDifficultyRule || 'same',
+      penaltyProbability: penaltyProbability !== undefined ? Number(penaltyProbability) : 0,
       hostPlayerId,
       hostNickname: hostNickname || 'Host',
       hostAvatar: hostAvatar || 'shadow',

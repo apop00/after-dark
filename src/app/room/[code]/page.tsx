@@ -224,6 +224,7 @@ export default function RoomLobbyPage({
           missionDistribution: room.mission_distribution,
           maxSkipsPerPlayer: room.max_skips_per_player,
           skipDifficultyRule: room.skip_difficulty_rule,
+          penaltyProbability: room.penalty_probability,
         }),
       });
 
@@ -441,6 +442,17 @@ export default function RoomLobbyPage({
                   {room.max_skips_per_player && room.max_skips_per_player > 0
                     ? `🔄 ${room.max_skips_per_player} ${room.max_skips_per_player === 1 ? 'cambio' : 'cambi'} (${room.skip_difficulty_rule === 'harder' ? 'più difficile' : room.skip_difficulty_rule === 'random' ? 'casuale' : 'stesso liv'})`
                     : '🚫 Nessun cambio'}
+                </span>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
+                    room.penalty_probability && room.penalty_probability > 0
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                      : 'bg-white/5 text-slate-400 border-white/10'
+                  }`}
+                >
+                  {room.penalty_probability && room.penalty_probability > 0
+                    ? `⚠️ Malus: ${room.penalty_probability}%`
+                    : '🛡️ Nessun Malus'}
                 </span>
               </div>
             </div>

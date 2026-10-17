@@ -68,10 +68,27 @@ export interface Room {
   mission_distribution?: MissionDistribution; // 'fair' o 'random'
   max_skips_per_player?: number; // 0, 1, 2, 3
   skip_difficulty_rule?: SkipDifficultyRule; // 'same', 'harder', 'random'
+  penalty_probability?: number; // 0, 10, 25, 50, 100 (% probabilità di ricevere un malus segreto)
   host_id: string; // player_id of creator
   status: RoomStatus;
   created_at: string;
   expires_at: string;
+}
+
+export interface PlayerPenalty {
+  id: string;
+  penalty_id: string;
+  title: string;
+  description: string;
+  duration_minutes?: number;
+  requires_target_player?: boolean;
+  target_player_nickname?: string;
+  target_player_id?: string;
+  category?: 'tempo' | 'comportamento' | 'sociale' | 'recitazione';
+  icon?: string;
+  status: 'active' | 'completed';
+  assigned_at: string;
+  completed_at?: string | null;
 }
 
 export interface RoomMember {
@@ -110,6 +127,8 @@ export interface Game {
     mission_distribution?: MissionDistribution;
     max_skips_per_player?: number;
     skip_difficulty_rule?: SkipDifficultyRule;
+    penalty_probability?: number;
+    penalties?: Record<string, PlayerPenalty>; // key: player_id
     real_mission_ids?: Record<string, string>;
   };
 }

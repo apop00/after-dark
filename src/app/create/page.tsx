@@ -27,6 +27,8 @@ import {
   Dices,
   RotateCcw,
   Shuffle,
+  AlertTriangle,
+  Skull,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { ModeGraphic } from '@/components/ModeGraphics';
@@ -112,6 +114,7 @@ export default function CreateRoomPage() {
   const [missionDistribution, setMissionDistribution] = useState<MissionDistribution>('fair');
   const [maxSkipsPerPlayer, setMaxSkipsPerPlayer] = useState<number>(1);
   const [skipDifficultyRule, setSkipDifficultyRule] = useState<SkipDifficultyRule>('same');
+  const [penaltyProbability, setPenaltyProbability] = useState<number>(0);
   const [difficulties, setDifficulties] = useState<MissionDifficulty[]>([
     'facile',
     'media',
@@ -175,6 +178,7 @@ export default function CreateRoomPage() {
           missionDistribution,
           maxSkipsPerPlayer,
           skipDifficultyRule,
+          penaltyProbability,
           hostPlayerId: session.playerId,
           hostNickname: session.nickname,
           hostAvatar: session.avatarSeed,
@@ -795,6 +799,56 @@ export default function CreateRoomPage() {
                   hideTasks ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
+            </div>
+          </div>
+
+          {/* Modificatore Punizione (Malus) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                <span>Modificatore Punizione (Malus Casuale)</span>
+              </label>
+              <span
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  penaltyProbability > 0
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                    : 'bg-white/5 text-slate-400 border-white/10'
+                }`}
+              >
+                {penaltyProbability === 0 ? 'Disattivato' : `${penaltyProbability}% Probabilità`}
+              </span>
+            </div>
+
+            <p className="text-[11px] text-slate-400">
+              Probabilità che ciascun giocatore riceva una penitenza segreta obbligatoria da scontare (es. silenzio, mimo, chiamate, accenti teutonici, crampi).
+            </p>
+
+            <div className="grid grid-cols-5 gap-1.5">
+              {[
+                { val: 0, label: '0%', sub: 'Off' },
+                { val: 10, label: '10%', sub: 'Raro' },
+                { val: 25, label: '25%', sub: 'Medio' },
+                { val: 50, label: '50%', sub: 'Alto' },
+                { val: 100, label: '100%', sub: 'Tutti 🔥' },
+              ].map(({ val, label, sub }) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setPenaltyProbability(val);
+                  }}
+                  className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
+                    penaltyProbability === val
+                      ? 'bg-amber-500/25 border-amber-400 text-white font-black shadow-md shadow-amber-950/40'
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <span className="text-[11px] font-black block">{label}</span>
+                  <span className="text-[8px] text-slate-400 block mt-0.5 leading-none">{sub}</span>
+                </button>
+              ))}
             </div>
           </div>
 

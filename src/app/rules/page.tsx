@@ -15,6 +15,7 @@ import {
   Scale,
   Users,
   Zap,
+  AlertTriangle,
 } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 
@@ -190,11 +191,86 @@ export default function RulesPage() {
           </div>
         </div>
 
-        {/* 6. Le 6 Ambientazioni */}
+        {/* 6. Modificatore Punizione (Malus Casuale) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-black text-white flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <span>6. Modificatore Punizione (Malus Casuale)</span>
+            </h2>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              Novità ⚠️
+            </span>
+          </div>
+
+          <div className="p-4 rounded-3xl bg-amber-950/20 border border-amber-500/30 space-y-3 text-xs text-slate-300 leading-relaxed shadow-lg">
+            <p>
+              L&apos;host può impostare una percentuale di probabilità (<strong>10%, 25%, 50%, 100%</strong> o <strong>0% disattivato</strong>) che un giocatore riceva all&apos;inizio della partita una <strong>penitenza segreta obbligatoria</strong> con timer interattivo o bersaglio assegnato!
+            </p>
+
+            <div className="space-y-2 pt-1">
+              <p className="font-bold text-amber-300 text-[11px] uppercase tracking-wider">
+                Le 12 Penitenze Possibili nel Catalogo:
+              </p>
+              <div className="grid grid-cols-1 gap-1.5 text-[11px]">
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">1.</span>
+                  <div><strong>Voto del Silenzio</strong>: Non parlare per 2 minuti interi. Se parli, il timer ricomincia!</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">2.</span>
+                  <div><strong>Statua di Marmo</strong>: Rimani immobile come una statua per 2 minuti senza muovere un muscolo.</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">3.</span>
+                  <div><strong>Il Mimo Silenzioso</strong>: Fai il mimo per 5 minuti: comunica solo a gesti ed espressioni, zero suoni vocali!</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">4.</span>
+                  <div><strong>Chiamata al Buio</strong>: Chiama al telefono una persona decisa dal compagno bersaglio designato X.</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">5.</span>
+                  <div><strong>Messaggio Imbarazzante</strong>: Manda un messaggio WhatsApp a una persona decisa dal giocatore designato X.</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">6.</span>
+                  <div><strong>Il Lord Altolocato</strong>: Parla da aristocratico snob per 5 minuti (dai del &quot;voi&quot;, vocaboli arcaici, mignolo alzato).</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">7.</span>
+                  <div><strong>Accento Teutonico</strong>: Parla con un marcato accento tedesco caricaturale per 5 minuti (Ja, natürlich!).</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">8.</span>
+                  <div><strong>Discorso d&apos;Altri Tempi</strong>: Parla da nostalgico del ventennio per 5 minuti con retorica teatrale d&apos;epoca.</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">9.</span>
+                  <div><strong>Divieto di Italiano</strong>: Vietato parlare in italiano per 5 minuti (solo altre lingue, dialetto strettissimo o versi!).</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">10.</span>
+                  <div><strong>Vita da Cane</strong>: Sei un cane per 5 minuti: abbaia, scodinzola e fatti fare i grattini sulla testa!</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">11.</span>
+                  <div><strong>Spirito Felino</strong>: Sei un gatto per 5 minuti: fai le fusa, miagola per chiedere le cose e strusciati!</div>
+                </div>
+                <div className="p-2 rounded-xl bg-black/40 border border-amber-500/20 flex items-start gap-2">
+                  <span className="font-mono text-amber-400 font-bold">12.</span>
+                  <div><strong>Crampi & Falso Allarme</strong>: Lamentati ad alta voce per 1 minuto dicendo che hai crampi fortissimi e ti stai cagando addosso, poi di&apos; con nonchalance: &quot;Ah no, nulla... è passato!&quot;.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 7. Le 6 Ambientazioni */}
         <div className="space-y-3">
           <h2 className="text-base font-black text-white flex items-center gap-2">
             <Flame className="w-4 h-4 text-rose-400" />
-            <span>6. Le 6 Ambientazioni di Gioco</span>
+            <span>7. Le 6 Ambientazioni di Gioco</span>
           </h2>
           <div className="space-y-2 text-xs">
             <div className="p-3.5 rounded-2xl bg-fuchsia-950/30 border border-fuchsia-500/40 space-y-1">
