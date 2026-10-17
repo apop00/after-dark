@@ -27,15 +27,13 @@ import { MISSIONS_DATABASE } from '@/data/missions';
 import { ensureUuid } from '@/lib/utils/uuid';
 
 const DB_SAFE_FALLBACK_MISSION_IDS = [
-  'cross_01', 'cross_02', 'cross_03', 'cross_04', 'cross_05',
-  'cross_06', 'cross_07', 'cross_08', 'cross_09', 'cross_10',
-  'cross_11', 'cross_12', 'cross_13', 'cross_14', 'cross_15',
-  'cross_16', 'cross_17', 'cross_18', 'cross_19', 'cross_20',
+  'cross_01', 'cross_02', 'cross_03', 'cross_07', 'cross_08',
+  'cross_11', 'cross_12', 'cross_13', 'cross_15', 'cross_16', 'cross_20',
   'bar_01', 'bar_02', 'bar_03', 'bar_04', 'bar_05',
   'disco_01', 'disco_02', 'disco_03', 'disco_04', 'disco_05',
   'house_01', 'house_02', 'house_03', 'house_04', 'house_05',
   'out_01', 'out_02', 'out_03', 'out_04', 'out_05',
-  'chaos_01', 'chaos_02', 'chaos_03', 'chaos_04', 'chaos_05',
+  'chaos_03', 'chaos_04', 'chaos_05', 'chaos_08', 'chaos_09',
 ];
 
 interface RoomMeta {
