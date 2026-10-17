@@ -54,6 +54,8 @@ export default function GameHUDPage({
   const [timeLeftStr, setTimeLeftStr] = useState<string>('--:--');
   const [skipsRemaining, setSkipsRemaining] = useState<number>(0);
   const [isSkippingMissionId, setIsSkippingMissionId] = useState<string | null>(null);
+  const [isFailingMissionId, setIsFailingMissionId] = useState<string | null>(null);
+  const [selectedMissionIsDouble, setSelectedMissionIsDouble] = useState(false);
 
   // Modal states
   const [selectedMissionToComplete, setSelectedMissionToComplete] = useState<PlayerMission | null>(null);
@@ -223,17 +225,22 @@ export default function GameHUDPage({
   }, [game, gameId, router]);
 
   // Completamento missione
-  const handleInitiateComplete = (pm: PlayerMission) => {
+  const handleInitiateComplete = (pm: PlayerMission, isDoublePoints?: boolean) => {
+    setSelectedMissionIsDouble(Boolean(isDoublePoints));
     // Se la stanza è in modalità auto-conferma o la missione è self_timer, completa subito senza testimone!
     if (!game?.config?.require_witness || pm.mission?.verification_type === 'self_timer') {
-      executeCompletion(pm.id);
+      executeCompletion(pm.id, undefined, isDoublePoints);
     } else {
       setSelectedMissionToComplete(pm);
       setIsWitnessModalOpen(true);
     }
   };
 
-  const executeCompletion = async (playerMissionId: string, verifierPlayerId?: string) => {
+  const executeCompletion = async (
+    playerMissionId: string,
+    verifierPlayerId?: string,
+    isDoublePoints?: boolean
+  ) => {
     triggerHaptic('medium');
     try {
       const res = await fetch('/api/missions/complete', {
@@ -244,6 +251,7 @@ export default function GameHUDPage({
           playerMissionId,
           requesterPlayerId: myPlayerId,
           verifierPlayerId,
+          isDoublePoints: isDoublePoints ?? selectedMissionIsDouble,
         }),
       });
 
@@ -257,6 +265,43 @@ export default function GameHUDPage({
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Errore';
       alert(message);
+    }
+  };
+
+  const handleFailMission = async (pm: PlayerMission) => {
+    const isCoop = Boolean(pm.coop_partner_id || pm.mission?.category === 'collaborazione');
+    const confirmMessage = isCoop
+      ? 'Dichiarare questa missione di coppia come FALLITA? Verranno assegnati 0 punti a entrambi i giocatori e passerete alla sfida successiva.'
+      : 'Dichiarare questa missione come FALLITA? Verranno assegnati 0 punti e passerai alla sfida successiva.';
+
+    if (!confirm(confirmMessage)) return;
+
+    triggerHaptic('medium');
+    setIsFailingMissionId(pm.id);
+    try {
+      const res = await fetch('/api/missions/fail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameId,
+          playerMissionId: pm.id,
+          playerId: myPlayerId,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Impossibile segnare la missione come fallita');
+      }
+
+      sounds.playChaosAlert();
+      triggerHaptic('warning');
+      await fetchGameState();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Errore nel dichiarare fallita la missione';
+      alert(msg);
+    } finally {
+      setIsFailingMissionId(null);
     }
   };
 
@@ -508,8 +553,8 @@ export default function GameHUDPage({
             ) : (
               (() => {
                 const isSequential = game?.config?.progression_mode === 'sequential';
-                const firstUncompletedIndex = myMissions.findIndex((m) => m.status !== 'completed');
-                const activeSequentialIndex = firstUncompletedIndex === -1 ? myMissions.length : firstUncompletedIndex;
+                const firstActiveIndex = myMissions.findIndex((m) => m.status === 'active' || m.status === 'pending_verification');
+                const activeSequentialIndex = firstActiveIndex === -1 ? myMissions.length : firstActiveIndex;
 
                 return myMissions.map((pm, index) => {
                   const isLocked = isSequential && index > activeSequentialIndex;
@@ -526,7 +571,9 @@ export default function GameHUDPage({
                       skipsRemaining={skipsRemaining}
                       onCompleteRequest={handleInitiateComplete}
                       onSkipRequest={handleSkipMission}
+                      onFailRequest={handleFailMission}
                       isSkipping={isSkippingMissionId === pm.id}
+                      isFailing={isFailingMissionId === pm.id}
                     />
                   );
                 });
@@ -695,7 +742,7 @@ export default function GameHUDPage({
         candidates={witnessCandidates}
         onSubmit={(verifierId) => {
           if (selectedMissionToComplete) {
-            executeCompletion(selectedMissionToComplete.id, verifierId);
+            executeCompletion(selectedMissionToComplete.id, verifierId, selectedMissionIsDouble);
           }
         }}
       />

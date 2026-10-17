@@ -984,6 +984,7 @@ class SupabaseStore {
     playerMissionId: string;
     requesterPlayerId: string;
     verifierPlayerId?: string;
+    isDoublePoints?: boolean;
   }): Promise<{
     playerMission: PlayerMission;
     verification?: MissionVerification;
@@ -1046,7 +1047,8 @@ class SupabaseStore {
 
     // Auto-conferma immediata se la missione è self_timer o se nessun testimone è stato indicato:
     if (missionCatalog.verification_type === 'self_timer' || !params.verifierPlayerId) {
-      const earned = calculateMissionPoints(missionCatalog, events);
+      const isDoublePoints = Boolean(params.isDoublePoints);
+      const earned = calculateMissionPoints(missionCatalog, events, isDoublePoints);
       const updateRes = await fetch(
         this.getUrl(`player_missions?id=eq.${pm.id}`),
         {
@@ -1087,7 +1089,7 @@ class SupabaseStore {
         }
       }
 
-      return { playerMission: { ...updatedPm, mission_id: actualMissionId, mission: missionCatalog } };
+      return { playerMission: { ...updatedPm, mission_id: actualMissionId, is_double_points: isDoublePoints, earned_points: earned, mission: missionCatalog } };
     }
 
     // Richiede testimone
@@ -1327,6 +1329,86 @@ class SupabaseStore {
         updated_at: new Date().toISOString(),
       }),
     });
+  }
+
+  async failMission(params: {
+    gameId: string;
+    playerMissionId: string;
+    playerId: string;
+  }): Promise<{ playerMission: PlayerMission }> {
+    const playerUuid = ensureUuid(params.playerId);
+    const missionUuid = ensureUuid(params.playerMissionId);
+
+    const pmRes = await fetch(
+      this.getUrl(`player_missions?id=eq.${missionUuid}&limit=1`),
+      { headers: this.getHeaders(), cache: 'no-store' }
+    );
+    const pms = await pmRes.json();
+    if (!Array.isArray(pms) || pms.length === 0) {
+      throw new Error('Missione assegnata non trovata.');
+    }
+    const pm: PlayerMission = pms[0];
+
+    const isOwner = pm.player_id === playerUuid;
+    const isCoopPartner = pm.coop_partner_id === playerUuid;
+    if (!isOwner && !isCoopPartner) {
+      throw new Error('Non sei autorizzato a modificare questa missione.');
+    }
+
+    if (pm.status === 'completed') {
+      throw new Error('Questa missione è già stata completata con successo.');
+    }
+
+    const gameRes = await fetch(this.getUrl(`games?id=eq.${params.gameId}&limit=1`), {
+      headers: this.getHeaders(),
+      cache: 'no-store',
+    });
+    const games = await gameRes.json();
+    const game: Game | undefined = games[0];
+    const realMissionIds: Record<string, string> = game?.config?.real_mission_ids || {};
+    const actualMissionId = realMissionIds[pm.id] || pm.mission_id;
+    const missionCatalog = MISSIONS_DATABASE.find((m) => m.id === actualMissionId);
+
+    const updateRes = await fetch(
+      this.getUrl(`player_missions?id=eq.${pm.id}`),
+      {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          status: 'failed',
+          completed_at: new Date().toISOString(),
+          earned_points: 0,
+        }),
+      }
+    );
+    const updatedPm = (await updateRes.json())[0] || pm;
+
+    await this.incrementScore(params.gameId, playerUuid, 0, 0, 1);
+
+    // Se cooperativa, sincronizza anche il compagno
+    if (pm.coop_partner_id || missionCatalog?.category === 'collaborazione') {
+      const partnerRes = await fetch(
+        this.getUrl(
+          `player_missions?game_id=eq.${params.gameId}&player_id=neq.${playerUuid}&mission_id=eq.${pm.mission_id}&status=neq.completed`
+        ),
+        { headers: this.getHeaders(), cache: 'no-store' }
+      );
+      const partnerRows: PlayerMission[] = partnerRes.ok ? await partnerRes.json() : [];
+      for (const pRow of partnerRows) {
+        await fetch(this.getUrl(`player_missions?id=eq.${pRow.id}`), {
+          method: 'PATCH',
+          headers: this.getHeaders(),
+          body: JSON.stringify({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+            earned_points: 0,
+          }),
+        });
+        await this.incrementScore(params.gameId, pRow.player_id, 0, 0, 1);
+      }
+    }
+
+    return { playerMission: { ...updatedPm, mission_id: actualMissionId, mission: missionCatalog } };
   }
 
   // ==========================================

@@ -818,6 +818,7 @@ class GameServerStore {
     playerMissionId: string;
     requesterPlayerId: string;
     verifierPlayerId?: string;
+    isDoublePoints?: boolean;
   }): { playerMission: PlayerMission; verification?: MissionVerification } {
     this.loadFromDisk();
     const missions = this.playerMissions.get(params.gameId) || [];
@@ -835,6 +836,9 @@ class GameServerStore {
     const missionCatalog = pm.mission;
     if (!missionCatalog) throw new Error('Dati catalogo missione mancanti.');
 
+    const isDoublePoints = Boolean(params.isDoublePoints);
+    pm.is_double_points = isDoublePoints;
+
     const game = this.games.get(params.gameId);
     const requireWitness = Boolean(game?.config?.require_witness);
 
@@ -846,7 +850,7 @@ class GameServerStore {
     if (missionCatalog.verification_type === 'self_timer' || !params.verifierPlayerId) {
       pm.status = 'completed';
       pm.completed_at = new Date().toISOString();
-      const earned = calculateMissionPoints(missionCatalog, this.gameEvents.get(params.gameId) || []);
+      const earned = calculateMissionPoints(missionCatalog, this.gameEvents.get(params.gameId) || [], isDoublePoints);
       pm.earned_points = earned;
 
       this.updateScore(params.gameId, params.requesterPlayerId, earned, 1, 0);
@@ -862,6 +866,7 @@ class GameServerStore {
         teammatesMissions.forEach((tPm) => {
           tPm.status = 'completed';
           tPm.completed_at = new Date().toISOString();
+          tPm.is_double_points = isDoublePoints;
           tPm.earned_points = earned;
           this.updateScore(params.gameId, tPm.player_id, earned, 1, 0);
         });
@@ -925,7 +930,7 @@ class GameServerStore {
     if (params.approved) {
       pm.status = 'completed';
       pm.completed_at = new Date().toISOString();
-      const points = calculateMissionPoints(pm.mission!, this.gameEvents.get(params.gameId) || []);
+      const points = calculateMissionPoints(pm.mission!, this.gameEvents.get(params.gameId) || [], Boolean(pm.is_double_points));
       pm.earned_points = points;
       this.updateScore(params.gameId, v.requester_player_id, points, 1, 0);
 
@@ -940,6 +945,7 @@ class GameServerStore {
         teammatesMissions.forEach((tPm) => {
           tPm.status = 'completed';
           tPm.completed_at = new Date().toISOString();
+          tPm.is_double_points = pm.is_double_points;
           tPm.earned_points = points;
           this.updateScore(params.gameId, tPm.player_id, points, 1, 0);
         });
@@ -951,6 +957,54 @@ class GameServerStore {
 
     this.saveToDisk();
     return { verification: v, playerMission: pm };
+  }
+
+  public failMission(params: {
+    gameId: string;
+    playerMissionId: string;
+    playerId: string;
+  }): { playerMission: PlayerMission } {
+    this.loadFromDisk();
+    const missions = this.playerMissions.get(params.gameId) || [];
+    const pm = missions.find((m) => m.id === params.playerMissionId);
+    if (!pm) throw new Error('Missione non trovata.');
+
+    const isOwner = pm.player_id === params.playerId;
+    const isCoopPartner = pm.coop_partner_id === params.playerId;
+    if (!isOwner && !isCoopPartner) {
+      throw new Error('Non sei autorizzato a modificare questa missione.');
+    }
+
+    if (pm.status === 'completed') {
+      throw new Error('Questa missione è già stata completata con successo.');
+    }
+
+    pm.status = 'failed';
+    pm.completed_at = new Date().toISOString();
+    pm.earned_points = 0;
+
+    // Aggiorna punteggio: 0 punti guadagnati, 0 completate, 1 fallita
+    this.updateScore(params.gameId, pm.player_id, 0, 0, 1);
+
+    // Se cooperativa, sincronizza anche il compagno di squadra
+    if (pm.coop_partner_id || pm.mission?.category === 'collaborazione') {
+      const teammatesMissions = missions.filter(
+        (m) =>
+          m.player_id !== pm.player_id &&
+          m.mission_id === pm.mission_id &&
+          m.status !== 'completed' &&
+          m.status !== 'failed'
+      );
+      teammatesMissions.forEach((tPm) => {
+        tPm.status = 'failed';
+        tPm.completed_at = new Date().toISOString();
+        tPm.earned_points = 0;
+        this.updateScore(params.gameId, tPm.player_id, 0, 0, 1);
+      });
+    }
+
+    this.saveToDisk();
+    return { playerMission: pm };
   }
 
   public verifyMission = this.resolveVerification.bind(this);

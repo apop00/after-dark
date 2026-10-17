@@ -38,6 +38,7 @@ export interface Mission {
   repeat_cooldown_games?: number; // Quante partite prima di poter ricomparire
   tags?: string[];
   gender_target?: PlayerGender; // 'neutro' (default, per tutti) | 'uomo' | 'donna'
+  allow_double_points?: boolean;
 }
 
 export type ProgressionMode = 'free' | 'sequential'; // 'free' (Tutte Insieme) | 'sequential' (Catena di Sfide 🔥)
@@ -154,6 +155,7 @@ export interface PlayerMission {
   assigned_at: string;
   completed_at?: string | null;
   earned_points: number;
+  is_double_points?: boolean;
   mission?: Mission; // Joined data
   verification_id?: string | null;
 }

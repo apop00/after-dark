@@ -335,7 +335,8 @@ export function assignMissionsToPlayers(
  */
 export function calculateMissionPoints(
   mission: Mission,
-  activeEvents: GameEvent[] = []
+  activeEvents: GameEvent[] = [],
+  isDoublePoints: boolean = false
 ): number {
   let points = mission.base_points;
 
@@ -344,6 +345,10 @@ export function calculateMissionPoints(
     if (event.is_active && event.multiplier > 1) {
       points = Math.round(points * event.multiplier);
     }
+  }
+
+  if (isDoublePoints) {
+    points = points * 2;
   }
 
   return points;

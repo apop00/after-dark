@@ -6,7 +6,7 @@ import { supabaseStore } from '@/lib/server/supabaseStore';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { gameId, playerMissionId, requesterPlayerId, verifierPlayerId } =
+    const { gameId, playerMissionId, requesterPlayerId, verifierPlayerId, isDoublePoints } =
       body;
 
     if (!gameId || !playerMissionId || !requesterPlayerId) {
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
       playerMissionId,
       requesterPlayerId,
       verifierPlayerId,
+      isDoublePoints: Boolean(isDoublePoints),
     };
 
     const isProdDb = isServerSupabaseConfigured && process.env.NODE_ENV !== 'test';

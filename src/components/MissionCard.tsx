@@ -12,6 +12,8 @@ import {
   AlertCircle,
   Lock,
   RefreshCw,
+  XCircle,
+  Flame,
 } from 'lucide-react';
 import { sounds } from '@/lib/audio/sound';
 import { triggerHaptic } from '@/lib/haptics/vibration';
@@ -46,7 +48,9 @@ export function MissionCard({
   skipsRemaining = 0,
   onCompleteRequest,
   onSkipRequest,
+  onFailRequest,
   isSkipping = false,
+  isFailing = false,
 }: {
   playerMission: PlayerMission;
   requireWitness?: boolean;
@@ -56,11 +60,14 @@ export function MissionCard({
   totalSteps?: number;
   scoringMode?: 'points' | 'mission_count';
   skipsRemaining?: number;
-  onCompleteRequest: (mission: PlayerMission) => void;
+  onCompleteRequest: (mission: PlayerMission, isDoublePoints?: boolean) => void;
   onSkipRequest?: (mission: PlayerMission) => void;
+  onFailRequest?: (mission: PlayerMission) => void;
   isSkipping?: boolean;
+  isFailing?: boolean;
 }) {
   const [isRevealed, setIsRevealed] = useState(!hideTasks);
+  const [isDoublePointsChecked, setIsDoublePointsChecked] = useState(false);
   const mission = playerMission.mission;
 
   if (isLocked) {
@@ -98,6 +105,10 @@ export function MissionCard({
   const isPending = playerMission.status === 'pending_verification';
   const isFailed = playerMission.status === 'failed';
   const isCoop = Boolean(playerMission.coop_partner_id || mission.category === 'collaborazione');
+  const hasDoublePoints = Boolean(
+    mission.allow_double_points ||
+    mission.special_conditions?.some((c) => c.toLowerCase().includes('doppi'))
+  );
 
   const toggleReveal = () => {
     const next = !isRevealed;
@@ -113,6 +124,8 @@ export function MissionCard({
           ? 'bg-gradient-to-b from-emerald-950/30 to-black/80 border-emerald-500/50 shadow-emerald-950/30'
           : isPending
           ? 'bg-gradient-to-b from-amber-950/30 to-black/80 border-amber-500/50 shadow-amber-950/30 animate-pulse'
+          : isFailed
+          ? 'bg-gradient-to-b from-rose-950/20 to-black/80 border-rose-500/40 opacity-80'
           : 'card-party border-white/15 shadow-2xl'
       }`}
     >
@@ -218,6 +231,53 @@ export function MissionCard({
                 <span>{mission.special_conditions.join(' ')}</span>
               </div>
             )}
+
+            {/* Toggle Condizione Punti Doppi */}
+            {hasDoublePoints && !isCompleted && !isPending && !isFailed && (
+              <div
+                onClick={() => {
+                  triggerHaptic('light');
+                  setIsDoublePointsChecked(!isDoublePointsChecked);
+                }}
+                role="button"
+                tabIndex={0}
+                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 select-none ${
+                  isDoublePointsChecked
+                    ? 'bg-gradient-to-r from-amber-950/60 to-yellow-950/60 border-amber-500/70 shadow-lg shadow-amber-950/40 text-amber-200'
+                    : 'bg-white/5 border-white/10 hover:border-amber-500/30 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shrink-0 ${
+                      isDoublePointsChecked ? 'bg-amber-400 text-black' : 'bg-white/10 text-amber-300'
+                    }`}
+                  >
+                    2x
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black text-white flex items-center gap-1.5">
+                      <span>Condizione Punti Doppi</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                        +{mission.base_points * 2} PT
+                      </span>
+                    </p>
+                    <p className="text-[10px] text-amber-300/80 leading-tight mt-0.5 truncate">
+                      {mission.special_conditions?.[0] || 'Attiva se hai soddisfatto la condizione per raddoppiare!'}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={`w-5 h-5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${
+                    isDoublePointsChecked
+                      ? 'bg-amber-400 border-amber-300 text-black font-extrabold'
+                      : 'border-white/20 bg-black/40'
+                  }`}
+                >
+                  {isDoublePointsChecked ? '✓' : ''}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div
@@ -268,48 +328,87 @@ export function MissionCard({
       <div className="p-4 bg-black/40 border-t border-white/5 flex items-center justify-between">
         {isCompleted ? (
           <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-            <CheckCircle2 className="w-5 h-5" />
-            <span>
-              Completata! {scoringMode === 'points' ? `(+${playerMission.earned_points} PT)` : '✓'}
-            </span>
+            <CheckCircle2 className="w-5 h-5 shrink-0" />
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span>
+                Completata! {scoringMode === 'points' ? `(+${playerMission.earned_points} PT)` : '✓'}
+              </span>
+              {Boolean(playerMission.is_double_points || playerMission.earned_points >= mission.base_points * 2) && (
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1">
+                  <Flame className="w-3 h-3 text-amber-400" />
+                  <span>2x Punti Doppi</span>
+                </span>
+              )}
+            </div>
           </div>
         ) : isPending ? (
           <div className="flex items-center gap-2 text-amber-400 text-sm">
-            <Clock className="w-4 h-4 animate-spin" />
+            <Clock className="w-4 h-4 animate-spin shrink-0" />
             <span>In attesa della conferma del testimone...</span>
           </div>
         ) : isFailed ? (
-          <div className="flex items-center gap-2 text-rose-400 text-sm">
-            <AlertCircle className="w-4 h-4" />
-            <span>Non confermata dal testimone</span>
+          <div className="flex items-center gap-2 text-rose-400 text-sm font-semibold">
+            <XCircle className="w-5 h-5 text-rose-500 shrink-0" />
+            <span>Missione fallita / non riuscita (0 PT)</span>
           </div>
         ) : (
           <div className="flex items-center gap-2 w-full">
             {skipsRemaining > 0 && onSkipRequest && !isCoop && (
               <button
                 type="button"
-                disabled={isSkipping}
+                disabled={isSkipping || isFailing}
                 onClick={() => {
                   triggerHaptic('light');
                   onSkipRequest(playerMission);
                 }}
-                className="py-3.5 px-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-200 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 shrink-0 cursor-pointer"
-                title={`Cambia questa missione (${skipsRemaining} cambi totali rimasti per l'intera partita)`}
+                className="py-3.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-200 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 shrink-0 cursor-pointer"
+                title={`Cambia questa missione (${skipsRemaining} cambi rimasti)`}
               >
-                <RefreshCw className={`w-4 h-4 text-cyan-400 ${isSkipping ? 'animate-spin' : ''}`} />
-                <span>Cambia ({skipsRemaining} rimasti)</span>
+                <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${isSkipping ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Cambia ({skipsRemaining})</span>
+                <span className="sm:hidden">({skipsRemaining})</span>
               </button>
             )}
+
+            {onFailRequest && (
+              <button
+                type="button"
+                disabled={isSkipping || isFailing}
+                onClick={() => {
+                  triggerHaptic('light');
+                  onFailRequest(playerMission);
+                }}
+                className="py-3.5 px-3 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:text-rose-200 font-bold text-xs uppercase flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 shrink-0 cursor-pointer"
+                title="Dichiara la missione fallita (0 punti)"
+              >
+                <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                <span>Fallita</span>
+              </button>
+            )}
+
             <button
               type="button"
+              disabled={isSkipping || isFailing}
               onClick={() => {
                 triggerHaptic('medium');
-                onCompleteRequest(playerMission);
+                onCompleteRequest(playerMission, isDoublePointsChecked);
               }}
-              className="flex-1 py-3.5 px-4 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wide uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-rose-950/40"
+              className={`flex-1 py-3.5 px-4 rounded-2xl font-black text-sm tracking-wide uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg transition-all ${
+                isDoublePointsChecked
+                  ? 'bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-white shadow-amber-950/50 hover:brightness-110'
+                  : 'btn-game-rose text-white shadow-rose-950/40'
+              }`}
             >
-              <CheckCircle2 className="w-5 h-5 filter drop-shadow" />
-              <span>{!requireWitness ? 'Completa Missione ⚡' : 'Richiedi Testimone'}</span>
+              <CheckCircle2 className="w-5 h-5 filter drop-shadow shrink-0" />
+              <span>
+                {!requireWitness
+                  ? isDoublePointsChecked
+                    ? `Completa 2x (+${mission.base_points * 2} PT) 🔥`
+                    : 'Completa Missione ⚡'
+                  : isDoublePointsChecked
+                  ? 'Testimone (2x Doppi) 🔥'
+                  : 'Richiedi Testimone'}
+              </span>
             </button>
           </div>
         )}

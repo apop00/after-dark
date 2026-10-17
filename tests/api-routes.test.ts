@@ -6,6 +6,7 @@ import { GET as getRoom, PATCH as updateRoom } from '../src/app/api/rooms/[code]
 import { POST as startGame } from '../src/app/api/games/start/route';
 import { GET as getGameState } from '../src/app/api/games/[id]/state/route';
 import { POST as completeMission } from '../src/app/api/missions/complete/route';
+import { POST as failMission } from '../src/app/api/missions/fail/route';
 import { POST as verifyMission } from '../src/app/api/missions/verify/route';
 import { POST as finishGame } from '../src/app/api/games/[id]/finish/route';
 import { serverStore } from '../src/lib/server/store';
@@ -274,5 +275,155 @@ describe('AFTER DARK — API Route Endpoints End-to-End Tests', () => {
     const startData = await startRes.json();
     expect(startData.game.config.hide_tasks).toBe(false);
     expect(startData.game.config.missions_per_player).toBe(2);
+  });
+
+  it('Dichiarare una missione fallita assegna 0 punti e incrementa failed_count', async () => {
+    // 1. Crea stanza e avvia partita
+    const createReq = new NextRequest('http://localhost:3000/api/rooms/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        groupName: 'Stanza Test Fallimento',
+        mode: 'bar',
+        minPlayers: 2,
+        maxPlayers: 5,
+        durationMinutes: 30,
+        allowedDifficulties: ['facile', 'media'],
+        allowCoop: false,
+        hostPlayerId: 'host_fail_test',
+        hostNickname: 'HostTester',
+        hostAvatar: 'shadow',
+      }),
+    });
+    const createRes = await createRoom(createReq);
+    const { room } = await createRes.json();
+
+    const joinReq = new NextRequest('http://localhost:3000/api/rooms/join', {
+      method: 'POST',
+      body: JSON.stringify({
+        code: room.code,
+        playerId: 'player_fail_test',
+        nickname: 'Player2',
+        avatarSeed: 'viper',
+      }),
+    });
+    await joinRoom(joinReq);
+
+    const startReq = new NextRequest('http://localhost:3000/api/games/start', {
+      method: 'POST',
+      body: JSON.stringify({
+        roomCode: room.code,
+        hostPlayerId: 'host_fail_test',
+      }),
+    });
+    const startRes = await startGame(startReq);
+    const { game } = await startRes.json();
+
+    // 2. Prendi le missioni del giocatore
+    const stateReq = new NextRequest(`http://localhost:3000/api/games/${game.id}/state`, {
+      headers: { 'x-player-id': 'host_fail_test' },
+    });
+    const stateRes = await getGameState(stateReq, { params: Promise.resolve({ id: game.id }) });
+    const { myMissions } = await stateRes.json();
+    const missionToFail = myMissions[0];
+
+    // 3. Chiama endpoint di fallimento
+    const failReq = new NextRequest('http://localhost:3000/api/missions/fail', {
+      method: 'POST',
+      body: JSON.stringify({
+        gameId: game.id,
+        playerMissionId: missionToFail.id,
+        playerId: 'host_fail_test',
+      }),
+    });
+    const failRes = await failMission(failReq);
+    expect(failRes.status).toBe(200);
+    const failData = await failRes.json();
+    expect(failData.success).toBe(true);
+    expect(failData.playerMission.status).toBe('failed');
+    expect(failData.playerMission.earned_points).toBe(0);
+
+    // 4. Verifica punteggio aggiornato
+    const stateResAfter = await getGameState(stateReq, { params: Promise.resolve({ id: game.id }) });
+    const { scores } = await stateResAfter.json();
+    const hostScore = scores.find((s: { player_id: string }) => s.player_id === 'host_fail_test');
+    expect(hostScore.failed_count).toBe(1);
+    expect(hostScore.completed_count).toBe(0);
+    expect(hostScore.total_points).toBe(0);
+  });
+
+  it('Completamento missione con opzione Punti Doppi raddoppia i punti base', async () => {
+    // 1. Crea stanza e avvia partita
+    const createReq = new NextRequest('http://localhost:3000/api/rooms/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        groupName: 'Stanza Test Punti Doppi',
+        mode: 'bar',
+        minPlayers: 2,
+        maxPlayers: 5,
+        durationMinutes: 30,
+        allowedDifficulties: ['facile', 'media'],
+        allowCoop: false,
+        hostPlayerId: 'host_double_test',
+        hostNickname: 'DoubleHost',
+        hostAvatar: 'shadow',
+      }),
+    });
+    const createRes = await createRoom(createReq);
+    const { room } = await createRes.json();
+
+    const joinReq = new NextRequest('http://localhost:3000/api/rooms/join', {
+      method: 'POST',
+      body: JSON.stringify({
+        code: room.code,
+        playerId: 'player_double_test',
+        nickname: 'PlayerTwo',
+        avatarSeed: 'viper',
+      }),
+    });
+    await joinRoom(joinReq);
+
+    const startReq = new NextRequest('http://localhost:3000/api/games/start', {
+      method: 'POST',
+      body: JSON.stringify({
+        roomCode: room.code,
+        hostPlayerId: 'host_double_test',
+        requireWitness: false, // auto-conferma per test immediato
+      }),
+    });
+    const startRes = await startGame(startReq);
+    const { game } = await startRes.json();
+
+    // 2. Prendi la prima missione
+    const stateReq = new NextRequest(`http://localhost:3000/api/games/${game.id}/state`, {
+      headers: { 'x-player-id': 'host_double_test' },
+    });
+    const stateRes = await getGameState(stateReq, { params: Promise.resolve({ id: game.id }) });
+    const { myMissions } = await stateRes.json();
+    const mission = myMissions[0];
+    const expectedPoints = mission.mission.base_points * 2;
+
+    // 3. Completa con isDoublePoints = true
+    const completeReq = new NextRequest('http://localhost:3000/api/missions/complete', {
+      method: 'POST',
+      body: JSON.stringify({
+        gameId: game.id,
+        playerMissionId: mission.id,
+        requesterPlayerId: 'host_double_test',
+        isDoublePoints: true,
+      }),
+    });
+    const completeRes = await completeMission(completeReq);
+    expect(completeRes.status).toBe(200);
+    const completeData = await completeRes.json();
+    expect(completeData.playerMission.status).toBe('completed');
+    expect(completeData.playerMission.earned_points).toBe(expectedPoints);
+    expect(completeData.playerMission.is_double_points).toBe(true);
+
+    // 4. Verifica punteggio totale
+    const stateResAfter = await getGameState(stateReq, { params: Promise.resolve({ id: game.id }) });
+    const { scores } = await stateResAfter.json();
+    const hostScore = scores.find((s: { player_id: string }) => s.player_id === 'host_double_test');
+    expect(hostScore.total_points).toBe(expectedPoints);
+    expect(hostScore.completed_count).toBe(1);
   });
 });
