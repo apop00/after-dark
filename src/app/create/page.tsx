@@ -679,9 +679,13 @@ export default function CreateRoomPage() {
                 <span>Cambi Missione (Skip Task)</span>
               </label>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-purple-500/10 text-purple-300 border-purple-500/20">
-                {maxSkipsPerPlayer === 0 ? 'Disattivati' : `${maxSkipsPerPlayer} per giocatore`}
+                {maxSkipsPerPlayer === 0 ? 'Disattivati' : `${maxSkipsPerPlayer} totali nel game`}
               </span>
             </div>
+
+            <p className="text-[11px] text-slate-400">
+              Numero di cambi complessivi a disposizione di ciascun giocatore per tutta la partita (non a task: es. con 2 skip puoi cambiare al massimo 2 volte in tutto il game).
+            </p>
 
             <div className="grid grid-cols-4 gap-1.5">
               {[0, 1, 2, 3].map((val) => (
@@ -698,7 +702,7 @@ export default function CreateRoomPage() {
                       : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
                   }`}
                 >
-                  {val === 0 ? 'Nessuno' : `${val} Skip`}
+                  {val === 0 ? 'Nessuno' : `${val} Totali`}
                 </button>
               ))}
             </div>
@@ -816,12 +820,12 @@ export default function CreateRoomPage() {
                     : 'bg-white/5 text-slate-400 border-white/10'
                 }`}
               >
-                {penaltyProbability === 0 ? 'Disattivato' : `${penaltyProbability}% Probabilità`}
+                {penaltyProbability === 0 ? 'Disattivato' : `${penaltyProbability}% (1-2 gioc.)`}
               </span>
             </div>
 
-            <p className="text-[11px] text-slate-400">
-              Probabilità che ciascun giocatore riceva una penitenza segreta. Se estratta, scatterà a sorpresa a caso <strong>dopo la 1ª task fino a dopo la penultima task</strong>!
+            <p className="text-[11px] text-slate-400 leading-snug">
+              Probabilità che il malus si attivi nella partita. La penitenza <strong>non esce a tutti</strong>: colpisce solo <strong>1 giocatore</strong> (fino a 6 partecipanti) o <strong>2 giocatori</strong> (da 7 a 10 partecipanti), comparendo a sorpresa a caso <strong>dopo la 1ª task fino a dopo la penultima task</strong>!
             </p>
 
             <div className="grid grid-cols-5 gap-1.5">
@@ -830,7 +834,7 @@ export default function CreateRoomPage() {
                 { val: 10, label: '10%', sub: 'Raro' },
                 { val: 25, label: '25%', sub: 'Medio' },
                 { val: 50, label: '50%', sub: 'Alto' },
-                { val: 100, label: '100%', sub: 'Tutti 🔥' },
+                { val: 100, label: '100%', sub: 'Garantito ⚡' },
               ].map(({ val, label, sub }) => (
                 <button
                   key={val}

@@ -285,10 +285,10 @@ export function MissionCard({
                   onSkipRequest(playerMission);
                 }}
                 className="py-3.5 px-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-200 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 shrink-0 cursor-pointer"
-                title={`Cambia missione (${skipsRemaining} cambi disponibili)`}
+                title={`Cambia questa missione (${skipsRemaining} cambi totali rimasti per l'intera partita)`}
               >
                 <RefreshCw className={`w-4 h-4 text-cyan-400 ${isSkipping ? 'animate-spin' : ''}`} />
-                <span>Cambia ({skipsRemaining})</span>
+                <span>Cambia ({skipsRemaining} rimasti)</span>
               </button>
             )}
             <button

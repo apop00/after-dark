@@ -440,7 +440,7 @@ export default function RoomLobbyPage({
                 </span>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">
                   {room.max_skips_per_player && room.max_skips_per_player > 0
-                    ? `🔄 ${room.max_skips_per_player} ${room.max_skips_per_player === 1 ? 'cambio' : 'cambi'} (${room.skip_difficulty_rule === 'harder' ? 'più difficile' : room.skip_difficulty_rule === 'random' ? 'casuale' : 'stesso liv'})`
+                    ? `🔄 ${room.max_skips_per_player} ${room.max_skips_per_player === 1 ? 'skip totale' : 'skip totali nel game'} (${room.skip_difficulty_rule === 'harder' ? 'più difficile' : room.skip_difficulty_rule === 'random' ? 'casuale' : 'stesso liv'})`
                     : '🚫 Nessun cambio'}
                 </span>
                 <span
@@ -451,7 +451,7 @@ export default function RoomLobbyPage({
                   }`}
                 >
                   {room.penalty_probability && room.penalty_probability > 0
-                    ? `⚠️ Malus: ${room.penalty_probability}%`
+                    ? `⚠️ Malus: ${room.penalty_probability}% (1-2 gioc.)`
                     : '🛡️ Nessun Malus'}
                 </span>
               </div>

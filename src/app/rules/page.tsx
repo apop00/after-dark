@@ -160,9 +160,9 @@ export default function RulesPage() {
             <p>
               Se una missione ti sembra irrealizzabile o le condizioni non lo permettono, puoi utilizzare il tasto <strong>🔄 Cambia Task</strong> direttamente sulla carta.
             </p>
-            <ul className="space-y-1 pl-3 list-disc">
+            <ul className="space-y-1.5 pl-3 list-disc">
               <li>
-                <strong>Cambi Disponibili</strong>: L&apos;host può impostare da <strong>0 a 3 cambi</strong> per giocatore per tutta la durata del match.
+                <strong>Cambi Disponibili (Totali per Partita)</strong>: L&apos;host può impostare da <strong>0 a 3 cambi complessivi</strong> a disposizione di ciascun giocatore per tutta la durata del match (non a task: ad esempio con 2 skip puoi cambiare al massimo 2 missioni in tutta la partita).
               </li>
               <li>
                 <strong>Regola di Difficoltà</strong>:
@@ -205,8 +205,22 @@ export default function RulesPage() {
 
           <div className="p-4 rounded-3xl bg-amber-950/20 border border-amber-500/30 space-y-3 text-xs text-slate-300 leading-relaxed shadow-lg">
             <p>
-              L&apos;host può impostare una percentuale di probabilità (<strong>10%, 25%, 50%, 100%</strong> o <strong>0% disattivato</strong>) che un giocatore riceva all&apos;inizio della partita una <strong>penitenza segreta obbligatoria</strong> con timer interattivo o bersaglio assegnato!
+              L&apos;host può attivare il modificatore punizione impostando la probabilità (<strong>10%, 25%, 50%, 100%</strong> o <strong>0% disattivato</strong>) che il malus si verifichi nel match.
             </p>
+
+            <div className="p-3 rounded-2xl bg-black/40 border border-amber-500/30 space-y-1.5 text-[11px]">
+              <p className="font-bold text-amber-300 uppercase tracking-wide">
+                🎯 Regola Bersagli (Non esce a tutti!):
+              </p>
+              <p>
+                • <strong>1 solo giocatore</strong> nelle partite fino a 6 partecipanti.
+                <br />
+                • <strong>2 soli giocatori</strong> nelle partite da 7 a 10 partecipanti.
+              </p>
+              <p className="text-slate-400 pt-1">
+                ⏰ <strong>Momento a sorpresa</strong>: la penitenza scatta a caso <strong>dopo la 1ª task fino a dopo la penultima task</strong>, con timer o compagno bersaglio designato X!
+              </p>
+            </div>
 
             <div className="space-y-2 pt-1">
               <p className="font-bold text-amber-300 text-[11px] uppercase tracking-wider">

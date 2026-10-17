@@ -427,6 +427,9 @@ export function calculateEndGameAwards(
 
 /**
  * Assegna penalità/malus casuali ai giocatori in base alla probabilità configurata (0, 10, 25, 50, 100%).
+ * Regola: la penitenza NON compare a tutti i giocatori!
+ * - Fino a 6 giocatori: compare a SOLO 1 giocatore nel match.
+ * - Da 7 a 10 giocatori: compare a SOLO 2 giocatori nel match.
  * Le punizioni escono a caso dopo la prima task fino a dopo la penultima task (tra 1 e missionsPerPlayer - 1).
  */
 export function assignPenaltiesToPlayers<T extends { playerId: string; nickname: string }>(
@@ -438,60 +441,71 @@ export function assignPenaltiesToPlayers<T extends { playerId: string; nickname:
     return {};
   }
 
-  const assigned: Record<string, PlayerPenalty> = {};
+  // Roll basato sulla probabilità configurata per la partita
   const probNormalized = Math.min(100, Math.max(0, penaltyProbability));
+  const roll = Math.random() * 100;
+  if (roll >= probNormalized) {
+    return {};
+  }
+
+  // Quanti giocatori ricevono il malus:
+  // - 1 giocatore fino a 6 partecipanti
+  // - 2 giocatori da 7 a 10 partecipanti (e oltre)
+  const targetCount = players.length <= 6 ? 1 : 2;
+  const actualCount = Math.min(targetCount, players.length);
+
+  // Seleziona casualmente i giocatori bersaglio tra tutti i partecipanti
+  const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+  const selectedPlayers = shuffledPlayers.slice(0, actualCount);
 
   // Range di trigger: da dopo la prima task (1) fino a dopo la penultima task (missionsPerPlayer - 1)
   const minTrigger = 1;
   const maxTrigger = Math.max(1, missionsPerPlayer - 1);
 
-  // Mescola le penalità per evitare ripetizioni se più giocatori ne ricevono una
+  // Mescola le penalità per dare sfide diverse se ci sono più puniti
   const shuffledPenalties = [...PENALTIES_DATABASE].sort(() => Math.random() - 0.5);
-  let penaltyIdx = 0;
 
-  players.forEach((player) => {
-    const roll = Math.random() * 100;
-    if (roll < probNormalized) {
-      const def = shuffledPenalties[penaltyIdx % shuffledPenalties.length];
-      penaltyIdx++;
+  const assigned: Record<string, PlayerPenalty> = {};
 
-      // Calcola quando scatterà la penitenza a sorpresa per questo giocatore
-      const triggerAfterTask = minTrigger + Math.floor(Math.random() * (maxTrigger - minTrigger + 1));
+  selectedPlayers.forEach((player, idx) => {
+    const def = shuffledPenalties[idx % shuffledPenalties.length];
 
-      let targetPlayerNickname: string | undefined;
-      let targetPlayerId: string | undefined;
-      let desc = def.description;
+    // Calcola quando scatterà la penitenza a sorpresa per questo giocatore
+    const triggerAfterTask = minTrigger + Math.floor(Math.random() * (maxTrigger - minTrigger + 1));
 
-      if (def.requires_target_player) {
-        const others = players.filter((p) => p.playerId !== player.playerId);
-        if (others.length > 0) {
-          const target = others[Math.floor(Math.random() * others.length)];
-          targetPlayerNickname = target.nickname;
-          targetPlayerId = target.playerId;
-          desc = desc.replace('{target_player}', target.nickname);
-        } else {
-          desc = desc.replace('{target_player}', 'un compagno a tua scelta');
-        }
+    let targetPlayerNickname: string | undefined;
+    let targetPlayerId: string | undefined;
+    let desc = def.description;
+
+    if (def.requires_target_player) {
+      const others = players.filter((p) => p.playerId !== player.playerId);
+      if (others.length > 0) {
+        const target = others[Math.floor(Math.random() * others.length)];
+        targetPlayerNickname = target.nickname;
+        targetPlayerId = target.playerId;
+        desc = desc.replace('{target_player}', target.nickname);
+      } else {
+        desc = desc.replace('{target_player}', 'un compagno a tua scelta');
       }
-
-      const penalty: PlayerPenalty = {
-        id: 'pen_' + player.playerId + '_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-        penalty_id: def.id,
-        title: def.title,
-        description: desc,
-        duration_minutes: def.duration_minutes,
-        requires_target_player: def.requires_target_player,
-        target_player_nickname: targetPlayerNickname,
-        target_player_id: targetPlayerId,
-        category: def.category,
-        icon: def.icon,
-        trigger_after_task: triggerAfterTask,
-        status: 'active',
-        assigned_at: new Date().toISOString(),
-      };
-
-      assigned[player.playerId] = penalty;
     }
+
+    const penalty: PlayerPenalty = {
+      id: 'pen_' + player.playerId + '_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      penalty_id: def.id,
+      title: def.title,
+      description: desc,
+      duration_minutes: def.duration_minutes,
+      requires_target_player: def.requires_target_player,
+      target_player_nickname: targetPlayerNickname,
+      target_player_id: targetPlayerId,
+      category: def.category,
+      icon: def.icon,
+      trigger_after_task: triggerAfterTask,
+      status: 'active',
+      assigned_at: new Date().toISOString(),
+    };
+
+    assigned[player.playerId] = penalty;
   });
 
   return assigned;

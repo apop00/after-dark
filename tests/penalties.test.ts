@@ -22,24 +22,39 @@ describe('Modificatore Punizione (Penalties System)', () => {
     expect(ids).toContain('pen_cramps');
   });
 
-  it('assignPenaltiesToPlayers respects 0% and 100% probabilities', () => {
-    const players = [
+  it('assignPenaltiesToPlayers respects 0% and 100% probabilities with 1 player (<= 6) and 2 players (7-10)', () => {
+    const smallGroup = [
       { playerId: 'p1', nickname: 'Alice' },
       { playerId: 'p2', nickname: 'Bob' },
       { playerId: 'p3', nickname: 'Charlie' },
     ];
 
     // 0% probability -> empty
-    const none = assignPenaltiesToPlayers(players, 0);
+    const none = assignPenaltiesToPlayers(smallGroup, 0);
     expect(Object.keys(none).length).toBe(0);
 
-    // 100% probability -> all players get a penalty
-    const all = assignPenaltiesToPlayers(players, 100);
-    expect(Object.keys(all).length).toBe(3);
-    expect(all['p1']).toBeDefined();
-    expect(all['p2']).toBeDefined();
-    expect(all['p3']).toBeDefined();
-    expect(all['p1'].status).toBe('active');
+    // 100% probability with 3 players (<= 6) -> exactly 1 player gets a penalty
+    const onePenalty = assignPenaltiesToPlayers(smallGroup, 100);
+    expect(Object.keys(onePenalty).length).toBe(1);
+    const assignedPlayerId = Object.keys(onePenalty)[0];
+    expect(['p1', 'p2', 'p3']).toContain(assignedPlayerId);
+    expect(onePenalty[assignedPlayerId].status).toBe('active');
+
+    // 100% probability with 8 players (7-10) -> exactly 2 players get a penalty
+    const largeGroup = [
+      { playerId: 'p1', nickname: 'P1' },
+      { playerId: 'p2', nickname: 'P2' },
+      { playerId: 'p3', nickname: 'P3' },
+      { playerId: 'p4', nickname: 'P4' },
+      { playerId: 'p5', nickname: 'P5' },
+      { playerId: 'p6', nickname: 'P6' },
+      { playerId: 'p7', nickname: 'P7' },
+      { playerId: 'p8', nickname: 'P8' },
+    ];
+    const twoPenalties = assignPenaltiesToPlayers(largeGroup, 100);
+    expect(Object.keys(twoPenalties).length).toBe(2);
+    const chosenIds = Object.keys(twoPenalties);
+    expect(new Set(chosenIds).size).toBe(2);
   });
 
   it('correctly substitutes target player nickname when requires_target_player is true', () => {
@@ -52,11 +67,11 @@ describe('Modificatore Punizione (Penalties System)', () => {
     let foundTargetReplacement = false;
     for (let i = 0; i < 50; i++) {
       const assigned = assignPenaltiesToPlayers(players, 100);
-      const p1Penalty = assigned['p1'];
-      if (p1Penalty.requires_target_player) {
-        expect(p1Penalty.target_player_nickname).toBe('Bob');
-        expect(p1Penalty.description).toContain('Bob');
-        expect(p1Penalty.description).not.toContain('{target_player}');
+      const penalized = Object.values(assigned)[0];
+      if (penalized?.requires_target_player) {
+        expect(['Alice', 'Bob']).toContain(penalized.target_player_nickname);
+        expect(penalized.description).toContain(penalized.target_player_nickname!);
+        expect(penalized.description).not.toContain('{target_player}');
         foundTargetReplacement = true;
         break;
       }
@@ -123,45 +138,48 @@ describe('Modificatore Punizione (Penalties System)', () => {
 
     expect(game.config.penalty_probability).toBe(100);
     expect(game.config.penalties).toBeDefined();
-    const hostRawPenalty = game.config.penalties!['player_host'];
-    expect(hostRawPenalty).toBeDefined();
-    expect(hostRawPenalty.trigger_after_task).toBeGreaterThanOrEqual(1);
-    expect(hostRawPenalty.trigger_after_task).toBeLessThanOrEqual(2);
+    const penaltyEntries = Object.entries(game.config.penalties!);
+    expect(penaltyEntries.length).toBe(1);
+
+    const [penalizedPlayerId, rawPenalty] = penaltyEntries[0];
+    expect(rawPenalty).toBeDefined();
+    expect(rawPenalty.trigger_after_task).toBeGreaterThanOrEqual(1);
+    expect(rawPenalty.trigger_after_task).toBeLessThanOrEqual(2);
 
     // Prima di completare alcuna missione (0 task completate), la penitenza NON deve essere ancora uscita!
-    const initialState = serverStore.getGameState(game.id, 'player_host');
+    const initialState = serverStore.getGameState(game.id, penalizedPlayerId);
     expect(initialState.myPenalty).toBeNull();
 
     // Completa le missioni del giocatore fino a raggiungere trigger_after_task
     const playerMissions = initialState.myMissions;
-    const triggerTarget = hostRawPenalty.trigger_after_task!;
+    const triggerTarget = rawPenalty.trigger_after_task!;
 
     for (let i = 0; i < triggerTarget; i++) {
       const pm = playerMissions[i];
       serverStore.submitMissionCompletion({
         gameId: game.id,
         playerMissionId: pm.id,
-        requesterPlayerId: 'player_host',
+        requesterPlayerId: penalizedPlayerId,
       });
     }
 
     // Ora che ha completato trigger_after_task missioni, la penitenza DEVE essere uscita ed essere attiva!
-    const triggeredState = serverStore.getGameState(game.id, 'player_host');
+    const triggeredState = serverStore.getGameState(game.id, penalizedPlayerId);
     expect(triggeredState.myPenalty).toBeDefined();
-    expect(triggeredState.myPenalty?.id).toBe(hostRawPenalty.id);
+    expect(triggeredState.myPenalty?.id).toBe(rawPenalty.id);
     expect(triggeredState.myPenalty?.status).toBe('active');
 
     // Completa la penitenza
     const completeRes = serverStore.completePenalty({
       gameId: game.id,
-      playerId: 'player_host',
+      playerId: penalizedPlayerId,
     });
 
     expect(completeRes.penalty.status).toBe('completed');
     expect(completeRes.penalty.completed_at).toBeDefined();
 
     // Re-check getGameState
-    const updatedHostState = serverStore.getGameState(game.id, 'player_host');
-    expect(updatedHostState.myPenalty?.status).toBe('completed');
+    const updatedState = serverStore.getGameState(game.id, penalizedPlayerId);
+    expect(updatedState.myPenalty?.status).toBe('completed');
   });
 });

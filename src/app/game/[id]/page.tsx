@@ -261,7 +261,7 @@ export default function GameHUDPage({
   };
 
   const handleSkipMission = async (pm: PlayerMission) => {
-    if (!confirm('Vuoi davvero cambiare questa missione? Questa azione consumerà 1 dei tuoi cambi disponibili.')) {
+    if (!confirm(`Vuoi davvero cambiare questa missione? Consumerai 1 dei tuoi ${skipsRemaining} cambi totali per l'intera partita.`)) {
       return;
     }
     triggerHaptic('medium');
@@ -484,7 +484,7 @@ export default function GameHUDPage({
               <div className="flex items-center gap-2">
                 {skipsRemaining > 0 && (
                   <span className="text-[11px] font-semibold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
-                    🔄 {skipsRemaining} {skipsRemaining === 1 ? 'cambio rimasto' : 'cambi rimasti'}
+                    🔄 {skipsRemaining} {skipsRemaining === 1 ? 'skip totale rimasto' : 'skip totali rimasti'}
                   </span>
                 )}
                 <span className="text-[11px] font-semibold text-rose-300">
