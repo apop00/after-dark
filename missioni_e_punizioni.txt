@@ -1,0 +1,3599 @@
+================================================================================
+                      AFTER DARK — CATALOGO COMPLETO
+                     TUTTE LE MISSIONI E LE PUNIZIONI
+================================================================================
+
+Data estrazione: 17/10/2026
+Totale Punizioni (Modificatore Malus): 12
+Totale Missioni Segrete: 161
+
+INDICE DEI CONTENUTI:
+  PARTE 1: REGOLAMENTO RAPIDO & MECCANICHE CHIAVE
+  PARTE 2: LE 12 PUNIZIONI (MALUS CASUALE)
+  PARTE 3: MISSIONI PER AMBIENTAZIONE / MODALITÀ
+     3.1  BAR & LOUNGE
+     3.2  HOUSE PARTY (FESTA A CASA)
+     3.3  DISCOTECA & CLUB
+     3.4  ALL'APERTO & FESTIVAL
+     3.5  CHAOS MODE (SABOTAGGI & BLUFF ESTREMO)
+     3.6  JEFFREY ISLAND (PICCANTE & ALCOLICA 18+)
+     3.7  MISSIONI COLLABORATIVE (CO-OP SQUADRA)
+  PARTE 4: ELENCO GENERALE ORDINATO (1 - 161)
+
+================================================================================
+PARTE 1: REGOLAMENTO RAPIDO & MECCANICHE CHIAVE
+================================================================================
+
+1. SCOPO DEL GIOCO:
+   Ogni giocatore riceve una serie di missioni segrete sul proprio telefono.
+   L'obiettivo è compierle nella realtà durante la serata senza farsi scoprire dagli altri.
+
+2. MODALITÀ DI GIOCO:
+   - Tutte Insieme (Libera): tutte le task sono sbloccate fin da subito.
+   - Catena di Sfide (Sequenziale): una task per volta; devi completare o saltare
+     la missione corrente per sbloccare la successiva (crescendo di difficoltà).
+   - Obiettivo A Punti: vince chi accumula più punti in base alle difficoltà superate.
+   - Solo Conteggio Task: vince chi completa più missioni.
+     * Fair Mode: difficoltà bilanciate ed eque per tutti i giocatori.
+     * Chaos Roulette: difficoltà casuali assegnate dalla sorte.
+
+3. CAMBI MISSIONE (SKIP):
+   - L'host può impostare da 0 a 3 skip complessivi per giocatore.
+   - Gli skip sono un MONTEPREMI TOTALE per l'intera partita (non a task).
+   - Le missioni di coppia/collaborative NON sono skippabili.
+
+4. MISSIONI COLLABORATIVE (CO-OP):
+   - Assegnate a coppie o triplette di giocatori con lo stesso obiettivo segreto.
+   - Escono esattamente allo STESSO STEP/ORDINE per entrambi i compagni.
+   - Completamento condiviso: quando uno dei due la completa, viene completata
+     in automatico anche per il partner con assegnazione punti!
+
+5. MODIFICATORE PUNIZIONE (MALUS):
+   - Probabilità configurabile: 0%, 10%, 25%, 50%, 100%.
+   - Non esce a tutti! Colpisce:
+     * 1 solo giocatore nelle partite fino a 6 partecipanti.
+     * 2 soli giocatori nelle partite da 7 a 10 partecipanti.
+   - Scatta a sorpresa tra la prima task e la penultima task del giocatore.
+
+================================================================================
+PARTE 2: LE 12 PUNIZIONI (MODIFICATORE MALUS)
+================================================================================
+
+[PUNIZIONE #1] VOTO DEL SILENZIO
+ID: pen_mute
+Categoria: TEMPO
+Durata obbligatoria: 2 MINUTI
+Descrizione:
+   Non puoi proferire parola per 2 minuti interi. Se parli, il tempo riparte da capo o perdi la sfida!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #2] STATUA DI MARMO
+ID: pen_statue
+Categoria: TEMPO
+Durata obbligatoria: 2 MINUTI
+Descrizione:
+   Rimani immobile come una statua per 2 minuti. Nessun passo, nessun gesto brusco!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #3] IL MIMO SILENZIOSO
+ID: pen_mime
+Categoria: RECITAZIONE
+Durata obbligatoria: 5 MINUTI
+Descrizione:
+   Fai il mimo per 5 minuti consecutivi: puoi comunicare solo a gesti, smorfie e mimica facciale, zero suoni vocali!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #4] CHIAMATA AL BUIO
+ID: pen_call
+Categoria: SOCIALE
+Requisito: Richiede un giocatore bersaglio designato X scelto dalla stanza
+Descrizione:
+   Chiama al telefono una persona decisa da {target_player}. Devi fare una chiamata vera di almeno 30 secondi!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #5] MESSAGGIO IMBARAZZANTE
+ID: pen_message
+Categoria: SOCIALE
+Requisito: Richiede un giocatore bersaglio designato X scelto dalla stanza
+Descrizione:
+   Manda un messaggio WhatsApp o SMS a una persona decisa da {target_player}. Mostra la chat agli altri come prova!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #6] IL LORD ALTOLOCATO
+ID: pen_noble
+Categoria: RECITAZIONE
+Durata obbligatoria: 5 MINUTI
+Descrizione:
+   Parla da aristocratico snob e altolocato per 5 minuti: usa vocaboli arcaici, dai del "voi" a tutti e tieni il mignolo alzato quando bevi!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #7] ACCENTO TEUTONICO
+ID: pen_german
+Categoria: RECITAZIONE
+Durata obbligatoria: 5 MINUTI
+Descrizione:
+   Parla con un marcato accento tedesco caricaturale per 5 minuti (Ja, natürlich, wunderbar, kartoffeln, achtung)!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #8] DISCORSO D'ALTRI TEMPI
+ID: pen_ventennio
+Categoria: RECITAZIONE
+Durata obbligatoria: 5 MINUTI
+Descrizione:
+   Parla con retorica teatrale ed enfasi d'altri tempi da nostalgico del ventennio per 5 minuti (petto in fuori, 'arditi', 'adunate', 'quando c'era lui')!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #9] DIVIETO DI ITALIANO
+ID: pen_no_italian
+Categoria: COMPORTAMENTO
+Durata obbligatoria: 5 MINUTI
+Descrizione:
+   È severamente vietato parlare in italiano per 5 minuti. Puoi esprimerti solo in inglese, spagnolo, dialetto strettissimo o versi!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #10] VITA DA CANE
+ID: pen_dog
+Categoria: RECITAZIONE
+Durata obbligatoria: 5 MINUTI
+Descrizione:
+   Sei un cane per 5 minuti: abbaia, scodinzola quando ti parlano, guaisci se ti ignorano e fatti fare i grattini sulla testa!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #11] SPIRITO FELINO
+ID: pen_cat
+Categoria: RECITAZIONE
+Durata obbligatoria: 5 MINUTI
+Descrizione:
+   Sei un gatto per 5 minuti: fai le fusa, miagola per chiedere le cose, guarda tutti dall'alto in basso con fare superiore e strusciati!
+--------------------------------------------------------------------------------
+
+[PUNIZIONE #12] CRAMPI & FALSO ALLARME
+ID: pen_cramps
+Categoria: RECITAZIONE
+Durata obbligatoria: 1 MINUTI
+Descrizione:
+   Lamentati a voce alta dicendo a tutti che ti fa malissimo la pancia, che hai crampi fortissimi e che ti stai cagando addosso per 1 minuto recitando con convinzione, poi di' con massima nonchalance: 'Ah no, nulla... è passato!'.
+--------------------------------------------------------------------------------
+
+
+================================================================================
+PARTE 3: MISSIONI PER AMBIENTAZIONE / MODALITÀ
+================================================================================
+
+--------------------------------------------------------------------------------
+SEZIONE: 3.1 BAR & LOUNGE (70 missioni)
+Descrizione: Drink, cibo, conversazioni al tavolo, sottobicchieri, osservazione discreta e persuasione sottile.
+--------------------------------------------------------------------------------
+
+  [#1] L'ORDINE SPECULARE (ID: bar_01)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~15 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai ordinare a un altro partecipante lo stesso identico drink o consumazione che hai ordinato tu, senza mai nominarlo direttamente prima che ordini.
+      Condizioni Speciali: Non puoi offrire tu la consumazione.
+
+  [#2] L'ESPERTO SOMMELIER FITTIZIO (ID: bar_02)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~10 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Inventati un difetto o una nota aromatica completamente assurda del tuo bicchiere (es. "retrogusto di quercia affumicata da temporale estivo") e convinci qualcuno al tavolo a fingere di sentirla.
+
+  [#3] IL CRITICO DEL SOTTOBICCHIERE (ID: bar_03)
+      Difficoltà: FACILE | Punti Base: 80 PT | Durata: ~8 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Costruisci o posiziona una torre di almeno 4 sottobicchieri o tappi di fronte a un compagno di gioco senza che te la abbatta per almeno 5 minuti.
+
+  [#4] NIENTE PAROLE PROIBITE: DRINK & BAR (ID: bar_04)
+      Difficoltà: MEDIA | Punti Base: 140 PT | Durata: ~10 min
+      Categoria: BLUFF | Partecipanti: 1 | Verifica: peer_witness
+      Descrizione:
+         Parla per 10 minuti continui senza mai pronunciare le parole "bere", "drink", "bicchiere", "cocktail" o "bar", facendoti comunque capire quando ordinate o parlate.
+
+  [#5] LO SGUARDO DELL'ALIBI (ID: bar_05)
+      Difficoltà: DIFFICILE | Punti Base: 220 PT | Durata: ~12 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Scopri quale drink ha ordinato un altro giocatore prima di lui guardando solo cosa prepara il bartender, e sussurraglielo all'orecchio prima che il bicchiere tocchi il tavolo.
+
+  [#6] IL FALSO RICORDO D'INFANZIA (ID: bar_06)
+      Difficoltà: DIFFICILE | Punti Base: 250 PT | Durata: ~15 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Racconta al tavolo una storia totalmente inventata sul tuo primo lavoro estivo assurdo e fai annuire convinto almeno un altro giocatore dicendo "Sì, me lo avevi già raccontato!".
+
+  [#7] BRINDISI CON MOVENTE (ID: bar_07)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 3 | Verifica: group_vote
+      Descrizione:
+         Avvia un brindisi corale solenne al tavolo dedicandolo a una causa fittizia, bizzarra ma apparentemente nobile (es. "Ai lampioni a risparmio energetico").
+
+  [#8] LA PAROLA INFILTRATA: "PAPPAGALLO" (ID: bar_08)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~15 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Inserisci la parola "pappagallo" (o suo derivato) in 3 conversazioni separate con 3 persone diverse nell'arco di 15 minuti, senza destare sospetti.
+
+  [#9] L'INTERVISTA CLANDESTINA (ID: bar_09)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~10 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai confessare a un altro partecipante il suo peggior acquisto compulsivo degli ultimi 6 mesi, senza fargli capire che sei in missione.
+
+  [#10] IL TOCCO DELLE MANI INCROCIATE (ID: bar_10)
+      Difficoltà: DIFFICILE | Punti Base: 210 PT | Durata: ~12 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Fai in modo che due altri giocatori del gruppo si scambino involontariamente un oggetto (accendino, tovagliolo, cellulare, chiavi) passando attraverso di te.
+
+  [#11] SCOMMESSA A OROLOGIO (ID: bar_11)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~20 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Indovina l'orario esatto della prossima volta che qualcuno del gruppo si alza per andare in bagno o al bancone con un margine di errore inferiore a 3 minuti.
+
+  [#12] L'ACCENTO CAMALEONTE (ID: bar_12)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Sostieni una conversazione di almeno 3 minuti adottando una cadenza regionale o straniera impercettibilmente alterata senza farti sbeffeggiare apertamente.
+
+  [#13] LA TEORIA DEL COMPLOTTO QUOTIDIANO (ID: bar_14)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~15 min
+      Categoria: BLUFF | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Convincere due compagni che un oggetto comunissimo del locale (es. la forma delle cannucce o il logo sui bicchieri) ha un significato psicologico nascosto.
+
+  [#14] SINCRONIA DI BICCHIERI (ID: bar_15)
+      Difficoltà: LEGGENDARIA | Punti Base: 380 PT | Durata: ~25 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fai in modo che tu e un altro giocatore ignaro appoggiate il bicchiere sul tavolo nello stesso identico secondo per tre volte consecutive.
+
+  [#15] IL SOPRANNOME IMPROVVISO (ID: bar_16)
+      Difficoltà: DIFFICILE | Punti Base: 260 PT | Durata: ~20 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Inizia a chiamare un partecipante con un soprannome insolito e fa in modo che un terzo membro del gruppo inizi a usarlo spontaneamente nella conversazione.
+
+  [#16] DILEMMA DEL MENÙ (ID: bar_17)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~6 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai passare a un amico almeno 4 minuti a riflettere indeciso su quale bevanda o snack prendere, continuando a fargli domande retoriche.
+
+  [#17] IL MAESTRO DEL GHIACCIO (ID: bar_18)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Sposta discretamente 3 cubetti di ghiaccio o cannucce usate da un bicchiere a un piattino senza che il proprietario del drink se ne accorga per 2 minuti.
+
+  [#18] LO SBADIGLIO A CATENA (ID: bar_19)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~3 min
+      Categoria: OSSERVAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Sbadiglia vistosamente e fai sbadigliare per contagio almeno altri due partecipanti entro 90 secondi.
+
+  [#19] L'OPINIONE CONTROCORRENTE (ID: bar_20)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Difendi con passione un film universalmente odiato o un cibo ripugnante finché un amico non ammette riluttante: "Beh, in fondo un punto ce l'hai".
+
+  [#20] LA FINTA CHIAMATA D'EMERGENZA (ID: disco_14)
+      Difficoltà: MEDIA | Punti Base: 130 PT | Durata: ~5 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Mima l'ansia di una telefonata urgente nel frastuono della musica, chiedi silenzio con un dito a un amico e poi scoppia a ridere rivelando il nulla.
+
+  [#21] IL PASSAGGIO DELLA GIACCA (ID: disco_17)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Riesci a far reggere la tua giacca, felpa o accessorio a un altro giocatore per più di 5 minuti senza che te lo chieda indietro subito.
+
+  [#22] IL GUARDIANO DEL TAVOLO (ID: disco_19)
+      Difficoltà: MEDIA | Punti Base: 140 PT | Durata: ~12 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Presidia il tavolo o il punto d'appoggio del gruppo per 10 minuti respingendo amichevolmente chiunque provi ad occuparlo.
+
+  [#23] IL DJ DIROTTATORE (ID: house_02)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Riesci a far mettere in coda sulla cassa Bluetooth una canzone imbarazzante degli anni '90 o 2000 senza che nessuno la skippi nei primi 90 secondi.
+
+  [#24] LA VOTAZIONE IMPROVVISA (ID: house_04)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Lancia una votazione palese al volo su chi tra i presenti sopravviverebbe meno tempo in un'apocalisse zombie e fai votare almeno 4 persone.
+
+  [#25] LA BATTUTA A SCOPPIO RITARDATO (ID: house_06)
+      Difficoltà: MEDIA | Punti Base: 130 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Racconta una freddura o un calambour pessimo e mantieni un'espressione totalmente seria finché qualcun altro non ride per l'imbarazzo.
+
+  [#26] IL GIOCO DEL SILENZIO VOLONTARIO (ID: house_07)
+      Difficoltà: DIFFICILE | Punti Base: 250 PT | Durata: ~8 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Non parlare per 7 minuti esatti durante la festa, comunicando solo a gesti o mimica, senza che nessuno pensi che tu sia arrabbiato.
+
+  [#27] IL RITRATTO SEGRETO (ID: house_10)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~10 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Disegna su un foglietto o sul retro di un tovagliolo il ritratto caricaturale di un partecipante e faglielo trovare sotto il suo bicchiere.
+
+  [#28] L'ARCHIVISTA DELLE RISATE (ID: house_11)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~10 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Individua quale giocatore ha la risata più riconoscibile e imitala immediatamente dopo che ha riso senza fargli capire che era un'imitazione.
+
+  [#29] IL GOSSIP FILOSOFICO (ID: house_13)
+      Difficoltà: DIFFICILE | Punti Base: 210 PT | Durata: ~10 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Trasforma una banale chiacchiera di gossip su conoscenti in una profonda dissertazione esistenziale sul destino dell'umanità.
+
+  [#30] L'ORDINE CRONOLOGICO (ID: house_15)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai elencare a un amico tutti i cellulari che ha posseduto nella sua vita in ordine cronologico esatto.
+
+  [#31] LA SFIDA DEL POLLICE (ID: house_17)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Appoggia il pollice sul bordo del tavolo. Tutti quelli che lo vedono devono fare lo stesso. L'ultimo a farlo perde (e tu incassi i punti se lo notano in 3).
+
+  [#32] L'ALBERO GENEALOGICO DEI DEBITI (ID: house_18)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~6 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Ricorda a un amico un piccolo debito morale o materiale insignificante di almeno 2 anni fa (es. "un pacchetto di gomme nel 2022") con assoluta precisione scenica.
+
+  [#33] IL SABOTATORE DI BRINDISI (ID: chaos_01)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Durante il prossimo brindisi, tocca i bicchieri di tutti tranne uno specifico giocatore, scusandoti subito dopo dicendo "Ops, non ti avevo visto!".
+
+  [#34] L'INVERSIONE DI RUOLI (ID: chaos_02)
+      Difficoltà: DIFFICILE | Punti Base: 260 PT | Durata: ~10 min
+      Categoria: BLUFF | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Imita il tic verbale o la posa abituale di un tuo amico per 5 minuti finché un terzo giocatore non dice "Perché ti muovi/parli come lui?".
+
+  [#35] LA NOTIFICA FANTASMA (ID: chaos_04)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~6 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Guarda lo schermo del telefono con espressione di autentico shock o stupore, coprilo con la mano e rifiutati di dire cosa hai visto a chiunque te lo chieda per 3 minuti.
+
+  [#36] IL CONTAGIO DELLA RISATA ROVESCIATA (ID: chaos_05)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~10 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Ridi di una cosa serissima e mantieni una faccia tombale quando tutti gli altri ridono per una battuta.
+
+  [#37] IL CAMBIO D'ABITO FURTIVO (ID: chaos_06)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~12 min
+      Categoria: CREATIVITA | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Scambiati un accessorio vistoso (cappello, sciarpa, giacca, orologio) con un altro giocatore e vedi se qualcuno nel gruppo se ne accorge prima di 10 minuti.
+
+  [#38] LA PAROLA TABÙ DEL GRUPPO (ID: chaos_07)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~10 min
+      Categoria: CHAOS | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Dichiara apertamente una parola "maledetta" per i prossimi 10 minuti. Chiunque la pronuncia deve offrire un assaggio o fare un pegno.
+
+  [#39] IL FURTO DEL BICCHIERE FANTASMA (ID: chaos_08)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~8 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Scambia il tuo bicchiere (se dello stesso tipo e contenuto sicuro) con quello di un compagno distratto senza che se ne accorga.
+
+  [#40] L'ACCUSA INFONDATA (ID: chaos_09)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~8 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Accusa scherzosamente un compagno di essere l'Agente Segreto infiltrato del gruppo e porta almeno altri due compagni a sostenere l'accusa.
+
+  [#41] LA DOMANDA DA 100 MILIONI (ID: chaos_11)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~8 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Poni al gruppo un dilemma morale assurdo ma intrigante ("100 milioni subito ma ogni volta che entri in un bar suona l'inno nazionale?") e raccogli i pareri di tutti.
+
+  [#42] IL SILENZIO IMPROVVISO COLLETTIVO (ID: chaos_12)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~15 min
+      Categoria: OSSERVAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Quando si verifica uno di quei rari momenti in cui tutti tacciono contemporaneamente al tavolo, dì "È passato un angelo" con tono solenne.
+
+  [#43] L'EFFETTO MANDELA (ID: chaos_13)
+      Difficoltà: DIFFICILE | Punti Base: 260 PT | Durata: ~10 min
+      Categoria: BLUFF | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Convinci due persone che un attore famoso è morto anni fa, o che un cartone animato della loro infanzia aveva un finale completamente diverso.
+
+  [#44] IL GIUDIZIO UNIVERSALE DEGLI STICKER (ID: chaos_15)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Invia uno sticker o GIF nel gruppo WhatsApp/Telegram degli amici che descriva perfettamente la situazione attuale senza aggiungere alcun testo.
+
+  [#45] LA FINTA ESULTANZA (ID: chaos_16)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Guarda il telefono e fai un piccolo gesto di esultanza trattenuta (pugno chiuso, respiro di sollievo). Quando ti chiedono cosa sia successo, di' "Niente di che, una questione risolta".
+
+  [#46] L'IPNOTISTA DELLA CODA (ID: chaos_17)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~4 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Fai voltare tutti i partecipanti verso la stessa direzione indicando un punto vuoto con aria incuriosita e dicendo "Ma quello là in fondo è...?".
+
+  [#47] LA RISSA VERBALE DIPLOMATICA (ID: chaos_19)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~10 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Inizia un dibattito accesissimo su una questione totalmente insignificante (es. "La pizza all'ananas è un crimine o avanguardia?") e fai schierare due fazioni rivali.
+
+  [#48] L'ANARCHIA TOTALE (LEGGENDARIA) (ID: chaos_20)
+      Difficoltà: LEGGENDARIA | Punti Base: 450 PT | Durata: ~12 min
+      Categoria: PERSUASIONE | Partecipanti: 5 | Verifica: group_vote
+      Descrizione:
+         Fai scambiare i posti a tutti i giocatori del tavolo/salotto convincendoli che porta sfortuna mantenere la stessa sedia per più di un'ora.
+
+  [#49] IL COMPLIMENTO IMBARAZZANTE (ID: cross_01)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai un complimento iper-specifico e insolito a un amico (es. "Hai una precisione geometrica eccezionale quando bevi dal bicchiere") mantenendo una serietà glaciale.
+
+  [#50] IL MAESTRO DELL'INCROCIO DI GAMBE (ID: cross_03)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~15 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Ogni volta che il giocatore alla tua destra accavalla le gambe, accavalla le tue nello stesso verso. Ripeti per 4 volte consecutive.
+
+  [#51] IL DETECTIVE DEI SEGRETI (ID: cross_04)
+      Difficoltà: DIFFICILE | Punti Base: 290 PT | Durata: ~20 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Scopri quale altro partecipante ha attualmente una missione attiva di categoria "Bluff" o "Persuasione" prima che la completi.
+
+  [#52] LA PROVA DEL SEI GRADI DI SEPARAZIONE (ID: cross_05)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~10 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Trova un conoscente in comune inaspettato con un amico del gruppo attraverso una catena di al massimo 3 persone.
+
+  [#53] IL GIURAMENTO SOLENNE (ID: cross_06)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai promettere solennemente a un amico con mignolo incrociato qualcosa di completamente futile ma buffo.
+
+  [#54] L'AVVOCATO DEL DIAVOLO (ID: cross_07)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~12 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Prendi le difese di una persona antipatica a tutto il gruppo con argomentazioni filosofiche inattaccabili.
+
+  [#55] L'ORIGAMI ESPRESSIVO (ID: cross_08)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~6 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Costruisci un origami (barchetta, aeroplanino o cigno) usando un tovagliolo del locale e donalo solennemente a un compagno.
+
+  [#56] IL SESTO SENSO DEL CONTO (ID: cross_09)
+      Difficoltà: DIFFICILE | Punti Base: 250 PT | Durata: ~10 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Indovina il totale del conto o della spesa del tavolo con uno scarto inferiore a 2 euro prima che arrivi lo scontrino.
+
+  [#57] LA TELEPATIA DI GRUPPO (LEGGENDARIA) (ID: cross_10)
+      Difficoltà: LEGGENDARIA | Punti Base: 480 PT | Durata: ~5 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Al conto di 3, tu e un altro giocatore dovete pronunciare contemporaneamente un nome di città o colore e dire la stessa identica parola al primo colpo.
+
+  [#58] IL RITUALE DEL BRINDISI SOSPESO (ID: cross_11)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~4 min
+      Categoria: CHAOS | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Inizia un brindisi, fai alzare tutti i bicchieri, fermati a metà discorso fingendo di aver perso il filo e falli aspettare 15 secondi con i bicchieri in aria.
+
+  [#59] LA CITAZIONE FALSA DI OSCAR WILDE (ID: cross_12)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~8 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Infila in una conversazione una frase inventata sul momento attribuendola con assoluta certezza a Oscar Wilde, Nietzsche o Woody Allen.
+
+  [#60] IL CACCIATORE DI BATTERIA SCARICA (ID: cross_14)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Scopri quale tra i partecipanti ha la percentuale di batteria del telefono più bassa in questo momento.
+
+  [#61] L'OMAGGIO POETICO IMPROVVISATO (ID: cross_15)
+      Difficoltà: MEDIA | Punti Base: 140 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 3 | Verifica: group_vote
+      Descrizione:
+         Recita 4 versi in rima dedicati a una pietanza o a una bevanda presente sul tavolo con tono drammatico.
+
+  [#62] IL RADAR DELLE CANZONI (ID: cross_16)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai indovinare a un amico il titolo di una canzone fischiettandone solo le prime 5 note.
+
+  [#63] LA MANO DEL DESTINO (ID: cross_17)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai scegliere a un amico tra la tua mano destra e sinistra chiusa: una contiene una moneta o tappo, l'altra un complimento scritto.
+
+  [#64] IL GIUDICE DI STILE BENEVOLO (ID: cross_18)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Indovina da dove proviene o quale marca ha un indumento o accessorio indossato da un amico azzeccandoci al primo colpo.
+
+  [#65] L'INCANTESIMO DELLA CONCENTRAZIONE (ID: cross_19)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fissa un bicchiere o una bottiglia al centro del tavolo per 2 minuti senza mai sbattere le palpebre finché un amico non ti chiede se va tutto bene.
+
+  [#66] LA TRATTATIVA DI PACE (LEGGENDARIA) (ID: cross_20)
+      Difficoltà: LEGGENDARIA | Punti Base: 460 PT | Durata: ~20 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: group_vote
+      Descrizione:
+         Riconcilia una vecchia disputa scherzosa o discussione aperta tra due amici del gruppo facendoli brindare insieme con una stretta di mano pacificatrice.
+
+  [#67] LO SGUARDO MISTERIOSO DA THRILLER (ID: chaos_extra_01)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~4 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Lancia un'occhiata complice e preoccupata a un amico come se avessi visto qualcosa di allarmante, senza mai spiegare cosa.
+
+  [#68] LA FIRMA SUL TOVAGLIOLO (ID: chaos_extra_02)
+      Difficoltà: MEDIA | Punti Base: 140 PT | Durata: ~6 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai autografare un tovagliolo a un amico con una dedica affettuosa o bizzarra spacciandolo per un contratto notarile solenne.
+
+  [#69] L'ALLINEATORE FOLLE DI SEDIE (ID: chaos_extra_03)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~6 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Allinea millimetricamente tutte le sedie o i bicchieri del tavolo con meticolosità ossessiva finché qualcuno non commenta la tua precisione.
+
+  [#70] LA CANZONE DELLA BUONANOTTE COLLETTIVA (ID: chaos_extra_05)
+      Difficoltà: DIFFICILE | Punti Base: 280 PT | Durata: ~8 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Fai intonare a tutto il gruppo una sigla televisiva o canzone celebre prima della chiusura della partita.
+
+
+--------------------------------------------------------------------------------
+SEZIONE: 3.2 HOUSE PARTY (FESTA IN CASA) (17 missioni)
+Descrizione: Divano, cucina, frigo, aneddoti personali, votazioni improvvisate e sabotaggi domestici.
+--------------------------------------------------------------------------------
+
+  [#1] LA MOSSA SPECCHIO (ID: disco_01)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Inventati un movimento di danza ritmico e ripetitivo sulla pista e convinci un compagno di gioco a imitarlo a specchio per almeno 15 secondi.
+
+  [#2] IL TRENINO SPONTANEO (ID: disco_04)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Innesca o partecipa a una fila di ballo o passo coordinato con almeno altri 3 compagni di gioco per almeno 30 secondi.
+
+  [#3] L'URLO SUL RITORNELLO (ID: disco_06)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai cantare a squarciagola il ritornello di una traccia a un amico che di solito non canta mai in pubblico.
+
+  [#4] LA FOTO MOSSE PERFETTA (ID: disco_08)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Scatta o fatti scattare una foto di gruppo mossa e sfocata che sembri la copertina di un album indie electro anni 2000.
+
+  [#5] OCCHIALI DA SOLE NOTTURNI (ID: disco_10)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~8 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai indossare a un compagno i tuoi occhiali da sole sulla pista da ballo buia per almeno una canzone intera senza lamentarsi.
+
+  [#6] CERCHIO HIP-HOP DA SALOTTO (ID: disco_12)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Apri un cerchio di ballo tra voi amici e lancia dentro un compagno riluttante facendolo acclamare a gran voce da tutto il gruppo.
+
+  [#7] IL CUSTODE DEL FRIGORIFERO (ID: house_01)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~10 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Posizionati vicino al frigorifero o alla dispensa e commenta seriosamente ogni scelta di snack o bevanda presa da 3 amici diversi.
+
+  [#8] L'OGGETTO INFILTRATO (ID: house_03)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~15 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Prendi un piccolo oggetto innocuo (un cucchiaino, una molletta, un tappo) e nascondilo nella tasca della giacca di un amico senza che se ne accorga.
+
+  [#9] L'ISPEZIONE DOMESTICA (ID: house_05)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Trova l'oggetto più bizzarro o vintage esposto nella stanza e chiedi al padrone di casa l'aneddoto sulla sua origine.
+
+  [#10] IL TOAST PERFETTO (ID: house_08)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~8 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Prepara uno spuntino o assembla un piattino di stuzzichini per un amico decorandolo in modo ridicolmente artistico e formale.
+
+  [#11] LO SCAMBIO DI SEDIE INCONSAPEVOLE (ID: house_09)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai cambiare sedia o divano a un amico senza chiedergli di alzarsi direttamente (es. chiedendogli di passarti qualcosa o indicando un dettaglio).
+
+  [#12] LA PROVA DEL CUOCO SPACCIATA (ID: house_14)
+      Difficoltà: DIFFICILE | Punti Base: 260 PT | Durata: ~10 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai credere che uno snack industriale confezionato sia una ricetta segreta preparata a mano da tua nonna.
+
+  [#13] IL SALUTO SEGRETO IMPROVVISATO (ID: house_16)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~8 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Insegna a un amico una stretta di mano segreta con 4 passaggi bizzarri e usatela come saluto ufficiale per il resto della serata.
+
+  [#14] LA TELECRONACA SOTTO VOCE (ID: house_19)
+      Difficoltà: DIFFICILE | Punti Base: 220 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fai la telecronaca a bassa voce di ciò che sta facendo un amico in cucina come se fosse la finale di Champions League.
+
+  [#15] IL MASTER DEL SALOTTO (LEGGENDARIA) (ID: house_20)
+      Difficoltà: LEGGENDARIA | Punti Base: 400 PT | Durata: ~15 min
+      Categoria: PERSUASIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Riesci a far spostare l'intera conversazione del salotto su un argomento a tua scelta deciso prima, e mantenerla viva per almeno 12 minuti continuativi.
+
+  [#16] LA CATENA DI SUSSURRI (ID: chaos_14)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~6 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Sussurra una frase nonsense all'orecchio di un amico dicendo "passala a destra", e fai in modo che l'ultimo del cerchio la ripeta ad alta voce.
+
+  [#17] IL CRONOMETRO DELLA MORTE APPARENTE (ID: chaos_18)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~3 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Rimani con gli occhi chiusi per 60 secondi esatti senza parlare né toccare nessuno in mezzo alla conversazione.
+
+
+--------------------------------------------------------------------------------
+SEZIONE: 3.3 DISCOTECA & CLUB (22 missioni)
+Descrizione: Pista da ballo, musica ad alto volume, sguardi, cenni in codice, pose sincronizzate.
+--------------------------------------------------------------------------------
+
+  [#1] LA MOSSA SPECCHIO (ID: disco_01)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Inventati un movimento di danza ritmico e ripetitivo sulla pista e convinci un compagno di gioco a imitarlo a specchio per almeno 15 secondi.
+
+  [#2] IL RADAR DEL DROP (ID: disco_02)
+      Difficoltà: FACILE | Punti Base: 80 PT | Durata: ~5 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Prevedi ad alta voce il momento esatto in cui la canzone "droppa" o cambia ritmo, alzando le braccia esattamente sul beat.
+
+  [#3] LA COMUNICAZIONE MORSE A BICCHIERI (ID: disco_03)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Comunica una parola in codice di 4 lettere a un tuo amico attraverso la folla usando solo cenni del capo o gesti delle mani, senza usare la voce né il cellulare.
+
+  [#4] IL TRENINO SPONTANEO (ID: disco_04)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Innesca o partecipa a una fila di ballo o passo coordinato con almeno altri 3 compagni di gioco per almeno 30 secondi.
+
+  [#5] LA GUARDIA DEL CORPO IMPROVVISATA (ID: disco_05)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fai finta di essere la guardia del corpo seria e impassibile di un tuo amico mentre attraversa la pista da ballo per andare al bar.
+
+  [#6] L'URLO SUL RITORNELLO (ID: disco_06)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai cantare a squarciagola il ritornello di una traccia a un amico che di solito non canta mai in pubblico.
+
+  [#7] LA FOTO MOSSE PERFETTA (ID: disco_08)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Scatta o fatti scattare una foto di gruppo mossa e sfocata che sembri la copertina di un album indie electro anni 2000.
+
+  [#8] LA SCOMPARSA DA ILLUSIONISTA (ID: disco_09)
+      Difficoltà: MEDIA | Punti Base: 140 PT | Durata: ~10 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Sparisci dalla vista di un tuo amico durante un momento di folla e ricompari esattamente alle sue spalle toccandogli la spalla opposta.
+
+  [#9] OCCHIALI DA SOLE NOTTURNI (ID: disco_10)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~8 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai indossare a un compagno i tuoi occhiali da sole sulla pista da ballo buia per almeno una canzone intera senza lamentarsi.
+
+  [#10] INDOVINA IL DJ SET (ID: disco_11)
+      Difficoltà: DIFFICILE | Punti Base: 250 PT | Durata: ~15 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Riconosci e scrivi in segreto sul telefono il genere o il campione della traccia successiva prima che entri la batteria principale, e mostralo come prova al compagno.
+
+  [#11] CERCHIO HIP-HOP DA SALOTTO (ID: disco_12)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Apri un cerchio di ballo tra voi amici e lancia dentro un compagno riluttante facendolo acclamare a gran voce da tutto il gruppo.
+
+  [#12] IL LABIALE SBAGLIATO (ID: disco_13)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~3 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Canta in playback con grande enfasi parole completamente diverse dal testo reale della canzone per 30 secondi finché qualcuno non ti guarda perplesso.
+
+  [#13] LA FINTA CHIAMATA D'EMERGENZA (ID: disco_14)
+      Difficoltà: MEDIA | Punti Base: 130 PT | Durata: ~5 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Mima l'ansia di una telefonata urgente nel frastuono della musica, chiedi silenzio con un dito a un amico e poi scoppia a ridere rivelando il nulla.
+
+  [#14] LA TRANCE MISTICA (ID: disco_15)
+      Difficoltà: DIFFICILE | Punti Base: 270 PT | Durata: ~3 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Rimani immobile come una statua in mezzo alla pista mentre tutti ballano intorno a te per 45 secondi di fila senza sorridere.
+
+  [#15] IL BATTITO DI MANI FUORI TEMPO (ID: disco_16)
+      Difficoltà: DIFFICILE | Punti Base: 260 PT | Durata: ~5 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Inizia a battere le mani perfettamente in controtempo rispetto alla cassa e convincere almeno un altro amico a unirsi convinto al tuo ritmo storto.
+
+  [#16] IL PASSAGGIO DELLA GIACCA (ID: disco_17)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Riesci a far reggere la tua giacca, felpa o accessorio a un altro giocatore per più di 5 minuti senza che te lo chieda indietro subito.
+
+  [#17] HIGH FIVE VOLANTE (ID: disco_18)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Scambia un batticinque a mezz'aria saltando contemporaneamente con un amico durante il drop di un brano.
+
+  [#18] IL GUARDIANO DEL TAVOLO (ID: disco_19)
+      Difficoltà: MEDIA | Punti Base: 140 PT | Durata: ~12 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Presidia il tavolo o il punto d'appoggio del gruppo per 10 minuti respingendo amichevolmente chiunque provi ad occuparlo.
+
+  [#19] L'IPNOTISTA DELLA CODA (ID: chaos_17)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~4 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Fai voltare tutti i partecipanti verso la stessa direzione indicando un punto vuoto con aria incuriosita e dicendo "Ma quello là in fondo è...?".
+
+  [#20] IL DETECTIVE DEI SEGRETI (ID: cross_04)
+      Difficoltà: DIFFICILE | Punti Base: 290 PT | Durata: ~20 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Scopri quale altro partecipante ha attualmente una missione attiva di categoria "Bluff" o "Persuasione" prima che la completi.
+
+  [#21] IL CACCIATORE DI BATTERIA SCARICA (ID: cross_14)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Scopri quale tra i partecipanti ha la percentuale di batteria del telefono più bassa in questo momento.
+
+  [#22] LO SGUARDO MISTERIOSO DA THRILLER (ID: chaos_extra_01)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~4 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Lancia un'occhiata complice e preoccupata a un amico come se avessi visto qualcosa di allarmante, senza mai spiegare cosa.
+
+
+--------------------------------------------------------------------------------
+SEZIONE: 3.4 ALL'APERTO & FESTIVAL (41 missioni)
+Descrizione: Piazze, parchi, passeggiate notturne, monumenti, movimento e interazione con l'ambiente.
+--------------------------------------------------------------------------------
+
+  [#1] LA PAROLA INFILTRATA: "PAPPAGALLO" (ID: bar_08)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~15 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Inserisci la parola "pappagallo" (o suo derivato) in 3 conversazioni separate con 3 persone diverse nell'arco di 15 minuti, senza destare sospetti.
+
+  [#2] L'INTERVISTA CLANDESTINA (ID: bar_09)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~10 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai confessare a un altro partecipante il suo peggior acquisto compulsivo degli ultimi 6 mesi, senza fargli capire che sei in missione.
+
+  [#3] IL SOPRANNOME IMPROVVISO (ID: bar_16)
+      Difficoltà: DIFFICILE | Punti Base: 260 PT | Durata: ~20 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Inizia a chiamare un partecipante con un soprannome insolito e fa in modo che un terzo membro del gruppo inizi a usarlo spontaneamente nella conversazione.
+
+  [#4] LO SBADIGLIO A CATENA (ID: bar_19)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~3 min
+      Categoria: OSSERVAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Sbadiglia vistosamente e fai sbadigliare per contagio almeno altri due partecipanti entro 90 secondi.
+
+  [#5] L'OPINIONE CONTROCORRENTE (ID: bar_20)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~10 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Difendi con passione un film universalmente odiato o un cibo ripugnante finché un amico non ammette riluttante: "Beh, in fondo un punto ce l'hai".
+
+  [#6] LA VOTAZIONE IMPROVVISA (ID: house_04)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Lancia una votazione palese al volo su chi tra i presenti sopravviverebbe meno tempo in un'apocalisse zombie e fai votare almeno 4 persone.
+
+  [#7] LA BATTUTA A SCOPPIO RITARDATO (ID: house_06)
+      Difficoltà: MEDIA | Punti Base: 130 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Racconta una freddura o un calambour pessimo e mantieni un'espressione totalmente seria finché qualcun altro non ride per l'imbarazzo.
+
+  [#8] IL SALUTO SEGRETO IMPROVVISATO (ID: house_16)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~8 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Insegna a un amico una stretta di mano segreta con 4 passaggi bizzarri e usatela come saluto ufficiale per il resto della serata.
+
+  [#9] IL NAVIGATORE CIECO (ID: out_01)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~12 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Guida il gruppo verso una direzione o una via laterale sostenendo con assoluta sicurezza che "da qui si accorcia", anche se allunghi la strada.
+
+  [#10] LA GUIDA TURISTICA APOCRIFA (ID: out_02)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~8 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Indica un palazzo, una statua o un elemento urbano qualunque e inventati una storia storica totalmente falsa convincendo almeno un compagno.
+
+  [#11] L'AVVISTATORE DI CANI (ID: out_03)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~15 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Sii il primo ad avvistare 3 cani di razze diverse durante la passeggiata e fai pronunciare il loro nome a un compagno.
+
+  [#12] LA CAMMINATA SINCRONIZZATA (ID: out_04)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~6 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Cammina spalla a spalla con un amico sincronizzando perfettamente il passo del piede destro e sinistro per almeno 50 passi senza che lui se ne accorga.
+
+  [#13] IL TROVATORE DI TARGHE ASSURDE (ID: out_05)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~10 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Trova un'auto parcheggiata la cui targa contenga una parola o una sigla buffa e falla notare al gruppo.
+
+  [#14] LA FERMATA DEL SEMAFORO FILOSOFICO (ID: out_06)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~4 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Durante l'attesa a un semaforo pedonale rosso, fai partire una discussione etica sul perché la gente aspetta anche senza macchine.
+
+  [#15] IL LANCIO DELL'OMBRA (ID: out_07)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fai in modo che l'ombra del tuo corpo copra completamente l'ombra di un compagno di gioco per 10 secondi sotto un lampione.
+
+  [#16] LA PANCHINA DELLE CONFESSIONI (ID: out_08)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~8 min
+      Categoria: CREATIVITA | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Convincere due amici a sedersi su una panchina pubblica e scattargli una foto che sembri una locandina cinematografica d'autore.
+
+  [#17] IL CACCIATORE DI VETRINE (ID: out_10)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: PERSUASIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai fermare un amico davanti a una vetrina di un negozio chiuso commentando seriamente un capo o un oggetto orribile.
+
+  [#18] L'ECO DELLA PIAZZA (ID: out_11)
+      Difficoltà: MEDIA | Punti Base: 140 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Trova un punto in una piazza o sotto un portico con riverbero e fai urlare una frase nonsense a un amico per testare l'eco.
+
+  [#19] IL CALCOLO DEI PASSI (ID: out_12)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~6 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai indovinare a un amico quanti passi mancano all'incrocio successivo e verificate contando ad alta voce insieme.
+
+  [#20] LA BREZZA IMPROVVISA (ID: out_13)
+      Difficoltà: MEDIA | Punti Base: 130 PT | Durata: ~10 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Lamentati credibilmente del vento o della temperatura esattamente prima che un altro compagno dica spontaneamente la stessa cosa.
+
+  [#21] IL GIROTONDO INCONSAPEVOLE (ID: out_14)
+      Difficoltà: DIFFICILE | Punti Base: 270 PT | Durata: ~8 min
+      Categoria: CHAOS | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Guida il gruppo attorno a un monumento o un'aiuola facendo compiere un cerchio completo a 360 gradi prima di riprendere la rotta.
+
+  [#22] IL SALTATORE DI RIGHE (ID: out_15)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Evita rigorosamente di calpestare le fughe delle piastrelle o i tombini per 100 metri, facendoti notare da un testimone.
+
+  [#23] LA TRACCIA DEL CARTELLO BIZZARRO (ID: out_17)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~8 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Trova un cartello stradale o un adesivo insolito e convinci un amico che è l'indizio di una società segreta locale.
+
+  [#24] L'ATTRAVERSAMENTO DA STAR (ID: out_18)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~4 min
+      Categoria: CREATIVITA | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Attraversa le strisce pedonali con i tuoi compagni sfilando a passo da passerella di alta moda.
+
+  [#25] IL CAMPANILE DELL'ORA ESATTA (ID: out_19)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~15 min
+      Categoria: OSSERVAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Annuncia l'ora esatta senza guardare il telefono nel momento in cui suonano le campane di una chiesa vicina o un orologio pubblico.
+
+  [#26] LA SPEDIZIONE NOTTURNA (LEGGENDARIA) (ID: out_20)
+      Difficoltà: LEGGENDARIA | Punti Base: 390 PT | Durata: ~20 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Porta l'intero gruppo a scoprire un angolo o vicolo del quartiere in cui nessuno dei presenti era mai stato prima.
+
+  [#27] LA NOTIFICA FANTASMA (ID: chaos_04)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~6 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Guarda lo schermo del telefono con espressione di autentico shock o stupore, coprilo con la mano e rifiutati di dire cosa hai visto a chiunque te lo chieda per 3 minuti.
+
+  [#28] LA DOMANDA DA 100 MILIONI (ID: chaos_11)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~8 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Poni al gruppo un dilemma morale assurdo ma intrigante ("100 milioni subito ma ogni volta che entri in un bar suona l'inno nazionale?") e raccogli i pareri di tutti.
+
+  [#29] IL GIUDIZIO UNIVERSALE DEGLI STICKER (ID: chaos_15)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Invia uno sticker o GIF nel gruppo WhatsApp/Telegram degli amici che descriva perfettamente la situazione attuale senza aggiungere alcun testo.
+
+  [#30] L'IPNOTISTA DELLA CODA (ID: chaos_17)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~4 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Fai voltare tutti i partecipanti verso la stessa direzione indicando un punto vuoto con aria incuriosita e dicendo "Ma quello là in fondo è...?".
+
+  [#31] IL COMPLIMENTO IMBARAZZANTE (ID: cross_01)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai un complimento iper-specifico e insolito a un amico (es. "Hai una precisione geometrica eccezionale quando bevi dal bicchiere") mantenendo una serietà glaciale.
+
+  [#32] LA PROVA DEL SEI GRADI DI SEPARAZIONE (ID: cross_05)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~10 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Trova un conoscente in comune inaspettato con un amico del gruppo attraverso una catena di al massimo 3 persone.
+
+  [#33] IL GIURAMENTO SOLENNE (ID: cross_06)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai promettere solennemente a un amico con mignolo incrociato qualcosa di completamente futile ma buffo.
+
+  [#34] LA TELEPATIA DI GRUPPO (LEGGENDARIA) (ID: cross_10)
+      Difficoltà: LEGGENDARIA | Punti Base: 480 PT | Durata: ~5 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Al conto di 3, tu e un altro giocatore dovete pronunciare contemporaneamente un nome di città o colore e dire la stessa identica parola al primo colpo.
+
+  [#35] LA CITAZIONE FALSA DI OSCAR WILDE (ID: cross_12)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~8 min
+      Categoria: BLUFF | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Infila in una conversazione una frase inventata sul momento attribuendola con assoluta certezza a Oscar Wilde, Nietzsche o Woody Allen.
+
+  [#36] IL CACCIATORE DI BATTERIA SCARICA (ID: cross_14)
+      Difficoltà: FACILE | Punti Base: 90 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Scopri quale tra i partecipanti ha la percentuale di batteria del telefono più bassa in questo momento.
+
+  [#37] IL RADAR DELLE CANZONI (ID: cross_16)
+      Difficoltà: FACILE | Punti Base: 100 PT | Durata: ~5 min
+      Categoria: CREATIVITA | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai indovinare a un amico il titolo di una canzone fischiettandone solo le prime 5 note.
+
+  [#38] LA MANO DEL DESTINO (ID: cross_17)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai scegliere a un amico tra la tua mano destra e sinistra chiusa: una contiene una moneta o tappo, l'altra un complimento scritto.
+
+  [#39] IL GIUDICE DI STILE BENEVOLO (ID: cross_18)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~8 min
+      Categoria: DEDUZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Indovina da dove proviene o quale marca ha un indumento o accessorio indossato da un amico azzeccandoci al primo colpo.
+
+  [#40] LA TRATTATIVA DI PACE (LEGGENDARIA) (ID: cross_20)
+      Difficoltà: LEGGENDARIA | Punti Base: 460 PT | Durata: ~20 min
+      Categoria: PERSUASIONE | Partecipanti: 3 | Verifica: group_vote
+      Descrizione:
+         Riconcilia una vecchia disputa scherzosa o discussione aperta tra due amici del gruppo facendoli brindare insieme con una stretta di mano pacificatrice.
+
+  [#41] LA CANZONE DELLA BUONANOTTE COLLETTIVA (ID: chaos_extra_05)
+      Difficoltà: DIFFICILE | Punti Base: 280 PT | Durata: ~8 min
+      Categoria: SOCIALIZZAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Fai intonare a tutto il gruppo una sigla televisiva o canzone celebre prima della chiusura della partita.
+
+
+--------------------------------------------------------------------------------
+SEZIONE: 3.5 CHAOS MODE (SABOTAGGI & BLUFF ESTREMO) (15 missioni)
+Descrizione: Tradimenti amichevoli, regole bizzarre, complotti assurdi, imprevisti e caos totale.
+--------------------------------------------------------------------------------
+
+  [#1] IL MAESTRO DEL GHIACCIO (ID: bar_18)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Sposta discretamente 3 cubetti di ghiaccio o cannucce usate da un bicchiere a un piattino senza che il proprietario del drink se ne accorga per 2 minuti.
+
+  [#2] LA TRANCE MISTICA (ID: disco_15)
+      Difficoltà: DIFFICILE | Punti Base: 270 PT | Durata: ~3 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Rimani immobile come una statua in mezzo alla pista mentre tutti ballano intorno a te per 45 secondi di fila senza sorridere.
+
+  [#3] L'OGGETTO INFILTRATO (ID: house_03)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~15 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Prendi un piccolo oggetto innocuo (un cucchiaino, una molletta, un tappo) e nascondilo nella tasca della giacca di un amico senza che se ne accorga.
+
+  [#4] LA SFIDA DEL POLLICE (ID: house_17)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Appoggia il pollice sul bordo del tavolo. Tutti quelli che lo vedono devono fare lo stesso. L'ultimo a farlo perde (e tu incassi i punti se lo notano in 3).
+
+  [#5] IL GIROTONDO INCONSAPEVOLE (ID: out_14)
+      Difficoltà: DIFFICILE | Punti Base: 270 PT | Durata: ~8 min
+      Categoria: CHAOS | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Guida il gruppo attorno a un monumento o un'aiuola facendo compiere un cerchio completo a 360 gradi prima di riprendere la rotta.
+
+  [#6] IL SALTATORE DI RIGHE (ID: out_15)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Evita rigorosamente di calpestare le fughe delle piastrelle o i tombini per 100 metri, facendoti notare da un testimone.
+
+  [#7] IL SABOTATORE DI BRINDISI (ID: chaos_01)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Durante il prossimo brindisi, tocca i bicchieri di tutti tranne uno specifico giocatore, scusandoti subito dopo dicendo "Ops, non ti avevo visto!".
+
+  [#8] IL TRADIMENTO DELL'ALLEANZA (COOP) (ID: chaos_03)
+      Difficoltà: DIFFICILE | Punti Base: 280 PT | Durata: ~15 min
+      Categoria: BLUFF | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Fingi un'alleanza segreta con un giocatore per completare un obiettivo, ma fai convalidare l'obiettivo da un testimone diverso prima di lui.
+
+  [#9] IL CONTAGIO DELLA RISATA ROVESCIATA (ID: chaos_05)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~10 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Ridi di una cosa serissima e mantieni una faccia tombale quando tutti gli altri ridono per una battuta.
+
+  [#10] LA PAROLA TABÙ DEL GRUPPO (ID: chaos_07)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~10 min
+      Categoria: CHAOS | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Dichiara apertamente una parola "maledetta" per i prossimi 10 minuti. Chiunque la pronuncia deve offrire un assaggio o fare un pegno.
+
+  [#11] IL FURTO DEL BICCHIERE FANTASMA (ID: chaos_08)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~8 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Scambia il tuo bicchiere (se dello stesso tipo e contenuto sicuro) con quello di un compagno distratto senza che se ne accorga.
+
+  [#12] IL CRONOMETRO DELLA MORTE APPARENTE (ID: chaos_18)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~3 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Rimani con gli occhi chiusi per 60 secondi esatti senza parlare né toccare nessuno in mezzo alla conversazione.
+
+  [#13] IL RITUALE DEL BRINDISI SOSPESO (ID: cross_11)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~4 min
+      Categoria: CHAOS | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Inizia un brindisi, fai alzare tutti i bicchieri, fermati a metà discorso fingendo di aver perso il filo e falli aspettare 15 secondi con i bicchieri in aria.
+
+  [#14] L'INCANTESIMO DELLA CONCENTRAZIONE (ID: cross_19)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~5 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fissa un bicchiere o una bottiglia al centro del tavolo per 2 minuti senza mai sbattere le palpebre finché un amico non ti chiede se va tutto bene.
+
+  [#15] L'ALLINEATORE FOLLE DI SEDIE (ID: chaos_extra_03)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~6 min
+      Categoria: CHAOS | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Allinea millimetricamente tutte le sedie o i bicchieri del tavolo con meticolosità ossessiva finché qualcuno non commenta la tua precisione.
+
+
+--------------------------------------------------------------------------------
+SEZIONE: 3.6 JEFFREY ISLAND (PICCANTE & ALCOLICA 18+) (36 missioni)
+Descrizione: Party bollente e senza censure: flirt, drink, baci, penitenze piccanti, verità proibite e contatto fisico.
+--------------------------------------------------------------------------------
+
+  [#1] LO SHOT DELLA VERITÀ BRUCIANTE (ID: jeffrey_01)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~10 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Offri o proponi uno shot a un compagno. Prima di berlo, fagli confessare a bruciapelo la figura peggiore che ha fatto durante una serata.
+
+  [#2] IL BRINDISI DEL FONDATORE DI JEFFREY ISLAND (ID: jeffrey_02)
+      Difficoltà: FACILE | Punti Base: 130 PT | Durata: ~6 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Alzati in piedi con bicchiere alla mano e improvvisa un brindisi solenne e assurdo dedicato alla "Fondazione della Repubblica Libera di Jeffrey Island", facendo brindare tutti.
+
+  [#3] BEVI SE HAI MAI (NEVER HAVE I EVER LAMPO) (ID: jeffrey_03)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~8 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Lancia una dichiarazione del tipo "Bevo io e beve chiunque abbia mai..." con un aneddoto piccante o imbarazzante. Almeno 2 persone devono bere un sorso con te.
+
+  [#4] IL FINTO CUPIDO (FLIRT AD ALTA TENSIONE) (ID: jeffrey_04)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~10 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Sostieni con convinzione totale che tra due partecipanti al tavolo c'è una tensione palpabile e innegabile, analizzando i loro presunti "micro-segnali".
+
+  [#5] IL COMPLIMENTO SUSSURRATO (ID: jeffrey_05)
+      Difficoltà: FACILE | Punti Base: 140 PT | Durata: ~5 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Avvicinati a un giocatore, sussurragli all'orecchio un complimento estremamente audace o teatrale con tono serissimo, poi allontanati fingendo che sia un segreto di stato.
+
+  [#6] LO SCAMBIO DI BICCHIERE A TRADIMENTO (ID: jeffrey_06)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~7 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai assaggiare il tuo drink a un compagno per fargli "sentire una cosa strana", e subito dopo bevi dal suo bicchiere commentando che il suo è nettamente migliore.
+
+  [#7] LA PROPOSTA INDECENTE TEATRALE (ID: jeffrey_07)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~8 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fai una proposta folle e irresistibile a un compagno (es. "Scappiamo a Santo Domingo domattina alle 6 con 40 euro") e ottieni il suo consenso verbale solenne.
+
+  [#8] COCKTAIL ROULETTE (IL BARMAN IMPROVVISATO) (ID: jeffrey_08)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~10 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Componi un mix di bevande o aggiungi un ingrediente segreto (es. fettina, ghiaccio extra, cannucce multiple) e fallo bere a un volontario come "Specialità della Casa".
+
+  [#9] IL GIOCO DELLE PENITENZE ISTANTANEE (ID: jeffrey_09)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~6 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Sfida un compagno a morra cinese o sasso-carta-forbice: chi perde deve bere 2 sorsi o mandare un vocale con voce sexy al suo migliore amico.
+
+  [#10] SGUARDO IPNOTICO DA TELENOVELA (15 SECONDI) (ID: jeffrey_10)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~5 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Fissa un altro giocatore negli occhi a distanza ravvicinata per 15 secondi senza parlare né distogliere lo sguardo, terminando con un sospiro drammatico.
+
+  [#11] LA CRONACA DEI FLIRT PASSATI (ID: jeffrey_11)
+      Difficoltà: DIFFICILE | Punti Base: 220 PT | Durata: ~12 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fai raccontare a un compagno il peggior appuntamento o bacio della sua vita, senza lasciarlo scappare fino a quando non ha svelato i dettagli più comici.
+
+  [#12] LA SCOMMESSA ALCOLICA DEI 3 NOMI (ID: jeffrey_12)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~5 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Sfida un amico: deve nominare 3 drink con la lettera "M" (o 3 ex) in 5 secondi esatti, altrimenti deve bere un sorso d'onore.
+
+  [#13] LA SOSTA VIP DA ROCKSTAR (ID: jeffrey_13)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~10 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Comportati per 10 minuti come se fossi il proprietario del locale o della casa, chiedendo a chiunque se il servizio è all'altezza dei tuoi standard miliardari.
+
+  [#14] IL BACIO SULLA GUANCIA DA PADRINO (ID: jeffrey_14)
+      Difficoltà: FACILE | Punti Base: 130 PT | Durata: ~4 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Avvicinati a un compagno di gioco, dagli un solenne bacio su entrambe le guance dicendogli: "Tu sei la mia famiglia ora, non tradirmi mai".
+
+  [#15] IL BALLO PROIBITO A SORPRESA (ID: jeffrey_15)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~6 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Prendi per mano un altro giocatore e trascinalo in un ballo appassionato o improvvisato di 30 secondi (salsa, lento o club dance), a prescindere dalla musica presente.
+
+  [#16] IL LIMBO ALCOLICO DELL'ISOLA (ID: jeffrey_16)
+      Difficoltà: DIFFICILE | Punti Base: 250 PT | Durata: ~10 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Organizza un passaggio sotto un braccio teso o una cannuccia/cintura con almeno 3 partecipanti: chi tocca beve un sorso.
+
+  [#17] LA RISATA SEXY DA CATTIVO DEI FILM (ID: jeffrey_17)
+      Difficoltà: FACILE | Punti Base: 110 PT | Durata: ~4 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         In mezzo a una battuta, scoppia in una risata profonda, teatrale e sorniona da magnate malvagio facendo calare il gelo o facendo sbellicare tutti.
+
+  [#18] CHI BUTTERESTI GIÙ DALLA TORRE? (ID: jeffrey_18)
+      Difficoltà: MEDIA | Punti Base: 190 PT | Durata: ~8 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Chiedi pubblicamente a un compagno di scegliere tra due persone presenti nel gruppo: "Chi butteresti dalla torre di Jeffrey Island per salvarti?". Deve motivare a voce alta!
+
+  [#19] LO SHOT ALLA GOCCIA DI SOLIDARIETÀ (ID: jeffrey_19)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~7 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Trova un compagno disposto a bere uno shot o un sorso lungo in sincronia perfetta "alla goccia" incrociando i gomiti (brindisi alla marinara).
+
+  [#20] L'ORACOLO DELLE RELAZIONI DI JEFFREY ISLAND (ID: jeffrey_20)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~9 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Fai finta di leggere la mano o le carte a un giocatore predicendogli un futuro amoroso scandaloso o travolgente entro le prossime 48 ore.
+
+  [#21] IL GENTILUOMO PROVOCATORE (UOMO) (ID: jeffrey_man_01)
+      Difficoltà: FACILE | Punti Base: 140 PT | Durata: ~5 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Target Genere: UOMO
+      Descrizione:
+         Fai il baciamano solenne a una ragazza o a un amico al tavolo, presentandoti come "Conte di Jeffrey Island" con tono nobile e ammaliatore.
+
+  [#22] BRACCIO DI FERRO DA SALOON (UOMO) (ID: jeffrey_man_02)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~7 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Target Genere: UOMO
+      Descrizione:
+         Sfida un altro uomo del tavolo a braccio di ferro con scommessa alcolica: il perdente beve un sorso e deve fare 5 flessioni sul posto.
+
+  [#23] IL MACHO PENTITO (UOMO) (ID: jeffrey_man_03)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~8 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: peer_witness
+      Target Genere: UOMO
+      Descrizione:
+         Confessa a voce alta con sguardo tenero la cosa più romantica o melensa che hai mai fatto (o sognato di fare) per una persona.
+
+  [#24] IL TOAST DELL'ALFA (UOMO) (ID: jeffrey_man_04)
+      Difficoltà: FACILE | Punti Base: 130 PT | Durata: ~4 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Target Genere: UOMO
+      Descrizione:
+         Bevi un intero bicchiere o shot d'un fiato sbattendo poi il bicchiere sul tavolo con espressione da film western, gridando "Questo è Jeffrey Island!".
+
+  [#25] LA SFILATA DI MODA DA TRAPSTAR (UOMO) (ID: jeffrey_man_05)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~6 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: group_vote
+      Target Genere: UOMO
+      Descrizione:
+         Mettiti gli occhiali da sole (o rubali a un amico) ed esibisciti in una camminata da passerella per 15 metri facendoti applaudire dal gruppo.
+
+  [#26] IL BARBIERE IMPROVVISATO (UOMO) (ID: jeffrey_man_06)
+      Difficoltà: FACILE | Punti Base: 120 PT | Durata: ~5 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Target Genere: UOMO
+      Descrizione:
+         Aggiusta con cura maniacale i capelli o il colletto a un altro ragazzo al tavolo dicendogli: "Così stasera non ti resiste nessuno, fidati".
+
+  [#27] LA REGINA INCONTRASTATA DEL PRIVÉ (DONNA) (ID: jeffrey_wmn_01)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~7 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Target Genere: DONNA
+      Descrizione:
+         Fatti servire o versare da bere da un compagno maschio al tavolo facendogli un cenno regale con il dito senza proferire parola finché non esegue.
+
+  [#28] LO SGUARDO DA FEMME FATALE (DONNA) (ID: jeffrey_wmn_02)
+      Difficoltà: FACILE | Punti Base: 140 PT | Durata: ~5 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Target Genere: DONNA
+      Descrizione:
+         Lancia a un ragazzo un'occhiata intensa battendo le ciglia e facendolo arrossire o balbettare, facendoti poi dire cosa stava pensando.
+
+  [#29] IL FINTO GOSSIP DA TELENOVELA (DONNA) (ID: jeffrey_wmn_03)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~8 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: peer_witness
+      Target Genere: DONNA
+      Descrizione:
+         Racconta con fare scandalizzato a due compagni un segreto fittizio assurdo su qualcuno nel locale, facendoli rimanere a bocca aperta prima di svelare il bluff.
+
+  [#30] IL BRINDISI DELLE BAD GIRLS (DONNA) (ID: jeffrey_wmn_04)
+      Difficoltà: FACILE | Punti Base: 130 PT | Durata: ~6 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: group_vote
+      Target Genere: DONNA
+      Descrizione:
+         Raduna tutte le ragazze presenti (o almeno 2 persone) per uno shot o sorso di gruppo al grido di "Stasera nessuna pietà!".
+
+  [#31] LA PSICOANALISTA SFACCIATA (DONNA) (ID: jeffrey_wmn_05)
+      Difficoltà: DIFFICILE | Punti Base: 240 PT | Durata: ~8 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 3 | Verifica: peer_witness
+      Target Genere: DONNA
+      Descrizione:
+         Guarda un ragazzo dritto negli occhi e analizza senza pietà il suo "stile di corteggiamento" dandogli un voto da 1 a 10 davanti a tutti.
+
+  [#32] LA CORONA DI TOVAGLIOLI (DONNA) (ID: jeffrey_wmn_06)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~7 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_witness
+      Target Genere: DONNA
+      Descrizione:
+         Fatti incoronare da un compagno con una corona o fascia improvvisata (di tovaglioli o cannucce) e ordina a tutti un brindisi solenne per la tua corte.
+
+  [#33] LA FALSA RIVELAZIONE BOMBA DI MEZZANOTTE (ID: jeffrey_leg_01)
+      Difficoltà: LEGGENDARIA | Punti Base: 350 PT | Durata: ~10 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Fai calare il silenzio al tavolo annunciando: "Ragazzi devo dirvi una cosa importante sulla mia vita privata che non ho mai detto a nessuno..." e dopo 10 secondi di suspense vuota il bicchiere dicendo "...sto benissimo!".
+
+  [#34] IL LIMBO DELLE VERITÀ PROIBITE (COOP) (ID: jeffrey_leg_02)
+      Difficoltà: DIFFICILE | Punti Base: 280 PT | Durata: ~12 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Tu e il tuo partner fate confessare al resto del tavolo a turno il loro "guilty pleasure" più bizzarro. Chi si rifiuta di rispondere beve 3 sorsi di penitenza.
+
+  [#35] IL RE O REGINA DEI CHUPITI (ID: jeffrey_leg_03)
+      Difficoltà: LEGGENDARIA | Punti Base: 380 PT | Durata: ~15 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Convincere l'intero gruppo a ordinare una "batteria di shot" (o bicchieri speciali) e berli tutti insieme sincronizzati al tuo via.
+
+  [#36] LO SCAMBIO DI TELEFONI A ROULETTE RUSSA (ID: jeffrey_leg_04)
+      Difficoltà: DIFFICILE | Punti Base: 260 PT | Durata: ~8 min
+      Categoria: JEFFREY_ISLAND | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Scambia il telefono con un altro giocatore per 3 minuti: ciascuno può guardare solo la galleria dei meme o delle foto buffe dell'altro mostrando la peggiore al gruppo.
+
+
+--------------------------------------------------------------------------------
+SEZIONE: 3.7 MISSIONI COLLABORATIVE (CO-OP SQUADRA) (10 missioni)
+Descrizione: Sfide in coppia o trio: sincronizzazione, complotti a due, sguardi e obiettivi congiunti.
+--------------------------------------------------------------------------------
+
+  [#1] PATTO DEL BANCONE (COOP) (ID: bar_13)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~15 min
+      Categoria: COLLABORAZIONE | Partecipanti: 3 | Verifica: peer_target
+      Descrizione:
+         Collabora con il tuo partner per far ordinare a un terzo giocatore una ciotola di patatine o arachidi extra senza che capisca che stavate complottando.
+
+  [#2] L'OMBRA FEDELE (COOP) (ID: disco_07)
+      Difficoltà: MEDIA | Punti Base: 170 PT | Durata: ~6 min
+      Categoria: COLLABORAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Con il tuo partner, posizionatevi contemporaneamente ai due lati di un terzo giocatore per 2 minuti ballando in sincronia perfetta senza che lui capisca il motivo.
+
+  [#3] IL RE DELLA PISTA (LEGGENDARIA) (ID: disco_20)
+      Difficoltà: LEGGENDARIA | Punti Base: 420 PT | Durata: ~15 min
+      Categoria: COLLABORAZIONE | Partecipanti: 5 | Verifica: group_vote
+      Descrizione:
+         Organizza una coreografia improvvisata con almeno 4 compagni di gioco che duri per un intero ritornello e termini con un pose-down finale.
+
+  [#4] IL COMPLICE SILENZIOSO (COOP) (ID: house_12)
+      Difficoltà: MEDIA | Punti Base: 190 PT | Durata: ~12 min
+      Categoria: COLLABORAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Assieme al partner, ogni volta che un terzo giocatore parla, annuite sincronizzati in silenzio per 3 volte nell'arco di 10 minuti.
+
+  [#5] LA SCORTA STRATEGICA (COOP) (ID: out_09)
+      Difficoltà: MEDIA | Punti Base: 180 PT | Durata: ~8 min
+      Categoria: COLLABORAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Tu e il tuo partner camminate davanti e dietro a un terzo partecipante aprendogli e chiudendogli la strada come un convoglio presidenziale per 3 minuti.
+
+  [#6] IL SELFIE MONUMENTALE (ID: out_16)
+      Difficoltà: DIFFICILE | Punti Base: 250 PT | Durata: ~10 min
+      Categoria: COLLABORAZIONE | Partecipanti: 4 | Verifica: group_vote
+      Descrizione:
+         Scatta un selfie in cui compaiono tutti i membri del gruppo allineati esattamente in ordine di altezza dal più basso al più alto.
+
+  [#7] IL PATTO DI NON AGGRESSIONE CLANDESTINO (ID: chaos_10)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~15 min
+      Categoria: COLLABORAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Stringi un patto segreto con un compagno per confermarvi a vicenda una missione nelle prossime due tornate di gioco.
+
+  [#8] LA PAROLA D'ORDINE CLANDESTINA (ID: cross_02)
+      Difficoltà: MEDIA | Punti Base: 160 PT | Durata: ~20 min
+      Categoria: COLLABORAZIONE | Partecipanti: 2 | Verifica: peer_target
+      Descrizione:
+         Stabilisci all'inizio della serata una parola d'ordine segreta con un compagno e usatela con naturalezza ogni volta che incrociate lo sguardo.
+
+  [#9] L'ALLEANZA INVISIBILE (COOP) (ID: cross_13)
+      Difficoltà: DIFFICILE | Punti Base: 230 PT | Durata: ~15 min
+      Categoria: COLLABORAZIONE | Partecipanti: 3 | Verifica: peer_witness
+      Descrizione:
+         Insieme a un compagno, scambiatevi di posto ogni volta che la musica o il tema di conversazione cambia, senza dire una parola tra voi.
+
+  [#10] L'ACCORDO SEGRETO DI SGUARDI (COOP) (ID: chaos_extra_04)
+      Difficoltà: MEDIA | Punti Base: 150 PT | Durata: ~5 min
+      Categoria: COLLABORAZIONE | Partecipanti: 2 | Verifica: peer_witness
+      Descrizione:
+         Tu e il partner vi fissate negli occhi senza ridere per 20 secondi in mezzo alla conversazione generale.
+
+
+
+================================================================================
+PARTE 4: ELENCO GENERALE ORDINATO DI TUTTE LE 161 MISSIONI
+================================================================================
+
+[MISSIONE #1 di 161] L'Ordine Speculare
+ID: bar_01
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: persuasione
+Modalità compatibili: bar, house_party
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai ordinare a un altro partecipante lo stesso identico drink o consumazione che hai ordinato tu, senza mai nominarlo direttamente prima che ordini.
+Condizioni speciali: Non puoi offrire tu la consumazione.
+................................................................................
+
+[MISSIONE #2 di 161] L'Esperto Sommelier Fittizio
+ID: bar_02
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: bluff
+Modalità compatibili: bar, house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Inventati un difetto o una nota aromatica completamente assurda del tuo bicchiere (es. "retrogusto di quercia affumicata da temporale estivo") e convinci qualcuno al tavolo a fingere di sentirla.
+................................................................................
+
+[MISSIONE #3 di 161] Il Critico del Sottobicchiere
+ID: bar_03
+Difficoltà: FACILE
+Punti base: 80 PT
+Categoria: creativita
+Modalità compatibili: bar
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Costruisci o posiziona una torre di almeno 4 sottobicchieri o tappi di fronte a un compagno di gioco senza che te la abbatta per almeno 5 minuti.
+................................................................................
+
+[MISSIONE #4 di 161] Niente Parole Proibite: Drink & Bar
+ID: bar_04
+Difficoltà: MEDIA
+Punti base: 140 PT
+Categoria: bluff
+Modalità compatibili: bar, house_party
+Durata stimata: ~10 minuti
+Target partecipanti: Solo tu
+Verifica: Testimone imparziale
+Descrizione:
+   Parla per 10 minuti continui senza mai pronunciare le parole "bere", "drink", "bicchiere", "cocktail" o "bar", facendoti comunque capire quando ordinate o parlate.
+................................................................................
+
+[MISSIONE #5 di 161] Lo Sguardo dell'Alibi
+ID: bar_05
+Difficoltà: DIFFICILE
+Punti base: 220 PT
+Categoria: osservazione
+Modalità compatibili: bar
+Durata stimata: ~12 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Scopri quale drink ha ordinato un altro giocatore prima di lui guardando solo cosa prepara il bartender, e sussurraglielo all'orecchio prima che il bicchiere tocchi il tavolo.
+................................................................................
+
+[MISSIONE #6 di 161] Il Falso Ricordo d'Infanzia
+ID: bar_06
+Difficoltà: DIFFICILE
+Punti base: 250 PT
+Categoria: bluff
+Modalità compatibili: bar, house_party
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Racconta al tavolo una storia totalmente inventata sul tuo primo lavoro estivo assurdo e fai annuire convinto almeno un altro giocatore dicendo "Sì, me lo avevi già raccontato!".
+................................................................................
+
+[MISSIONE #7 di 161] Brindisi con Movente
+ID: bar_07
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: socializzazione
+Modalità compatibili: bar, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Avvia un brindisi corale solenne al tavolo dedicandolo a una causa fittizia, bizzarra ma apparentemente nobile (es. "Ai lampioni a risparmio energetico").
+................................................................................
+
+[MISSIONE #8 di 161] La Parola Infiltrata: "Pappagallo"
+ID: bar_08
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: persuasione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~15 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Inserisci la parola "pappagallo" (o suo derivato) in 3 conversazioni separate con 3 persone diverse nell'arco di 15 minuti, senza destare sospetti.
+................................................................................
+
+[MISSIONE #9 di 161] L'Intervista Clandestina
+ID: bar_09
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: deduzione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai confessare a un altro partecipante il suo peggior acquisto compulsivo degli ultimi 6 mesi, senza fargli capire che sei in missione.
+................................................................................
+
+[MISSIONE #10 di 161] Il Tocco delle Mani Incrociate
+ID: bar_10
+Difficoltà: DIFFICILE
+Punti base: 210 PT
+Categoria: persuasione
+Modalità compatibili: bar, house_party
+Durata stimata: ~12 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai in modo che due altri giocatori del gruppo si scambino involontariamente un oggetto (accendino, tovagliolo, cellulare, chiavi) passando attraverso di te.
+................................................................................
+
+[MISSIONE #11 di 161] Scommessa a Orologio
+ID: bar_11
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: osservazione
+Modalità compatibili: bar, house_party
+Durata stimata: ~20 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Indovina l'orario esatto della prossima volta che qualcuno del gruppo si alza per andare in bagno o al bancone con un margine di errore inferiore a 3 minuti.
+................................................................................
+
+[MISSIONE #12 di 161] L'Accento Camaleonte
+ID: bar_12
+Difficoltà: DIFFICILE
+Punti base: 230 PT
+Categoria: creativita
+Modalità compatibili: bar, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sostieni una conversazione di almeno 3 minuti adottando una cadenza regionale o straniera impercettibilmente alterata senza farti sbeffeggiare apertamente.
+................................................................................
+
+[MISSIONE #13 di 161] Patto del Bancone (Coop)
+ID: bar_13
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: collaborazione
+Modalità compatibili: bar
+Durata stimata: ~15 minuti
+Target partecipanti: 3 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Collabora con il tuo partner per far ordinare a un terzo giocatore una ciotola di patatine o arachidi extra senza che capisca che stavate complottando.
+................................................................................
+
+[MISSIONE #14 di 161] La Teoria del Complotto Quotidiano
+ID: bar_14
+Difficoltà: DIFFICILE
+Punti base: 240 PT
+Categoria: bluff
+Modalità compatibili: bar, house_party
+Durata stimata: ~15 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Convincere due compagni che un oggetto comunissimo del locale (es. la forma delle cannucce o il logo sui bicchieri) ha un significato psicologico nascosto.
+................................................................................
+
+[MISSIONE #15 di 161] Sincronia di Bicchieri
+ID: bar_15
+Difficoltà: LEGGENDARIA
+Punti base: 380 PT
+Categoria: osservazione
+Modalità compatibili: bar
+Durata stimata: ~25 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai in modo che tu e un altro giocatore ignaro appoggiate il bicchiere sul tavolo nello stesso identico secondo per tre volte consecutive.
+................................................................................
+
+[MISSIONE #16 di 161] Il Soprannome Improvviso
+ID: bar_16
+Difficoltà: DIFFICILE
+Punti base: 260 PT
+Categoria: persuasione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~20 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Inizia a chiamare un partecipante con un soprannome insolito e fa in modo che un terzo membro del gruppo inizi a usarlo spontaneamente nella conversazione.
+................................................................................
+
+[MISSIONE #17 di 161] Dilemma del Menù
+ID: bar_17
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: persuasione
+Modalità compatibili: bar
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai passare a un amico almeno 4 minuti a riflettere indeciso su quale bevanda o snack prendere, continuando a fargli domande retoriche.
+................................................................................
+
+[MISSIONE #18 di 161] Il Maestro del Ghiaccio
+ID: bar_18
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: chaos
+Modalità compatibili: bar
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sposta discretamente 3 cubetti di ghiaccio o cannucce usate da un bicchiere a un piattino senza che il proprietario del drink se ne accorga per 2 minuti.
+................................................................................
+
+[MISSIONE #19 di 161] Lo Sbadiglio a Catena
+ID: bar_19
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: osservazione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~3 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sbadiglia vistosamente e fai sbadigliare per contagio almeno altri due partecipanti entro 90 secondi.
+................................................................................
+
+[MISSIONE #20 di 161] L'Opinione Controcorrente
+ID: bar_20
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: persuasione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Difendi con passione un film universalmente odiato o un cibo ripugnante finché un amico non ammette riluttante: "Beh, in fondo un punto ce l'hai".
+................................................................................
+
+[MISSIONE #21 di 161] La Mossa Specchio
+ID: disco_01
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: creativita
+Modalità compatibili: discoteca, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Inventati un movimento di danza ritmico e ripetitivo sulla pista e convinci un compagno di gioco a imitarlo a specchio per almeno 15 secondi.
+................................................................................
+
+[MISSIONE #22 di 161] Il Radar del Drop
+ID: disco_02
+Difficoltà: FACILE
+Punti base: 80 PT
+Categoria: osservazione
+Modalità compatibili: discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Prevedi ad alta voce il momento esatto in cui la canzone "droppa" o cambia ritmo, alzando le braccia esattamente sul beat.
+................................................................................
+
+[MISSIONE #23 di 161] La Comunicazione Morse a Bicchieri
+ID: disco_03
+Difficoltà: DIFFICILE
+Punti base: 240 PT
+Categoria: deduzione
+Modalità compatibili: discoteca
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Comunica una parola in codice di 4 lettere a un tuo amico attraverso la folla usando solo cenni del capo o gesti delle mani, senza usare la voce né il cellulare.
+................................................................................
+
+[MISSIONE #24 di 161] Il Trenino Spontaneo
+ID: disco_04
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: socializzazione
+Modalità compatibili: discoteca, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Innesca o partecipa a una fila di ballo o passo coordinato con almeno altri 3 compagni di gioco per almeno 30 secondi.
+................................................................................
+
+[MISSIONE #25 di 161] La Guardia del Corpo Improvvisata
+ID: disco_05
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: creativita
+Modalità compatibili: discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai finta di essere la guardia del corpo seria e impassibile di un tuo amico mentre attraversa la pista da ballo per andare al bar.
+................................................................................
+
+[MISSIONE #26 di 161] L'Urlo sul Ritornello
+ID: disco_06
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: persuasione
+Modalità compatibili: discoteca, house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai cantare a squarciagola il ritornello di una traccia a un amico che di solito non canta mai in pubblico.
+................................................................................
+
+[MISSIONE #27 di 161] L'Ombra Fedele (Coop)
+ID: disco_07
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: collaborazione
+Modalità compatibili: discoteca
+Durata stimata: ~6 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Con il tuo partner, posizionatevi contemporaneamente ai due lati di un terzo giocatore per 2 minuti ballando in sincronia perfetta senza che lui capisca il motivo.
+................................................................................
+
+[MISSIONE #28 di 161] La Foto Mosse Perfetta
+ID: disco_08
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: creativita
+Modalità compatibili: discoteca, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Scatta o fatti scattare una foto di gruppo mossa e sfocata che sembri la copertina di un album indie electro anni 2000.
+................................................................................
+
+[MISSIONE #29 di 161] La Scomparsa da Illusionista
+ID: disco_09
+Difficoltà: MEDIA
+Punti base: 140 PT
+Categoria: osservazione
+Modalità compatibili: discoteca
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Sparisci dalla vista di un tuo amico durante un momento di folla e ricompari esattamente alle sue spalle toccandogli la spalla opposta.
+................................................................................
+
+[MISSIONE #30 di 161] Occhiali da Sole Notturni
+ID: disco_10
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: persuasione
+Modalità compatibili: discoteca, house_party
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai indossare a un compagno i tuoi occhiali da sole sulla pista da ballo buia per almeno una canzone intera senza lamentarsi.
+................................................................................
+
+[MISSIONE #31 di 161] Indovina il DJ Set
+ID: disco_11
+Difficoltà: DIFFICILE
+Punti base: 250 PT
+Categoria: deduzione
+Modalità compatibili: discoteca
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Riconosci e scrivi in segreto sul telefono il genere o il campione della traccia successiva prima che entri la batteria principale, e mostralo come prova al compagno.
+................................................................................
+
+[MISSIONE #32 di 161] Cerchio Hip-Hop da Salotto
+ID: disco_12
+Difficoltà: DIFFICILE
+Punti base: 230 PT
+Categoria: socializzazione
+Modalità compatibili: discoteca, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Apri un cerchio di ballo tra voi amici e lancia dentro un compagno riluttante facendolo acclamare a gran voce da tutto il gruppo.
+................................................................................
+
+[MISSIONE #33 di 161] Il Labiale Sbagliato
+ID: disco_13
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: bluff
+Modalità compatibili: discoteca
+Durata stimata: ~3 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Canta in playback con grande enfasi parole completamente diverse dal testo reale della canzone per 30 secondi finché qualcuno non ti guarda perplesso.
+................................................................................
+
+[MISSIONE #34 di 161] La Finta Chiamata d'Emergenza
+ID: disco_14
+Difficoltà: MEDIA
+Punti base: 130 PT
+Categoria: bluff
+Modalità compatibili: discoteca, bar
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Mima l'ansia di una telefonata urgente nel frastuono della musica, chiedi silenzio con un dito a un amico e poi scoppia a ridere rivelando il nulla.
+................................................................................
+
+[MISSIONE #35 di 161] La Trance Mistica
+ID: disco_15
+Difficoltà: DIFFICILE
+Punti base: 270 PT
+Categoria: chaos
+Modalità compatibili: discoteca
+Durata stimata: ~3 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Rimani immobile come una statua in mezzo alla pista mentre tutti ballano intorno a te per 45 secondi di fila senza sorridere.
+................................................................................
+
+[MISSIONE #36 di 161] Il Battito di Mani Fuori Tempo
+ID: disco_16
+Difficoltà: DIFFICILE
+Punti base: 260 PT
+Categoria: persuasione
+Modalità compatibili: discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Inizia a battere le mani perfettamente in controtempo rispetto alla cassa e convincere almeno un altro amico a unirsi convinto al tuo ritmo storto.
+................................................................................
+
+[MISSIONE #37 di 161] Il Passaggio della Giacca
+ID: disco_17
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: persuasione
+Modalità compatibili: discoteca, bar, house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Riesci a far reggere la tua giacca, felpa o accessorio a un altro giocatore per più di 5 minuti senza che te lo chieda indietro subito.
+................................................................................
+
+[MISSIONE #38 di 161] High Five Volante
+ID: disco_18
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: socializzazione
+Modalità compatibili: discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Scambia un batticinque a mezz'aria saltando contemporaneamente con un amico durante il drop di un brano.
+................................................................................
+
+[MISSIONE #39 di 161] Il Guardiano del Tavolo
+ID: disco_19
+Difficoltà: MEDIA
+Punti base: 140 PT
+Categoria: osservazione
+Modalità compatibili: discoteca, bar
+Durata stimata: ~12 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Presidia il tavolo o il punto d'appoggio del gruppo per 10 minuti respingendo amichevolmente chiunque provi ad occuparlo.
+................................................................................
+
+[MISSIONE #40 di 161] Il Re della Pista (Leggendaria)
+ID: disco_20
+Difficoltà: LEGGENDARIA
+Punti base: 420 PT
+Categoria: collaborazione
+Modalità compatibili: discoteca
+Durata stimata: ~15 minuti
+Target partecipanti: 5 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Organizza una coreografia improvvisata con almeno 4 compagni di gioco che duri per un intero ritornello e termini con un pose-down finale.
+................................................................................
+
+[MISSIONE #41 di 161] Il Custode del Frigorifero
+ID: house_01
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: socializzazione
+Modalità compatibili: house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Posizionati vicino al frigorifero o alla dispensa e commenta seriosamente ogni scelta di snack o bevanda presa da 3 amici diversi.
+................................................................................
+
+[MISSIONE #42 di 161] Il DJ Dirottatore
+ID: house_02
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: persuasione
+Modalità compatibili: house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Riesci a far mettere in coda sulla cassa Bluetooth una canzone imbarazzante degli anni '90 o 2000 senza che nessuno la skippi nei primi 90 secondi.
+................................................................................
+
+[MISSIONE #43 di 161] L'Oggetto Infiltrato
+ID: house_03
+Difficoltà: DIFFICILE
+Punti base: 230 PT
+Categoria: chaos
+Modalità compatibili: house_party
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Prendi un piccolo oggetto innocuo (un cucchiaino, una molletta, un tappo) e nascondilo nella tasca della giacca di un amico senza che se ne accorga.
+................................................................................
+
+[MISSIONE #44 di 161] La Votazione Improvvisa
+ID: house_04
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: socializzazione
+Modalità compatibili: house_party, bar, outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Lancia una votazione palese al volo su chi tra i presenti sopravviverebbe meno tempo in un'apocalisse zombie e fai votare almeno 4 persone.
+................................................................................
+
+[MISSIONE #45 di 161] L'Ispezione Domestica
+ID: house_05
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: deduzione
+Modalità compatibili: house_party
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Trova l'oggetto più bizzarro o vintage esposto nella stanza e chiedi al padrone di casa l'aneddoto sulla sua origine.
+................................................................................
+
+[MISSIONE #46 di 161] La Battuta a Scoppio Ritardato
+ID: house_06
+Difficoltà: MEDIA
+Punti base: 130 PT
+Categoria: creativita
+Modalità compatibili: house_party, bar, outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Racconta una freddura o un calambour pessimo e mantieni un'espressione totalmente seria finché qualcun altro non ride per l'imbarazzo.
+................................................................................
+
+[MISSIONE #47 di 161] Il Gioco del Silenzio Volontario
+ID: house_07
+Difficoltà: DIFFICILE
+Punti base: 250 PT
+Categoria: bluff
+Modalità compatibili: house_party, bar
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Non parlare per 7 minuti esatti durante la festa, comunicando solo a gesti o mimica, senza che nessuno pensi che tu sia arrabbiato.
+................................................................................
+
+[MISSIONE #48 di 161] Il Toast Perfetto
+ID: house_08
+Difficoltà: FACILE
+Punti base: 120 PT
+Categoria: creativita
+Modalità compatibili: house_party
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Prepara uno spuntino o assembla un piattino di stuzzichini per un amico decorandolo in modo ridicolmente artistico e formale.
+................................................................................
+
+[MISSIONE #49 di 161] Lo Scambio di Sedie Inconsapevole
+ID: house_09
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: persuasione
+Modalità compatibili: house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai cambiare sedia o divano a un amico senza chiedergli di alzarsi direttamente (es. chiedendogli di passarti qualcosa o indicando un dettaglio).
+................................................................................
+
+[MISSIONE #50 di 161] Il Ritratto Segreto
+ID: house_10
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: creativita
+Modalità compatibili: house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Disegna su un foglietto o sul retro di un tovagliolo il ritratto caricaturale di un partecipante e faglielo trovare sotto il suo bicchiere.
+................................................................................
+
+[MISSIONE #51 di 161] L'Archivista delle Risate
+ID: house_11
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: osservazione
+Modalità compatibili: house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Individua quale giocatore ha la risata più riconoscibile e imitala immediatamente dopo che ha riso senza fargli capire che era un'imitazione.
+................................................................................
+
+[MISSIONE #52 di 161] Il Complice Silenzioso (Coop)
+ID: house_12
+Difficoltà: MEDIA
+Punti base: 190 PT
+Categoria: collaborazione
+Modalità compatibili: house_party
+Durata stimata: ~12 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Assieme al partner, ogni volta che un terzo giocatore parla, annuite sincronizzati in silenzio per 3 volte nell'arco di 10 minuti.
+................................................................................
+
+[MISSIONE #53 di 161] Il Gossip Filosofico
+ID: house_13
+Difficoltà: DIFFICILE
+Punti base: 210 PT
+Categoria: creativita
+Modalità compatibili: house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Trasforma una banale chiacchiera di gossip su conoscenti in una profonda dissertazione esistenziale sul destino dell'umanità.
+................................................................................
+
+[MISSIONE #54 di 161] La Prova del Cuoco Spacciata
+ID: house_14
+Difficoltà: DIFFICILE
+Punti base: 260 PT
+Categoria: bluff
+Modalità compatibili: house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai credere che uno snack industriale confezionato sia una ricetta segreta preparata a mano da tua nonna.
+................................................................................
+
+[MISSIONE #55 di 161] L'Ordine Cronologico
+ID: house_15
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: deduzione
+Modalità compatibili: house_party, bar
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai elencare a un amico tutti i cellulari che ha posseduto nella sua vita in ordine cronologico esatto.
+................................................................................
+
+[MISSIONE #56 di 161] Il Saluto Segreto Improvvisato
+ID: house_16
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: socializzazione
+Modalità compatibili: house_party, outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Insegna a un amico una stretta di mano segreta con 4 passaggi bizzarri e usatela come saluto ufficiale per il resto della serata.
+................................................................................
+
+[MISSIONE #57 di 161] La Sfida del Pollice
+ID: house_17
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: chaos
+Modalità compatibili: house_party, bar
+Durata stimata: ~5 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Appoggia il pollice sul bordo del tavolo. Tutti quelli che lo vedono devono fare lo stesso. L'ultimo a farlo perde (e tu incassi i punti se lo notano in 3).
+................................................................................
+
+[MISSIONE #58 di 161] L'Albero Genealogico dei Debiti
+ID: house_18
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: deduzione
+Modalità compatibili: house_party, bar
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Ricorda a un amico un piccolo debito morale o materiale insignificante di almeno 2 anni fa (es. "un pacchetto di gomme nel 2022") con assoluta precisione scenica.
+................................................................................
+
+[MISSIONE #59 di 161] La Telecronaca Sotto Voce
+ID: house_19
+Difficoltà: DIFFICILE
+Punti base: 220 PT
+Categoria: creativita
+Modalità compatibili: house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai la telecronaca a bassa voce di ciò che sta facendo un amico in cucina come se fosse la finale di Champions League.
+................................................................................
+
+[MISSIONE #60 di 161] Il Master del Salotto (Leggendaria)
+ID: house_20
+Difficoltà: LEGGENDARIA
+Punti base: 400 PT
+Categoria: persuasione
+Modalità compatibili: house_party
+Durata stimata: ~15 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Riesci a far spostare l'intera conversazione del salotto su un argomento a tua scelta deciso prima, e mantenerla viva per almeno 12 minuti continuativi.
+................................................................................
+
+[MISSIONE #61 di 161] Il Navigatore Cieco
+ID: out_01
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: persuasione
+Modalità compatibili: outdoor
+Durata stimata: ~12 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Guida il gruppo verso una direzione o una via laterale sostenendo con assoluta sicurezza che "da qui si accorcia", anche se allunghi la strada.
+................................................................................
+
+[MISSIONE #62 di 161] La Guida Turistica Apocrifa
+ID: out_02
+Difficoltà: DIFFICILE
+Punti base: 240 PT
+Categoria: bluff
+Modalità compatibili: outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Indica un palazzo, una statua o un elemento urbano qualunque e inventati una storia storica totalmente falsa convincendo almeno un compagno.
+................................................................................
+
+[MISSIONE #63 di 161] L'Avvistatore di Cani
+ID: out_03
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: osservazione
+Modalità compatibili: outdoor
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sii il primo ad avvistare 3 cani di razze diverse durante la passeggiata e fai pronunciare il loro nome a un compagno.
+................................................................................
+
+[MISSIONE #64 di 161] La Camminata Sincronizzata
+ID: out_04
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: osservazione
+Modalità compatibili: outdoor
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Cammina spalla a spalla con un amico sincronizzando perfettamente il passo del piede destro e sinistro per almeno 50 passi senza che lui se ne accorga.
+................................................................................
+
+[MISSIONE #65 di 161] Il Trovatore di Targhe Assurde
+ID: out_05
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: deduzione
+Modalità compatibili: outdoor
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Trova un'auto parcheggiata la cui targa contenga una parola o una sigla buffa e falla notare al gruppo.
+................................................................................
+
+[MISSIONE #66 di 161] La Fermata del Semaforo Filosofico
+ID: out_06
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: socializzazione
+Modalità compatibili: outdoor
+Durata stimata: ~4 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Durante l'attesa a un semaforo pedonale rosso, fai partire una discussione etica sul perché la gente aspetta anche senza macchine.
+................................................................................
+
+[MISSIONE #67 di 161] Il Lancio dell'Ombra
+ID: out_07
+Difficoltà: FACILE
+Punti base: 120 PT
+Categoria: creativita
+Modalità compatibili: outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai in modo che l'ombra del tuo corpo copra completamente l'ombra di un compagno di gioco per 10 secondi sotto un lampione.
+................................................................................
+
+[MISSIONE #68 di 161] La Panchina delle Confessioni
+ID: out_08
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: creativita
+Modalità compatibili: outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Convincere due amici a sedersi su una panchina pubblica e scattargli una foto che sembri una locandina cinematografica d'autore.
+................................................................................
+
+[MISSIONE #69 di 161] La Scorta Strategica (Coop)
+ID: out_09
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: collaborazione
+Modalità compatibili: outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Tu e il tuo partner camminate davanti e dietro a un terzo partecipante aprendogli e chiudendogli la strada come un convoglio presidenziale per 3 minuti.
+................................................................................
+
+[MISSIONE #70 di 161] Il Cacciatore di Vetrine
+ID: out_10
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: persuasione
+Modalità compatibili: outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai fermare un amico davanti a una vetrina di un negozio chiuso commentando seriamente un capo o un oggetto orribile.
+................................................................................
+
+[MISSIONE #71 di 161] L'Eco della Piazza
+ID: out_11
+Difficoltà: MEDIA
+Punti base: 140 PT
+Categoria: creativita
+Modalità compatibili: outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Trova un punto in una piazza o sotto un portico con riverbero e fai urlare una frase nonsense a un amico per testare l'eco.
+................................................................................
+
+[MISSIONE #72 di 161] Il Calcolo dei Passi
+ID: out_12
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: deduzione
+Modalità compatibili: outdoor
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai indovinare a un amico quanti passi mancano all'incrocio successivo e verificate contando ad alta voce insieme.
+................................................................................
+
+[MISSIONE #73 di 161] La Brezza Improvvisa
+ID: out_13
+Difficoltà: MEDIA
+Punti base: 130 PT
+Categoria: osservazione
+Modalità compatibili: outdoor
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Lamentati credibilmente del vento o della temperatura esattamente prima che un altro compagno dica spontaneamente la stessa cosa.
+................................................................................
+
+[MISSIONE #74 di 161] Il Girotondo Inconsapevole
+ID: out_14
+Difficoltà: DIFFICILE
+Punti base: 270 PT
+Categoria: chaos
+Modalità compatibili: outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Guida il gruppo attorno a un monumento o un'aiuola facendo compiere un cerchio completo a 360 gradi prima di riprendere la rotta.
+................................................................................
+
+[MISSIONE #75 di 161] Il Saltatore di Righe
+ID: out_15
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: chaos
+Modalità compatibili: outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Evita rigorosamente di calpestare le fughe delle piastrelle o i tombini per 100 metri, facendoti notare da un testimone.
+................................................................................
+
+[MISSIONE #76 di 161] Il Selfie Monumentale
+ID: out_16
+Difficoltà: DIFFICILE
+Punti base: 250 PT
+Categoria: collaborazione
+Modalità compatibili: outdoor, house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Scatta un selfie in cui compaiono tutti i membri del gruppo allineati esattamente in ordine di altezza dal più basso al più alto.
+................................................................................
+
+[MISSIONE #77 di 161] La Traccia del Cartello Bizzarro
+ID: out_17
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: bluff
+Modalità compatibili: outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Trova un cartello stradale o un adesivo insolito e convinci un amico che è l'indizio di una società segreta locale.
+................................................................................
+
+[MISSIONE #78 di 161] L'Attraversamento da Star
+ID: out_18
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: creativita
+Modalità compatibili: outdoor
+Durata stimata: ~4 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Attraversa le strisce pedonali con i tuoi compagni sfilando a passo da passerella di alta moda.
+................................................................................
+
+[MISSIONE #79 di 161] Il Campanile dell'Ora Esatta
+ID: out_19
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: osservazione
+Modalità compatibili: outdoor
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Annuncia l'ora esatta senza guardare il telefono nel momento in cui suonano le campane di una chiesa vicina o un orologio pubblico.
+................................................................................
+
+[MISSIONE #80 di 161] La Spedizione Notturna (Leggendaria)
+ID: out_20
+Difficoltà: LEGGENDARIA
+Punti base: 390 PT
+Categoria: socializzazione
+Modalità compatibili: outdoor
+Durata stimata: ~20 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Porta l'intero gruppo a scoprire un angolo o vicolo del quartiere in cui nessuno dei presenti era mai stato prima.
+................................................................................
+
+[MISSIONE #81 di 161] Il Sabotatore di Brindisi
+ID: chaos_01
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: chaos
+Modalità compatibili: chaos, bar, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Durante il prossimo brindisi, tocca i bicchieri di tutti tranne uno specifico giocatore, scusandoti subito dopo dicendo "Ops, non ti avevo visto!".
+................................................................................
+
+[MISSIONE #82 di 161] L'Inversione di Ruoli
+ID: chaos_02
+Difficoltà: DIFFICILE
+Punti base: 260 PT
+Categoria: bluff
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Imita il tic verbale o la posa abituale di un tuo amico per 5 minuti finché un terzo giocatore non dice "Perché ti muovi/parli come lui?".
+................................................................................
+
+[MISSIONE #83 di 161] Il Tradimento dell'Alleanza (Coop)
+ID: chaos_03
+Difficoltà: DIFFICILE
+Punti base: 280 PT
+Categoria: bluff
+Modalità compatibili: chaos
+Durata stimata: ~15 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fingi un'alleanza segreta con un giocatore per completare un obiettivo, ma fai convalidare l'obiettivo da un testimone diverso prima di lui.
+................................................................................
+
+[MISSIONE #84 di 161] La Notifica Fantasma
+ID: chaos_04
+Difficoltà: FACILE
+Punti base: 120 PT
+Categoria: bluff
+Modalità compatibili: chaos, bar, house_party, outdoor
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Guarda lo schermo del telefono con espressione di autentico shock o stupore, coprilo con la mano e rifiutati di dire cosa hai visto a chiunque te lo chieda per 3 minuti.
+................................................................................
+
+[MISSIONE #85 di 161] Il Contagio della Risata Rovesciata
+ID: chaos_05
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: chaos
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Ridi di una cosa serissima e mantieni una faccia tombale quando tutti gli altri ridono per una battuta.
+................................................................................
+
+[MISSIONE #86 di 161] Il Cambio d'Abito Furtivo
+ID: chaos_06
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: creativita
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~12 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Scambiati un accessorio vistoso (cappello, sciarpa, giacca, orologio) con un altro giocatore e vedi se qualcuno nel gruppo se ne accorge prima di 10 minuti.
+................................................................................
+
+[MISSIONE #87 di 161] La Parola Tabù del Gruppo
+ID: chaos_07
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: chaos
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Dichiara apertamente una parola "maledetta" per i prossimi 10 minuti. Chiunque la pronuncia deve offrire un assaggio o fare un pegno.
+................................................................................
+
+[MISSIONE #88 di 161] Il Furto del Bicchiere Fantasma
+ID: chaos_08
+Difficoltà: DIFFICILE
+Punti base: 240 PT
+Categoria: chaos
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Scambia il tuo bicchiere (se dello stesso tipo e contenuto sicuro) con quello di un compagno distratto senza che se ne accorga.
+................................................................................
+
+[MISSIONE #89 di 161] L'Accusa Infondata
+ID: chaos_09
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: persuasione
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Accusa scherzosamente un compagno di essere l'Agente Segreto infiltrato del gruppo e porta almeno altri due compagni a sostenere l'accusa.
+................................................................................
+
+[MISSIONE #90 di 161] Il Patto di Non Aggressione Clandestino
+ID: chaos_10
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: collaborazione
+Modalità compatibili: chaos
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Stringi un patto segreto con un compagno per confermarvi a vicenda una missione nelle prossime due tornate di gioco.
+................................................................................
+
+[MISSIONE #91 di 161] La Domanda da 100 Milioni
+ID: chaos_11
+Difficoltà: FACILE
+Punti base: 120 PT
+Categoria: socializzazione
+Modalità compatibili: chaos, bar, house_party, outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Poni al gruppo un dilemma morale assurdo ma intrigante ("100 milioni subito ma ogni volta che entri in un bar suona l'inno nazionale?") e raccogli i pareri di tutti.
+................................................................................
+
+[MISSIONE #92 di 161] Il Silenzio Improvviso Collettivo
+ID: chaos_12
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: osservazione
+Modalità compatibili: chaos, bar, house_party
+Durata stimata: ~15 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Quando si verifica uno di quei rari momenti in cui tutti tacciono contemporaneamente al tavolo, dì "È passato un angelo" con tono solenne.
+................................................................................
+
+[MISSIONE #93 di 161] L'Effetto Mandela
+ID: chaos_13
+Difficoltà: DIFFICILE
+Punti base: 260 PT
+Categoria: bluff
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Convinci due persone che un attore famoso è morto anni fa, o che un cartone animato della loro infanzia aveva un finale completamente diverso.
+................................................................................
+
+[MISSIONE #94 di 161] La Catena di Sussurri
+ID: chaos_14
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: socializzazione
+Modalità compatibili: chaos, house_party
+Durata stimata: ~6 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sussurra una frase nonsense all'orecchio di un amico dicendo "passala a destra", e fai in modo che l'ultimo del cerchio la ripeta ad alta voce.
+................................................................................
+
+[MISSIONE #95 di 161] Il Giudizio Universale degli Sticker
+ID: chaos_15
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: creativita
+Modalità compatibili: chaos, bar, house_party, outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Invia uno sticker o GIF nel gruppo WhatsApp/Telegram degli amici che descriva perfettamente la situazione attuale senza aggiungere alcun testo.
+................................................................................
+
+[MISSIONE #96 di 161] La Finta Esultanza
+ID: chaos_16
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: bluff
+Modalità compatibili: chaos, bar, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Guarda il telefono e fai un piccolo gesto di esultanza trattenuta (pugno chiuso, respiro di sollievo). Quando ti chiedono cosa sia successo, di' "Niente di che, una questione risolta".
+................................................................................
+
+[MISSIONE #97 di 161] L'Ipnotista della Coda
+ID: chaos_17
+Difficoltà: DIFFICILE
+Punti base: 230 PT
+Categoria: persuasione
+Modalità compatibili: chaos, outdoor, bar, discoteca
+Durata stimata: ~4 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai voltare tutti i partecipanti verso la stessa direzione indicando un punto vuoto con aria incuriosita e dicendo "Ma quello là in fondo è...?".
+................................................................................
+
+[MISSIONE #98 di 161] Il Cronometro della Morte Apparente
+ID: chaos_18
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: chaos
+Modalità compatibili: chaos, house_party
+Durata stimata: ~3 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Rimani con gli occhi chiusi per 60 secondi esatti senza parlare né toccare nessuno in mezzo alla conversazione.
+................................................................................
+
+[MISSIONE #99 di 161] La Rissa Verbale Diplomatica
+ID: chaos_19
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: socializzazione
+Modalità compatibili: chaos, bar, house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Inizia un dibattito accesissimo su una questione totalmente insignificante (es. "La pizza all'ananas è un crimine o avanguardia?") e fai schierare due fazioni rivali.
+................................................................................
+
+[MISSIONE #100 di 161] L'Anarchia Totale (Leggendaria)
+ID: chaos_20
+Difficoltà: LEGGENDARIA
+Punti base: 450 PT
+Categoria: persuasione
+Modalità compatibili: chaos, house_party, bar
+Durata stimata: ~12 minuti
+Target partecipanti: 5 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai scambiare i posti a tutti i giocatori del tavolo/salotto convincendoli che porta sfortuna mantenere la stessa sedia per più di un'ora.
+................................................................................
+
+[MISSIONE #101 di 161] Il Complimento Imbarazzante
+ID: cross_01
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: socializzazione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai un complimento iper-specifico e insolito a un amico (es. "Hai una precisione geometrica eccezionale quando bevi dal bicchiere") mantenendo una serietà glaciale.
+................................................................................
+
+[MISSIONE #102 di 161] La Parola d'Ordine Clandestina
+ID: cross_02
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: collaborazione
+Modalità compatibili: bar, discoteca, house_party, chaos
+Durata stimata: ~20 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Stabilisci all'inizio della serata una parola d'ordine segreta con un compagno e usatela con naturalezza ogni volta che incrociate lo sguardo.
+................................................................................
+
+[MISSIONE #103 di 161] Il Maestro dell'Incrocio di Gambe
+ID: cross_03
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: osservazione
+Modalità compatibili: bar, house_party
+Durata stimata: ~15 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Ogni volta che il giocatore alla tua destra accavalla le gambe, accavalla le tue nello stesso verso. Ripeti per 4 volte consecutive.
+................................................................................
+
+[MISSIONE #104 di 161] Il Detective dei Segreti
+ID: cross_04
+Difficoltà: DIFFICILE
+Punti base: 290 PT
+Categoria: deduzione
+Modalità compatibili: bar, house_party, discoteca, chaos
+Durata stimata: ~20 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Scopri quale altro partecipante ha attualmente una missione attiva di categoria "Bluff" o "Persuasione" prima che la completi.
+................................................................................
+
+[MISSIONE #105 di 161] La Prova del Sei Gradi di Separazione
+ID: cross_05
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: deduzione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Trova un conoscente in comune inaspettato con un amico del gruppo attraverso una catena di al massimo 3 persone.
+................................................................................
+
+[MISSIONE #106 di 161] Il Giuramento Solenne
+ID: cross_06
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: socializzazione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai promettere solennemente a un amico con mignolo incrociato qualcosa di completamente futile ma buffo.
+................................................................................
+
+[MISSIONE #107 di 161] L'Avvocato del Diavolo
+ID: cross_07
+Difficoltà: DIFFICILE
+Punti base: 240 PT
+Categoria: persuasione
+Modalità compatibili: bar, house_party
+Durata stimata: ~12 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Prendi le difese di una persona antipatica a tutto il gruppo con argomentazioni filosofiche inattaccabili.
+................................................................................
+
+[MISSIONE #108 di 161] L'Origami Espressivo
+ID: cross_08
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: creativita
+Modalità compatibili: bar, house_party
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Costruisci un origami (barchetta, aeroplanino o cigno) usando un tovagliolo del locale e donalo solennemente a un compagno.
+................................................................................
+
+[MISSIONE #109 di 161] Il Sesto Senso del Conto
+ID: cross_09
+Difficoltà: DIFFICILE
+Punti base: 250 PT
+Categoria: deduzione
+Modalità compatibili: bar
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Indovina il totale del conto o della spesa del tavolo con uno scarto inferiore a 2 euro prima che arrivi lo scontrino.
+................................................................................
+
+[MISSIONE #110 di 161] La Telepatia di Gruppo (Leggendaria)
+ID: cross_10
+Difficoltà: LEGGENDARIA
+Punti base: 480 PT
+Categoria: deduzione
+Modalità compatibili: bar, house_party, outdoor, chaos
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Al conto di 3, tu e un altro giocatore dovete pronunciare contemporaneamente un nome di città o colore e dire la stessa identica parola al primo colpo.
+................................................................................
+
+[MISSIONE #111 di 161] Il Rituale del Brindisi Sospeso
+ID: cross_11
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: chaos
+Modalità compatibili: bar, house_party, chaos
+Durata stimata: ~4 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Inizia un brindisi, fai alzare tutti i bicchieri, fermati a metà discorso fingendo di aver perso il filo e falli aspettare 15 secondi con i bicchieri in aria.
+................................................................................
+
+[MISSIONE #112 di 161] La Citazione Falsa di Oscar Wilde
+ID: cross_12
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: bluff
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Infila in una conversazione una frase inventata sul momento attribuendola con assoluta certezza a Oscar Wilde, Nietzsche o Woody Allen.
+................................................................................
+
+[MISSIONE #113 di 161] L'Alleanza Invisibile (Coop)
+ID: cross_13
+Difficoltà: DIFFICILE
+Punti base: 230 PT
+Categoria: collaborazione
+Modalità compatibili: house_party, bar
+Durata stimata: ~15 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Insieme a un compagno, scambiatevi di posto ogni volta che la musica o il tema di conversazione cambia, senza dire una parola tra voi.
+................................................................................
+
+[MISSIONE #114 di 161] Il Cacciatore di Batteria Scarica
+ID: cross_14
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: deduzione
+Modalità compatibili: bar, house_party, outdoor, discoteca
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Scopri quale tra i partecipanti ha la percentuale di batteria del telefono più bassa in questo momento.
+................................................................................
+
+[MISSIONE #115 di 161] L'Omaggio Poetico Improvvisato
+ID: cross_15
+Difficoltà: MEDIA
+Punti base: 140 PT
+Categoria: creativita
+Modalità compatibili: bar, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Recita 4 versi in rima dedicati a una pietanza o a una bevanda presente sul tavolo con tono drammatico.
+................................................................................
+
+[MISSIONE #116 di 161] Il Radar delle Canzoni
+ID: cross_16
+Difficoltà: FACILE
+Punti base: 100 PT
+Categoria: creativita
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai indovinare a un amico il titolo di una canzone fischiettandone solo le prime 5 note.
+................................................................................
+
+[MISSIONE #117 di 161] La Mano del Destino
+ID: cross_17
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: socializzazione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai scegliere a un amico tra la tua mano destra e sinistra chiusa: una contiene una moneta o tappo, l'altra un complimento scritto.
+................................................................................
+
+[MISSIONE #118 di 161] Il Giudice di Stile Benevolo
+ID: cross_18
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: deduzione
+Modalità compatibili: bar, house_party, outdoor
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Indovina da dove proviene o quale marca ha un indumento o accessorio indossato da un amico azzeccandoci al primo colpo.
+................................................................................
+
+[MISSIONE #119 di 161] L'Incantesimo della Concentrazione
+ID: cross_19
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: chaos
+Modalità compatibili: bar, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fissa un bicchiere o una bottiglia al centro del tavolo per 2 minuti senza mai sbattere le palpebre finché un amico non ti chiede se va tutto bene.
+................................................................................
+
+[MISSIONE #120 di 161] La Trattativa di Pace (Leggendaria)
+ID: cross_20
+Difficoltà: LEGGENDARIA
+Punti base: 460 PT
+Categoria: persuasione
+Modalità compatibili: bar, house_party, outdoor, chaos
+Durata stimata: ~20 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Riconcilia una vecchia disputa scherzosa o discussione aperta tra due amici del gruppo facendoli brindare insieme con una stretta di mano pacificatrice.
+................................................................................
+
+[MISSIONE #121 di 161] Lo Sguardo Misterioso da Thriller
+ID: chaos_extra_01
+Difficoltà: FACILE
+Punti base: 90 PT
+Categoria: bluff
+Modalità compatibili: chaos, discoteca, bar
+Durata stimata: ~4 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Lancia un'occhiata complice e preoccupata a un amico come se avessi visto qualcosa di allarmante, senza mai spiegare cosa.
+................................................................................
+
+[MISSIONE #122 di 161] La Firma sul Tovagliolo
+ID: chaos_extra_02
+Difficoltà: MEDIA
+Punti base: 140 PT
+Categoria: creativita
+Modalità compatibili: bar, house_party
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai autografare un tovagliolo a un amico con una dedica affettuosa o bizzarra spacciandolo per un contratto notarile solenne.
+................................................................................
+
+[MISSIONE #123 di 161] L'Allineatore Folle di Sedie
+ID: chaos_extra_03
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: chaos
+Modalità compatibili: bar, house_party
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Allinea millimetricamente tutte le sedie o i bicchieri del tavolo con meticolosità ossessiva finché qualcuno non commenta la tua precisione.
+................................................................................
+
+[MISSIONE #124 di 161] L'Accordo Segreto di Sguardi (Coop)
+ID: chaos_extra_04
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: collaborazione
+Modalità compatibili: bar, house_party, discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Tu e il partner vi fissate negli occhi senza ridere per 20 secondi in mezzo alla conversazione generale.
+................................................................................
+
+[MISSIONE #125 di 161] La Canzone della Buonanotte Collettiva
+ID: chaos_extra_05
+Difficoltà: DIFFICILE
+Punti base: 280 PT
+Categoria: socializzazione
+Modalità compatibili: house_party, bar, outdoor, chaos
+Durata stimata: ~8 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai intonare a tutto il gruppo una sigla televisiva o canzone celebre prima della chiusura della partita.
+................................................................................
+
+[MISSIONE #126 di 161] Lo Shot della Verità Bruciante
+ID: jeffrey_01
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, discoteca, chaos
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Offri o proponi uno shot a un compagno. Prima di berlo, fagli confessare a bruciapelo la figura peggiore che ha fatto durante una serata.
+................................................................................
+
+[MISSIONE #127 di 161] Il Brindisi del Fondatore di Jeffrey Island
+ID: jeffrey_02
+Difficoltà: FACILE
+Punti base: 130 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, discoteca
+Durata stimata: ~6 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Alzati in piedi con bicchiere alla mano e improvvisa un brindisi solenne e assurdo dedicato alla "Fondazione della Repubblica Libera di Jeffrey Island", facendo brindare tutti.
+................................................................................
+
+[MISSIONE #128 di 161] Bevi Se Hai Mai (Never Have I Ever Lampo)
+ID: jeffrey_03
+Difficoltà: FACILE
+Punti base: 120 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Lancia una dichiarazione del tipo "Bevo io e beve chiunque abbia mai..." con un aneddoto piccante o imbarazzante. Almeno 2 persone devono bere un sorso con te.
+................................................................................
+
+[MISSIONE #129 di 161] Il Finto Cupido (Flirt ad Alta Tensione)
+ID: jeffrey_04
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, chaos
+Durata stimata: ~10 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sostieni con convinzione totale che tra due partecipanti al tavolo c'è una tensione palpabile e innegabile, analizzando i loro presunti "micro-segnali".
+................................................................................
+
+[MISSIONE #130 di 161] Il Complimento Sussurrato
+ID: jeffrey_05
+Difficoltà: FACILE
+Punti base: 140 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, discoteca, bar
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Avvicinati a un giocatore, sussurragli all'orecchio un complimento estremamente audace o teatrale con tono serissimo, poi allontanati fingendo che sia un segreto di stato.
+................................................................................
+
+[MISSIONE #131 di 161] Lo Scambio di Bicchiere a Tradimento
+ID: jeffrey_06
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~7 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai assaggiare il tuo drink a un compagno per fargli "sentire una cosa strana", e subito dopo bevi dal suo bicchiere commentando che il suo è nettamente migliore.
+................................................................................
+
+[MISSIONE #132 di 161] La Proposta Indecente Teatrale
+ID: jeffrey_07
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fai una proposta folle e irresistibile a un compagno (es. "Scappiamo a Santo Domingo domattina alle 6 con 40 euro") e ottieni il suo consenso verbale solenne.
+................................................................................
+
+[MISSIONE #133 di 161] Cocktail Roulette (Il Barman Improvvisato)
+ID: jeffrey_08
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~10 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Componi un mix di bevande o aggiungi un ingrediente segreto (es. fettina, ghiaccio extra, cannucce multiple) e fallo bere a un volontario come "Specialità della Casa".
+................................................................................
+
+[MISSIONE #134 di 161] Il Gioco delle Penitenze Istantanee
+ID: jeffrey_09
+Difficoltà: MEDIA
+Punti base: 150 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sfida un compagno a morra cinese o sasso-carta-forbice: chi perde deve bere 2 sorsi o mandare un vocale con voce sexy al suo migliore amico.
+................................................................................
+
+[MISSIONE #135 di 161] Sguardo Ipnotico da Telenovela (15 Secondi)
+ID: jeffrey_10
+Difficoltà: MEDIA
+Punti base: 160 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Fissa un altro giocatore negli occhi a distanza ravvicinata per 15 secondi senza parlare né distogliere lo sguardo, terminando con un sospiro drammatico.
+................................................................................
+
+[MISSIONE #136 di 161] La Cronaca dei Flirt Passati
+ID: jeffrey_11
+Difficoltà: DIFFICILE
+Punti base: 220 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~12 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai raccontare a un compagno il peggior appuntamento o bacio della sua vita, senza lasciarlo scappare fino a quando non ha svelato i dettagli più comici.
+................................................................................
+
+[MISSIONE #137 di 161] La Scommessa Alcolica dei 3 Nomi
+ID: jeffrey_12
+Difficoltà: FACILE
+Punti base: 120 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Sfida un amico: deve nominare 3 drink con la lettera "M" (o 3 ex) in 5 secondi esatti, altrimenti deve bere un sorso d'onore.
+................................................................................
+
+[MISSIONE #138 di 161] La Sosta VIP da Rockstar
+ID: jeffrey_13
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, discoteca, house_party
+Durata stimata: ~10 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Comportati per 10 minuti come se fossi il proprietario del locale o della casa, chiedendo a chiunque se il servizio è all'altezza dei tuoi standard miliardari.
+................................................................................
+
+[MISSIONE #139 di 161] Il Bacio sulla Guancia da Padrino
+ID: jeffrey_14
+Difficoltà: FACILE
+Punti base: 130 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~4 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Avvicinati a un compagno di gioco, dagli un solenne bacio su entrambe le guance dicendogli: "Tu sei la mia famiglia ora, non tradirmi mai".
+................................................................................
+
+[MISSIONE #140 di 161] Il Ballo Proibito a Sorpresa
+ID: jeffrey_15
+Difficoltà: DIFFICILE
+Punti base: 240 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, discoteca, house_party, bar
+Durata stimata: ~6 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Prendi per mano un altro giocatore e trascinalo in un ballo appassionato o improvvisato di 30 secondi (salsa, lento o club dance), a prescindere dalla musica presente.
+................................................................................
+
+[MISSIONE #141 di 161] Il Limbo Alcolico dell'Isola
+ID: jeffrey_16
+Difficoltà: DIFFICILE
+Punti base: 250 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, discoteca
+Durata stimata: ~10 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Organizza un passaggio sotto un braccio teso o una cannuccia/cintura con almeno 3 partecipanti: chi tocca beve un sorso.
+................................................................................
+
+[MISSIONE #142 di 161] La Risata Sexy da Cattivo dei Film
+ID: jeffrey_17
+Difficoltà: FACILE
+Punti base: 110 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, discoteca
+Durata stimata: ~4 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   In mezzo a una battuta, scoppia in una risata profonda, teatrale e sorniona da magnate malvagio facendo calare il gelo o facendo sbellicare tutti.
+................................................................................
+
+[MISSIONE #143 di 161] Chi Butteresti Giù dalla Torre?
+ID: jeffrey_18
+Difficoltà: MEDIA
+Punti base: 190 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Chiedi pubblicamente a un compagno di scegliere tra due persone presenti nel gruppo: "Chi butteresti dalla torre di Jeffrey Island per salvarti?". Deve motivare a voce alta!
+................................................................................
+
+[MISSIONE #144 di 161] Lo Shot alla Goccia di Solidarietà
+ID: jeffrey_19
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar, discoteca
+Durata stimata: ~7 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Trova un compagno disposto a bere uno shot o un sorso lungo in sincronia perfetta "alla goccia" incrociando i gomiti (brindisi alla marinara).
+................................................................................
+
+[MISSIONE #145 di 161] L'Oracolo delle Relazioni di Jeffrey Island
+ID: jeffrey_20
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~9 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai finta di leggere la mano o le carte a un giocatore predicendogli un futuro amoroso scandaloso o travolgente entro le prossime 48 ore.
+................................................................................
+
+[MISSIONE #146 di 161] Il Gentiluomo Provocatore (Uomo)
+ID: jeffrey_man_01
+Difficoltà: FACILE
+Punti base: 140 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Genere bersaglio: uomo
+Descrizione:
+   Fai il baciamano solenne a una ragazza o a un amico al tavolo, presentandoti come "Conte di Jeffrey Island" con tono nobile e ammaliatore.
+................................................................................
+
+[MISSIONE #147 di 161] Braccio di Ferro da Saloon (Uomo)
+ID: jeffrey_man_02
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~7 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: uomo
+Descrizione:
+   Sfida un altro uomo del tavolo a braccio di ferro con scommessa alcolica: il perdente beve un sorso e deve fare 5 flessioni sul posto.
+................................................................................
+
+[MISSIONE #148 di 161] Il Macho Pentito (Uomo)
+ID: jeffrey_man_03
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, house_party, bar
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: uomo
+Descrizione:
+   Confessa a voce alta con sguardo tenero la cosa più romantica o melensa che hai mai fatto (o sognato di fare) per una persona.
+................................................................................
+
+[MISSIONE #149 di 161] Il Toast dell'Alfa (Uomo)
+ID: jeffrey_man_04
+Difficoltà: FACILE
+Punti base: 130 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca
+Durata stimata: ~4 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: uomo
+Descrizione:
+   Bevi un intero bicchiere o shot d'un fiato sbattendo poi il bicchiere sul tavolo con espressione da film western, gridando "Questo è Jeffrey Island!".
+................................................................................
+
+[MISSIONE #150 di 161] La Sfilata di Moda da Trapstar (Uomo)
+ID: jeffrey_man_05
+Difficoltà: DIFFICILE
+Punti base: 230 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, discoteca, house_party, bar
+Durata stimata: ~6 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: uomo
+Descrizione:
+   Mettiti gli occhiali da sole (o rubali a un amico) ed esibisciti in una camminata da passerella per 15 metri facendoti applaudire dal gruppo.
+................................................................................
+
+[MISSIONE #151 di 161] Il Barbiere Improvvisato (Uomo)
+ID: jeffrey_man_06
+Difficoltà: FACILE
+Punti base: 120 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Genere bersaglio: uomo
+Descrizione:
+   Aggiusta con cura maniacale i capelli o il colletto a un altro ragazzo al tavolo dicendogli: "Così stasera non ti resiste nessuno, fidati".
+................................................................................
+
+[MISSIONE #152 di 161] La Regina Incontrastata del Privé (Donna)
+ID: jeffrey_wmn_01
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca
+Durata stimata: ~7 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Genere bersaglio: donna
+Descrizione:
+   Fatti servire o versare da bere da un compagno maschio al tavolo facendogli un cenno regale con il dito senza proferire parola finché non esegue.
+................................................................................
+
+[MISSIONE #153 di 161] Lo Sguardo da Femme Fatale (Donna)
+ID: jeffrey_wmn_02
+Difficoltà: FACILE
+Punti base: 140 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca
+Durata stimata: ~5 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Genere bersaglio: donna
+Descrizione:
+   Lancia a un ragazzo un'occhiata intensa battendo le ciglia e facendolo arrossire o balbettare, facendoti poi dire cosa stava pensando.
+................................................................................
+
+[MISSIONE #154 di 161] Il Finto Gossip da Telenovela (Donna)
+ID: jeffrey_wmn_03
+Difficoltà: MEDIA
+Punti base: 180 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: donna
+Descrizione:
+   Racconta con fare scandalizzato a due compagni un segreto fittizio assurdo su qualcuno nel locale, facendoli rimanere a bocca aperta prima di svelare il bluff.
+................................................................................
+
+[MISSIONE #155 di 161] Il Brindisi delle Bad Girls (Donna)
+ID: jeffrey_wmn_04
+Difficoltà: FACILE
+Punti base: 130 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca
+Durata stimata: ~6 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: donna
+Descrizione:
+   Raduna tutte le ragazze presenti (o almeno 2 persone) per uno shot o sorso di gruppo al grido di "Stasera nessuna pietà!".
+................................................................................
+
+[MISSIONE #156 di 161] La Psicoanalista Sfacciata (Donna)
+ID: jeffrey_wmn_05
+Difficoltà: DIFFICILE
+Punti base: 240 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~8 minuti
+Target partecipanti: 3 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: donna
+Descrizione:
+   Guarda un ragazzo dritto negli occhi e analizza senza pietà il suo "stile di corteggiamento" dandogli un voto da 1 a 10 davanti a tutti.
+................................................................................
+
+[MISSIONE #157 di 161] La Corona di Tovaglioli (Donna)
+ID: jeffrey_wmn_06
+Difficoltà: MEDIA
+Punti base: 170 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~7 minuti
+Target partecipanti: 2 giocatori
+Verifica: Testimone imparziale
+Genere bersaglio: donna
+Descrizione:
+   Fatti incoronare da un compagno con una corona o fascia improvvisata (di tovaglioli o cannucce) e ordina a tutti un brindisi solenne per la tua corte.
+................................................................................
+
+[MISSIONE #158 di 161] La Falsa Rivelazione Bomba di Mezzanotte
+ID: jeffrey_leg_01
+Difficoltà: LEGGENDARIA
+Punti base: 350 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca, chaos
+Durata stimata: ~10 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Fai calare il silenzio al tavolo annunciando: "Ragazzi devo dirvi una cosa importante sulla mia vita privata che non ho mai detto a nessuno..." e dopo 10 secondi di suspense vuota il bicchiere dicendo "...sto benissimo!".
+................................................................................
+
+[MISSIONE #159 di 161] Il Limbo delle Verità Proibite (Coop)
+ID: jeffrey_leg_02
+Difficoltà: DIFFICILE
+Punti base: 280 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~12 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Tu e il tuo partner fate confessare al resto del tavolo a turno il loro "guilty pleasure" più bizzarro. Chi si rifiuta di rispondere beve 3 sorsi di penitenza.
+................................................................................
+
+[MISSIONE #160 di 161] Il Re o Regina dei Chupiti
+ID: jeffrey_leg_03
+Difficoltà: LEGGENDARIA
+Punti base: 380 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party, discoteca
+Durata stimata: ~15 minuti
+Target partecipanti: 4 giocatori
+Verifica: Testimone imparziale
+Descrizione:
+   Convincere l'intero gruppo a ordinare una "batteria di shot" (o bicchieri speciali) e berli tutti insieme sincronizzati al tuo via.
+................................................................................
+
+[MISSIONE #161 di 161] Lo Scambio di Telefoni a Roulette Russa
+ID: jeffrey_leg_04
+Difficoltà: DIFFICILE
+Punti base: 260 PT
+Categoria: jeffrey_island
+Modalità compatibili: jeffrey_island, bar, house_party
+Durata stimata: ~8 minuti
+Target partecipanti: 2 giocatori
+Verifica: Conferma del bersaglio
+Descrizione:
+   Scambia il telefono con un altro giocatore per 3 minuti: ciascuno può guardare solo la galleria dei meme o delle foto buffe dell'altro mostrando la peggiore al gruppo.
+................................................................................
+
+
+================================================================================
+                        FINE DEL CATALOGO
+          AFTER DARK — IL GIOCO DELLE MISSIONI SEGRETE
+================================================================================
