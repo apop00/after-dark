@@ -10,6 +10,7 @@ import {
   BookOpen,
   Check,
   Camera,
+  QrCode,
   X,
   SlidersHorizontal,
   Flame,
@@ -137,34 +138,30 @@ export default function HomePage() {
 
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-4 sm:py-5 flex flex-col space-y-4 sm:space-y-5">
         
-        {/* HERO SECTION: SPAZIOSO, ELEGANTE E MODERNO */}
-        <div className="text-center pt-1 pb-1 space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/25 text-rose-300 text-[10px] font-extrabold uppercase tracking-widest shadow-sm">
-            <Sparkles className="w-3 h-3 text-rose-400" />
-            <span>Party Game Sociale dal Vivo</span>
-          </div>
+        {/* HERO SECTION: TITOLO PUNCHY & SOTTOTITOLO SNELLO */}
+        <div className="text-center pt-1 pb-0.5 space-y-1">
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white neon-title uppercase">
             AFTER DARK
           </h1>
-          <p className="text-xs text-slate-300 max-w-xs mx-auto font-medium leading-relaxed">
-            Missioni segrete, bluff psicologico e caos controllato tra amici.
+          <p className="text-[11px] sm:text-xs text-slate-400 max-w-xs mx-auto font-medium tracking-wide">
+            Missioni segrete, bluff e caos tra amici
           </p>
         </div>
 
-        {/* PROFILO UTENTE: SPAZIOSO E RAFFINATO */}
+        {/* PROFILO UTENTE: PULITO, COMPATTO E MODERNO */}
         <div className="space-y-1">
           <div
             onClick={() => {
               triggerHaptic('light');
               setIsProfileOpen(true);
             }}
-            className="card-party rounded-3xl p-3.5 sm:p-4 relative overflow-hidden cursor-pointer hover:border-rose-500/50 transition-all active:scale-[0.99] group shadow-xl"
+            className="card-party rounded-2xl p-3 sm:p-3.5 relative overflow-hidden cursor-pointer hover:border-rose-500/50 transition-all active:scale-[0.99] group shadow-xl"
           >
             <div className="flex items-center justify-between gap-3">
               {/* Left: Avatar + Identity Info */}
               <div className="flex items-center gap-3 min-w-0">
                 <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-white/10 to-white/5 border border-rose-500/40 flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition-transform">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-white/10 to-white/5 border border-rose-500/40 flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition-transform">
                     {getAvatarEmoji(avatarSeed)}
                   </div>
                   <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-black animate-pulse" />
@@ -177,7 +174,7 @@ export default function HomePage() {
                       {getGenderEmoji(gender)} {getGenderLabel(gender)}
                     </span>
                   </div>
-                  <div className="font-black text-white text-base tracking-wide truncate">
+                  <div className="font-black text-white text-sm sm:text-base tracking-wide truncate">
                     {nickname}
                   </div>
                 </div>
@@ -191,7 +188,7 @@ export default function HomePage() {
                   triggerHaptic('light');
                   setIsProfileOpen(true);
                 }}
-                className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-xs text-slate-200 hover:text-white font-extrabold flex items-center gap-1.5 transition-all active:scale-95 shrink-0 cursor-pointer shadow-sm"
+                className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-xs text-slate-200 hover:text-white font-extrabold flex items-center gap-1.5 transition-all active:scale-95 shrink-0 cursor-pointer shadow-sm"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5 text-rose-400" />
                 <span>Modifica</span>
@@ -208,7 +205,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* PRIMARY ACTION BUTTONS: REDESIGNED WITH TACTILE PARTY AESTHETICS */}
+        {/* PRIMARY ACTION BUTTONS: REDESIGNED WITH SLEEK TACTILE STYLING */}
         <div className="space-y-2.5">
           <Link
             href="/create"
@@ -216,12 +213,13 @@ export default function HomePage() {
               triggerHaptic('medium');
               sounds.playClick();
             }}
-            className="w-full py-4 px-5 rounded-2xl btn-game-rose text-white font-black text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-2.5 cursor-pointer shadow-xl active:scale-[0.98] transition-all group"
+            className="w-full py-3.5 sm:py-4 px-5 rounded-2xl btn-game-rose text-white font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2.5 cursor-pointer shadow-xl active:scale-[0.98] transition-all group"
           >
             <PlusCircle className="w-5 h-5 filter drop-shadow group-hover:rotate-90 transition-transform duration-200" />
-            <span>Crea Nuova Partita</span>
+            <span>Crea Partita</span>
           </Link>
 
+          {/* TASTI PARTECIPA & SCANNER QR RIDISEGNATI */}
           <div className="grid grid-cols-2 gap-2.5">
             <Link
               href="/join"
@@ -229,15 +227,10 @@ export default function HomePage() {
                 triggerHaptic('light');
                 sounds.playClick();
               }}
-              className="p-3.5 rounded-2xl btn-game-dark flex flex-col items-center justify-center text-center gap-1.5 cursor-pointer shadow-lg active:scale-95 transition-all group"
+              className="py-3 px-3.5 rounded-2xl bg-gradient-to-b from-[#1c1236] to-[#0f0920] hover:from-[#26194a] hover:to-[#150d2c] border border-rose-500/30 hover:border-rose-500/60 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-950/20 active:scale-95 group cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">
-                <Users className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="block text-xs font-black uppercase tracking-wider text-white">Partecipa</span>
-                <span className="block text-[10px] text-slate-400 font-medium">Codice o Lobby</span>
-              </div>
+              <Users className="w-4 h-4 text-rose-400 group-hover:scale-110 transition-transform shrink-0" />
+              <span>Partecipa</span>
             </Link>
 
             <button
@@ -247,15 +240,10 @@ export default function HomePage() {
                 setIsScannerOpen(true);
               }}
               type="button"
-              className="p-3.5 rounded-2xl btn-game-dark flex flex-col items-center justify-center text-center gap-1.5 cursor-pointer shadow-lg active:scale-95 transition-all group"
+              className="py-3 px-3.5 rounded-2xl bg-gradient-to-b from-[#0f1f24] to-[#081216] hover:from-[#152a32] hover:to-[#0c1a20] border border-emerald-500/30 hover:border-emerald-500/60 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-950/20 active:scale-95 group cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                <Camera className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="block text-xs font-black uppercase tracking-wider text-white">Scanner QR</span>
-                <span className="block text-[10px] text-slate-400 font-medium">Inquadra dal vivo</span>
-              </div>
+              <QrCode className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
+              <span>Scanner QR</span>
             </button>
           </div>
         </div>
